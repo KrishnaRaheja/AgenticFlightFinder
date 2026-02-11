@@ -10,7 +10,7 @@ def main() -> None:
 			FlightData(date="2026-03-19", from_airport="OAK", to_airport="SEA"),  # return flight
 		],
 		trip="round-trip",
-		seat="economy",
+		seat="business",
 		passengers=Passengers(adults=1, children=0, infants_in_seat=0, infants_on_lap=0),
 		fetch_mode="fallback",
 	)
