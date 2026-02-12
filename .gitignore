@@ -1,0 +1,39 @@
+# Python temp files
+__pycache__/
+*.py[codz]
+
+# Jupyter Notebooks
+*.ipynb
+
+# VS Code settings
+.vscode/
+
+# Environment files
+.env
+.venv/
+env/
+venv/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Test and coverage outputs
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Build outputs
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Logs
+*.log
+
+# Misc
+*.swp
+*.bak
+*.tmp
