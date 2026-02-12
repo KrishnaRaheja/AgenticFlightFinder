@@ -21,7 +21,7 @@ Design Considerations:
 """
 
 from fast_flights import get_flights, FlightData, Passengers, Result
-from adapters.base_adapter import FlightAdapter
+from adapters.adapter_interface import FlightAdapter
 from models.universal_flight_model import UniversalFlight, FlightItinerary
 from typing import List, Optional, Set, Tuple
 from datetime import datetime, timedelta
@@ -140,7 +140,7 @@ class FastFlightsAdapter(FlightAdapter):
                 f"({len(result.flights)} total raw responses)"
             )
             
-            # Sort by price (lowest first)
+            # Sort by price (lowest first). More complex sorting/filtering done by Agent.
             itineraries.sort(key=lambda x: x.total_price_usd)
             
             return itineraries
