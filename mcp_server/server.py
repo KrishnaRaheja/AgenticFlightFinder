@@ -1,6 +1,6 @@
 import logging
 import json
-from typing import Optional, Any
+from pathlib import Path
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
@@ -21,6 +21,9 @@ server = Server("flight-search-mcp")
 
 # Initialize adapter
 adapter = FastFlightsAdapter()
+
+# System prompt storage (loaded at startup)
+system_prompt: str = ""
 
 
 @server.list_tools()
@@ -65,6 +68,15 @@ async def handle_list_tools() -> list[Tool]:
                     }
                 },
                 "required": ["origin", "destination", "departure_date"]
+            }
+        ),
+        Tool(
+            name="get_system_prompt",
+            description="Get the system prompt that guides the agent's behavior for flight deal monitoring and alerting decisions.",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "required": []
             }
         )
     ]
@@ -164,6 +176,19 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 })
             )]
     
+    elif name == "get_system_prompt":
+        """Return the loaded system prompt for the agent."""
+        if system_prompt:
+            return [TextContent(
+                type="text",
+                text=system_prompt
+            )]
+        else:
+            return [TextContent(
+                type="text",
+                text="No system prompt loaded."
+            )]
+    
     else:
         # When an unknown tool is called, return an error message
         return [TextContent(
@@ -174,9 +199,38 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
         )]
 
 
+def load_system_prompt() -> str:
+    """Load the system prompt from the markdown file.
+    
+    Returns:
+        str: The system prompt content, or empty string if file not found.
+    """
+    # Get the path to system_prompt.md in the same directory as this file
+    current_dir = Path(__file__).parent
+    prompt_path = current_dir / "system_prompt.md"
+    
+    try:
+        logger.info(f"Loading system prompt from: {prompt_path}")
+        with open(prompt_path, 'r', encoding='utf-8') as f:
+            prompt_content = f.read()
+        logger.info(f"Successfully loaded system prompt ({len(prompt_content)} characters)")
+        return prompt_content
+    except FileNotFoundError:
+        logger.warning(f"System prompt file not found at {prompt_path}. Continuing with empty prompt.")
+        return ""
+    except Exception as e:
+        logger.error(f"Error loading system prompt: {type(e).__name__}: {str(e)}")
+        return ""
+
+
 async def main():
     """Main async function to run the MCP server."""
+    global system_prompt
+    
     logger.info("Starting Flight Search MCP Server")
+    
+    # Load system prompt at startup
+    system_prompt = load_system_prompt()
 
     async with stdio_server() as (read_stream, write_stream):
         logger.info("Server running on stdio")
