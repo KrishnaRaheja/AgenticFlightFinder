@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.database import get_supabase
 
+from backend.routes.preferences import router as preferences_router
+
 app = FastAPI(
     title="Agentic Flight Deal Finder API",
     description="AI-powered flight monitoring system",
@@ -16,6 +18,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(preferences_router)
 
 
 @app.get("/")

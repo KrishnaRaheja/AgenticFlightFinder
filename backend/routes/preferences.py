@@ -1,0 +1,154 @@
+from fastapi import APIRouter, HTTPException
+from backend.models import FlightPreferenceCreate, FlightPreferenceResponse
+from backend.database import get_supabase
+import uuid
+from uuid import UUID
+from datetime import datetime, timezone
+
+router = APIRouter(prefix="/api/preferences", tags=["preferences"])
+
+# Hardcoded user_id for now (will be replaced with auth later)
+HARDCODED_USER_ID = "d69799a7-e8c8-479d-935a-562e5f3dd475"
+
+
+@router.post("/", response_model=FlightPreferenceResponse)
+async def create_preference(preference: FlightPreferenceCreate):
+    """
+    Create a new flight preference for a user.
+    Currently uses a hardcoded user_id until authentication is implemented.
+    """
+    try:
+        supabase = get_supabase()
+        
+        # Get current timestamp (timezone-aware, UTC)
+        current_timestamp = datetime.now(timezone.utc).isoformat()
+        
+        # Create preference dictionary with all fields
+        preference_dict = {
+            "id": str(uuid.uuid4()),
+            "user_id": HARDCODED_USER_ID,
+            "origin": preference.origin,
+            "destination": preference.destination,
+            "timeframe": preference.timeframe,
+            "max_stops": preference.max_stops,
+            "cabin_class": preference.cabin_class,
+            "budget": preference.budget,
+            "nearby_airports": preference.nearby_airports,
+            "date_flexibility": preference.date_flexibility,
+            "priority": preference.priority,
+            "prefer_non_work_days": preference.prefer_non_work_days,
+            "alert_frequency": preference.alert_frequency,
+            "additional_context": preference.additional_context,
+            "is_active": True,
+            "created_at": current_timestamp,
+            "updated_at": current_timestamp
+        }
+        
+        # Insert into Supabase
+        response = supabase.table("flight_preferences").insert(preference_dict).execute()
+        
+        # Return the created preference data
+        return response.data[0]
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to create preference: {str(e)}")
+
+
+@router.get("/", response_model=list[FlightPreferenceResponse])
+async def get_preferences():
+    """
+    Get all flight preferences for the current user, ordered by newest first
+    """
+    try:
+        supabase = get_supabase()
+        
+        # Query preferences for the current user
+        response = supabase.table("flight_preferences").select("*").eq("user_id", HARDCODED_USER_ID).order("created_at", desc=True).execute()
+        
+        # Return the preferences
+        return response.data
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve preferences: {str(e)}")
+
+
+@router.get("/{preference_id}", response_model=FlightPreferenceResponse)
+async def get_preference(preference_id: UUID):
+    """
+    Get a specific flight preference by ID
+    """
+    try:
+        supabase = get_supabase()
+        
+        # Query for the specific preference
+        response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        
+        # Check if preference was found
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Preference not found")
+        
+        # Return the preference
+        return response.data[0]
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve preference: {str(e)}")
+
+
+@router.put("/{preference_id}", response_model=FlightPreferenceResponse)
+async def update_preference(preference_id: UUID, preference: FlightPreferenceCreate):
+    """
+    Update an existing flight preference
+    """
+    try:
+        supabase = get_supabase()
+        
+        # First verify the preference exists
+        verify_response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        
+        if not verify_response.data:
+            raise HTTPException(status_code=404, detail="Preference not found")
+        
+        # Create update dictionary from preference data
+        update_dict = preference.model_dump()
+        
+        # Add updated_at timestamp
+        update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+        
+        # Update the preference
+        response = supabase.table("flight_preferences").update(update_dict).eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        
+        # Return the updated preference
+        return response.data[0]
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update preference: {str(e)}")
+
+
+@router.delete("/{preference_id}")
+async def delete_preference(preference_id: UUID):
+    """
+    Deactivate a flight preference (soft delete - sets is_active to false)
+    """
+    try:
+        supabase = get_supabase()
+        
+        # First verify the preference exists
+        verify_response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        
+        if not verify_response.data:
+            raise HTTPException(status_code=404, detail="Preference not found")
+        
+        # Deactivate the preference (soft delete)
+        supabase.table("flight_preferences").update({"is_active": False, "updated_at": datetime.now(timezone.utc).isoformat()}).eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        
+        # Return success message
+        return {"message": "Preference deactivated successfully", "id": str(preference_id)}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete preference: {str(e)}")
