@@ -1,5 +1,22 @@
+"""
+Agentic Flight Deal Finder API Backend
+
+Main FastAPI application that provides RESTful endpoints for managing flight preferences
+and tracking flight deals. Features include:
+
+- User authentication with Supabase
+- Flight preference management (create, read, update, delete)
+- Bearer token-based API security
+- OpenAPI documentation with Swagger UI
+- CORS support for frontend integration
+
+The API uses Supabase for database and authentication services.
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
+from fastapi.openapi.utils import get_openapi
 from backend.database import get_supabase
 
 from backend.routes.preferences import router as preferences_router
@@ -7,8 +24,12 @@ from backend.routes.preferences import router as preferences_router
 app = FastAPI(
     title="Agentic Flight Deal Finder API",
     description="AI-powered flight monitoring system",
-    version="1.0.0"
+    version="1.0.0",
+    swagger_ui_parameters={"persistAuthorization": True}
 )
+
+# Configure Bearer token security
+security = HTTPBearer()
 
 # Add CORS middleware to allow requests from React frontend
 app.add_middleware(
@@ -20,6 +41,39 @@ app.add_middleware(
 )
 
 app.include_router(preferences_router)
+
+
+def custom_openapi():
+    """Configure custom OpenAPI schema with Bearer token security."""
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+    
+    openapi_schema["components"]["securitySchemes"] = {
+        "BearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+        }
+    }
+    
+    # Apply security globally to all endpoints
+    for path in openapi_schema["paths"].values():
+        for operation in path.values():
+            if isinstance(operation, dict) and "security" not in operation:
+                operation["security"] = [{"BearerAuth": []}]
+    
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
 
 
 @app.get("/")

@@ -1,3 +1,11 @@
+"""
+Database Module
+
+Manages Supabase client initialization and configuration.
+Loads database credentials from environment variables and provides
+a singleton Supabase client instance for all database operations.
+"""
+
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv

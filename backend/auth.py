@@ -1,3 +1,11 @@
+"""
+Authentication Module
+
+Handles JWT token validation and user authentication for FastAPI endpoints.
+Provides a dependency function that validates Supabase JWT tokens from
+Authorization headers and returns the authenticated user's ID.
+"""
+
 from typing import Optional
 
 from fastapi import Depends, Header, HTTPException

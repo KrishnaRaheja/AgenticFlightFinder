@@ -1,3 +1,13 @@
+"""
+Data Models Module
+
+Defines Pydantic models for flight preferences including:
+- FlightPreferenceCreate: Input model for creating new flight preferences
+- FlightPreferenceResponse: Output model including database-generated fields
+
+These models provide data validation, serialization, and OpenAPI documentation.
+"""
+
 from pydantic import BaseModel, Field
 from typing import Optional
 from uuid import UUID

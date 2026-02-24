@@ -1,3 +1,11 @@
+"""
+Flight Preferences Routes Module
+
+Defines API endpoints for managing user flight preferences.
+
+All endpoints require Bearer token authentication.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException
 from backend.auth import get_current_user
 from backend.models import FlightPreferenceCreate, FlightPreferenceResponse
