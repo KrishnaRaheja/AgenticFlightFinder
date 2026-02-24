@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from backend.auth import get_current_user
 from backend.models import FlightPreferenceCreate, FlightPreferenceResponse
 from backend.database import get_supabase
 import uuid
@@ -7,12 +8,12 @@ from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/preferences", tags=["preferences"])
 
-# Hardcoded user_id for now (will be replaced with auth later)
-HARDCODED_USER_ID = "d69799a7-e8c8-479d-935a-562e5f3dd475"
-
 
 @router.post("/", response_model=FlightPreferenceResponse)
-async def create_preference(preference: FlightPreferenceCreate):
+async def create_preference(
+    preference: FlightPreferenceCreate,
+    current_user: str = Depends(get_current_user),
+):
     """
     Create a new flight preference for a user.
     Currently uses a hardcoded user_id until authentication is implemented.
@@ -23,26 +24,17 @@ async def create_preference(preference: FlightPreferenceCreate):
         # Get current timestamp (timezone-aware, UTC)
         current_timestamp = datetime.now(timezone.utc).isoformat()
         
-        # Create preference dictionary with all fields
-        preference_dict = {
+        # Convert Pydantic model to dict automatically
+        preference_dict = preference.model_dump()
+        
+        # Add database-generated fields
+        preference_dict.update({
             "id": str(uuid.uuid4()),
-            "user_id": HARDCODED_USER_ID,
-            "origin": preference.origin,
-            "destination": preference.destination,
-            "timeframe": preference.timeframe,
-            "max_stops": preference.max_stops,
-            "cabin_class": preference.cabin_class,
-            "budget": preference.budget,
-            "nearby_airports": preference.nearby_airports,
-            "date_flexibility": preference.date_flexibility,
-            "priority": preference.priority,
-            "prefer_non_work_days": preference.prefer_non_work_days,
-            "alert_frequency": preference.alert_frequency,
-            "additional_context": preference.additional_context,
+            "user_id": current_user,
             "is_active": True,
             "created_at": current_timestamp,
             "updated_at": current_timestamp
-        }
+        })
         
         # Insert into Supabase
         response = supabase.table("flight_preferences").insert(preference_dict).execute()
@@ -55,7 +47,7 @@ async def create_preference(preference: FlightPreferenceCreate):
 
 
 @router.get("/", response_model=list[FlightPreferenceResponse])
-async def get_preferences():
+async def get_preferences(current_user: str = Depends(get_current_user)):
     """
     Get all flight preferences for the current user, ordered by newest first
     """
@@ -63,7 +55,7 @@ async def get_preferences():
         supabase = get_supabase()
         
         # Query preferences for the current user
-        response = supabase.table("flight_preferences").select("*").eq("user_id", HARDCODED_USER_ID).order("created_at", desc=True).execute()
+        response = supabase.table("flight_preferences").select("*").eq("user_id", current_user).order("created_at", desc=True).execute()
         
         # Return the preferences
         return response.data
@@ -73,7 +65,10 @@ async def get_preferences():
 
 
 @router.get("/{preference_id}", response_model=FlightPreferenceResponse)
-async def get_preference(preference_id: UUID):
+async def get_preference(
+    preference_id: UUID,
+    current_user: str = Depends(get_current_user),
+):
     """
     Get a specific flight preference by ID
     """
@@ -81,7 +76,7 @@ async def get_preference(preference_id: UUID):
         supabase = get_supabase()
         
         # Query for the specific preference
-        response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", current_user).execute()
         
         # Check if preference was found
         if not response.data:
@@ -97,7 +92,11 @@ async def get_preference(preference_id: UUID):
 
 
 @router.put("/{preference_id}", response_model=FlightPreferenceResponse)
-async def update_preference(preference_id: UUID, preference: FlightPreferenceCreate):
+async def update_preference(
+    preference_id: UUID,
+    preference: FlightPreferenceCreate,
+    current_user: str = Depends(get_current_user),
+):
     """
     Update an existing flight preference
     """
@@ -105,7 +104,7 @@ async def update_preference(preference_id: UUID, preference: FlightPreferenceCre
         supabase = get_supabase()
         
         # First verify the preference exists
-        verify_response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        verify_response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", current_user).execute()
         
         if not verify_response.data:
             raise HTTPException(status_code=404, detail="Preference not found")
@@ -117,7 +116,7 @@ async def update_preference(preference_id: UUID, preference: FlightPreferenceCre
         update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         # Update the preference
-        response = supabase.table("flight_preferences").update(update_dict).eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        response = supabase.table("flight_preferences").update(update_dict).eq("id", str(preference_id)).eq("user_id", current_user).execute()
         
         # Return the updated preference
         return response.data[0]
@@ -129,7 +128,10 @@ async def update_preference(preference_id: UUID, preference: FlightPreferenceCre
 
 
 @router.delete("/{preference_id}")
-async def delete_preference(preference_id: UUID):
+async def delete_preference(
+    preference_id: UUID,
+    current_user: str = Depends(get_current_user),
+):
     """
     Deactivate a flight preference (soft delete - sets is_active to false)
     """
@@ -137,13 +139,13 @@ async def delete_preference(preference_id: UUID):
         supabase = get_supabase()
         
         # First verify the preference exists
-        verify_response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        verify_response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", current_user).execute()
         
         if not verify_response.data:
             raise HTTPException(status_code=404, detail="Preference not found")
         
         # Deactivate the preference (soft delete)
-        supabase.table("flight_preferences").update({"is_active": False, "updated_at": datetime.now(timezone.utc).isoformat()}).eq("id", str(preference_id)).eq("user_id", HARDCODED_USER_ID).execute()
+        supabase.table("flight_preferences").update({"is_active": False, "updated_at": datetime.now(timezone.utc).isoformat()}).eq("id", str(preference_id)).eq("user_id", current_user).execute()
         
         # Return success message
         return {"message": "Preference deactivated successfully", "id": str(preference_id)}
