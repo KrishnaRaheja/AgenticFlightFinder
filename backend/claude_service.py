@@ -111,10 +111,10 @@ def get_tool_definitions() -> List[Dict[str, Any]]:
                     },
                     "search_session_id": {
                         "type": "string",
-                        "description": "UUID to group flights from the same search"
+                        "description": "UUID to group flights from the same search (will be auto-generated if not provided)"
                     }
                 },
-                "required": ["user_id", "preference_id", "flights", "search_session_id"]
+                "required": ["user_id", "preference_id", "flights"]
             }
         },
         {
@@ -296,10 +296,12 @@ async def execute_store_price_history(arguments: Dict[str, Any]) -> Dict[str, An
         user_id = arguments.get("user_id")
         preference_id = arguments.get("preference_id")
         flights = arguments.get("flights", [])
-        search_session_id = arguments.get("search_session_id")
         
-        if not user_id or not preference_id or not search_session_id:
-            return {"error": "Missing required parameters: user_id, preference_id, search_session_id"}
+        # Generate a new UUID for this search session (don't trust Claude's format)
+        search_session_id = str(uuid.uuid4())
+        
+        if not user_id or not preference_id:
+            return {"error": "Missing required parameters: user_id, preference_id"}
         
         if not flights:
             return {"success": True, "inserted_count": 0, "message": "No flights to store"}
@@ -655,7 +657,7 @@ Refer to system prompt for instructions."""
             
             # Call Claude with tools
             response = client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model="claude-haiku-4-5-20251001",
                 max_tokens=4000,
                 system=system_prompt,
                 tools=tools,
