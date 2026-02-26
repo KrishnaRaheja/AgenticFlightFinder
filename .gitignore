@@ -18,6 +18,9 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Testing files
+testing/
+
 # Test and coverage outputs
 .pytest_cache/
 htmlcov/

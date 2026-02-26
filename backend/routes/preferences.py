@@ -6,15 +6,38 @@ Defines API endpoints for managing user flight preferences.
 All endpoints require Bearer token authentication.
 """
 
+import asyncio
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from backend.auth import get_current_user
 from backend.models import FlightPreferenceCreate, FlightPreferenceResponse
 from backend.database import get_supabase
+from backend.claude_service import call_claude_for_monitoring
 import uuid
 from uuid import UUID
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/preferences", tags=["preferences"])
+logger = logging.getLogger(__name__)
+
+
+async def run_immediate_monitoring(user_id: str, preference_id: str) -> None:
+    try:
+        await call_claude_for_monitoring(user_id, preference_id)
+        logger.info(
+            "Immediate monitoring succeeded for user %s preference %s",
+            user_id,
+            preference_id,
+        )
+    except Exception as exc:
+        logger.error(
+            "Immediate monitoring failed for user %s preference %s: %s",
+            user_id,
+            preference_id,
+            str(exc),
+            exc_info=True,
+        )
 
 
 @router.post("/", response_model=FlightPreferenceResponse)
@@ -47,8 +70,14 @@ async def create_preference(
         # Insert into Supabase
         response = supabase.table("flight_preferences").insert(preference_dict).execute()
         
+        created_preference = response.data[0]
+
+        asyncio.create_task(
+            run_immediate_monitoring(current_user, created_preference["id"])
+        )
+
         # Return the created preference data
-        return response.data[0]
+        return created_preference
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create preference: {str(e)}")

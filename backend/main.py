@@ -13,20 +13,36 @@ and tracking flight deals. Features include:
 The API uses Supabase for database and authentication services.
 """
 
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from fastapi.openapi.utils import get_openapi
 from backend.database import get_supabase
+from backend.scheduler import start_scheduler
 
 from backend.routes.preferences import router as preferences_router
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    start_scheduler()
+    logger.info(
+        "Scheduler running: monitoring at 7:00 AM EST / 12:00 UTC and 3:00 PM EST / 20:00 UTC"
+    )
+    yield
+
 
 app = FastAPI(
     title="Agentic Flight Deal Finder API",
     description="AI-powered flight monitoring system",
     version="1.0.0",
-    swagger_ui_parameters={"persistAuthorization": True}
+    swagger_ui_parameters={"persistAuthorization": True},
+    lifespan=lifespan,
 )
+
+logger = logging.getLogger(__name__)
 
 # Configure Bearer token security
 security = HTTPBearer()
