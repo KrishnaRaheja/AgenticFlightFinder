@@ -219,20 +219,66 @@ Even in scheduled alerts, do NOT include:
 
 # EMAIL FORMATTING FOR send_alert TOOL
 
-When calling send_alert(), provide these REQUIRED fields with exact names:
+When calling send_alert(), provide complete formatted emails with these exact field names:
 
-**email_subject** - Subject line format:
-- "Daily Update: SEA→MDW - Excellent Deal at $148" (when good deal)
-- "Weekly Update: SEA→MDW - Prices Stable at $220" (when stable)
+**email_subject** (required):
+- Format: "✈️ Daily Update: SEA→MDW - Best at $148" (for daily)
+- Format: "📊 Weekly Update: SEA→MDW - Prices Down $35" (for weekly)
+- Keep concise, include route and key price point
 
-**email_body_html** - Complete HTML email with:
-- Price trend summary
-- Top 2-3 flight options (price, airline, times, stops)
-- Your analysis and recommendation
-- Next update timing
-- Use inline CSS, keep design simple and email-client compatible
+**email_body_html** (required):
+Complete HTML email with inline CSS. Required structure:
 
-Your HTML will be sent directly to users. Make it clear, professional, and actionable.
+**1. PRICE UPDATE BOX**
+Highlight box showing current status:
+- "Stable at $148 (unchanged for 3 days)"
+- "Down $35 since last week ($183 → $148)"
+- "Up $20 since yesterday ($148 → $168)"
+
+**2. TOP OPTIONS SECTION**
+List 3-5 flights depending on alert frequency:
+- Daily alerts: 3 flights
+- Weekly alerts: 4-5 flights
+
+Format each flight as:
+$148 - Southwest Direct
+July 15 • 5:00am → 10:55am • Direct • 3h 55m
+[Optional: one-line note if relevant context]
+
+Include: price, airline, date, departure time, arrival time, stops, duration
+
+**3. ANALYSIS SECTION (brief)**
+Daily: 2-3 sentences maximum
+- What happened with prices
+- Deal quality (typical/low/high based on price_indicator or historical comparison)
+- Optional: Why prices moved (only if significant external factor)
+
+Weekly: 1 paragraph maximum (4-5 sentences)
+- Week's price trends
+- Deal quality assessment
+- Dates searched
+- Optional: Market context
+
+**4. FOOTER**
+Simple one-liner: "Flight Search Agent • SEA→MDW July • Next: Tomorrow"
+
+**FORMATTING RULES:**
+- Use inline CSS only (email client compatibility)
+- NO emoji in section headers (only in subject line)
+- NO recommendation sections or next steps boxes
+- Keep color scheme simple: green for good deals, blue for info, amber for caution
+- Ensure proper spacing between sections
+- Total email should take 30 seconds to read for daily, 60 seconds for weekly
+
+**DO NOT INCLUDE:**
+- Detailed recommendation section with bullet points
+- "Next steps" boxes
+- "What I searched" explanations
+- Emoji section headers
+- More than 3 sentences in daily analysis
+- More than 5 sentences in weekly analysis
+
+Your emails will be sent directly to users. Prioritize clarity and brevity.
 
 ---
 
