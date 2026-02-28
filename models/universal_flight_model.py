@@ -22,7 +22,7 @@ Structure:
 """
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 
 @dataclass
@@ -48,6 +48,10 @@ class UniversalFlight:
         is_best: Whether the provider recommends this flight
         booking_url: Direct booking link for future integration
         baggage_info: Baggage allowance details for future integration
+        route_path: Complete flight path including all layover airports
+            - Format: List of airport codes (e.g., ["SEA", "AMS", "BOM"] for SEA→Amsterdam→Mumbai)
+            - None for data sources that don't provide layover information (e.g., fast-flights)
+            - Populated for data sources that do provide it (e.g., future Duffel adapter)
     """
     
     # Required fields
@@ -67,6 +71,7 @@ class UniversalFlight:
     is_best: Optional[bool] = None
     booking_url: Optional[str] = None
     baggage_info: Optional[str] = None
+    route_path: Optional[List[str]] = None
 
 
 @dataclass

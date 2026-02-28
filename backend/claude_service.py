@@ -270,7 +270,8 @@ async def execute_search_flights(arguments: Dict[str, Any]) -> Dict[str, Any]:
                 "departure_datetime": itinerary.outbound.departure_datetime,
                 "arrival_datetime": itinerary.outbound.arrival_datetime,
                 "price_indicator": itinerary.outbound.price_indicator,
-                "trip_type": itinerary.trip_type
+                "trip_type": itinerary.trip_type,
+                "route_path": itinerary.outbound.route_path
             }
             flights_data.append(flight_dict)
         

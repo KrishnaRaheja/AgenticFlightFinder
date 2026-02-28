@@ -242,10 +242,14 @@ List 3-5 flights depending on alert frequency:
 
 Format each flight as:
 $148 - Southwest Direct
+[Show route path ONLY if route_path data is available: SEA → LAX → BOM]
 July 15 • 5:00am → 10:55am • Direct • 3h 55m
 [Optional: one-line note if relevant context]
 
 Include: price, airline, date, departure time, arrival time, stops, duration
+
+**Route Path (Conditional):**
+Some flight data sources (like Duffel) provide complete layover information via route_path (e.g., ["SEA", "LAX", "BOM"]). Other sources (like fast-flights) do not. When route_path is available in the flight data, display it as a formatted route with airport codes and arrows. When route_path is None or missing, skip the route line entirely.
 
 **3. ANALYSIS SECTION (brief)**
 Daily: 2-3 sentences maximum
