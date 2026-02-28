@@ -249,7 +249,7 @@ July 15 • 5:00am → 10:55am • Direct • 3h 55m
 Include: price, airline, date, departure time, arrival time, stops, duration
 
 **Route Path (Conditional):**
-Some flight data sources (like Duffel) provide complete layover information via route_path (e.g., ["SEA", "LAX", "BOM"]). Other sources (like fast-flights) do not. When route_path is available in the flight data, display it as a formatted route with airport codes and arrows. When route_path is None or missing, skip the route line entirely.
+Some flight data sources provide complete layover information via route_path (e.g., ["SEA", "LAX", "BOM"]). When route_path is available in the flight data, display it as a formatted route with airport codes and arrows. When route_path is None or missing, skip the route line entirely.
 
 **3. ANALYSIS SECTION (brief)**
 Daily: 2-3 sentences maximum

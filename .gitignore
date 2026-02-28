@@ -21,6 +21,9 @@ Thumbs.db
 # Testing files
 testing/
 
+# MCP_server
+mcp_server/
+
 # Test and coverage outputs
 .pytest_cache/
 htmlcov/
