@@ -145,7 +145,7 @@ def get_tool_definitions() -> List[Dict[str, Any]]:
         },
         {
             "name": "send_alert",
-            "description": "Record a flight deal alert in the database. Records top flight options for user notification.",
+            "description": "Create a complete formatted email alert. Provide email_subject and email_body_html which will be sent to users at 8pm EST. Also provide a brief reasoning summary for database records.",
             "input_schema": {
                 "type": "object",
                 "properties": {
@@ -162,20 +162,24 @@ def get_tool_definitions() -> List[Dict[str, Any]]:
                         "enum": ["multi_flight_summary", "exceptional_deal"],
                         "description": "Type of alert"
                     },
-                    "flight_details": {
-                        "type": "object",
-                        "description": "Top 2-3 flight options (object or array)"
+                    "email_subject": {
+                        "type": "string",
+                        "description": "Complete email subject line"
+                    },
+                    "email_body_html": {
+                        "type": "string",
+                        "description": "Complete HTML email body with inline CSS"
                     },
                     "reference_price": {
                         "type": "number",
-                        "description": "Historical price for comparison (e.g., yesterday's price)"
+                        "description": "Historical average for comparison"
                     },
                     "reasoning": {
                         "type": "string",
-                        "description": "Claude's explanation for the alert"
+                        "description": "Brief summary for database/logging"
                     }
                 },
-                "required": ["user_id", "preference_id", "alert_type", "flight_details", "reference_price", "reasoning"]
+                "required": ["user_id", "preference_id", "alert_type", "email_subject", "email_body_html", "reference_price", "reasoning"]
             }
         },
         {
@@ -321,6 +325,12 @@ async def execute_store_price_history(arguments: Dict[str, Any]) -> Dict[str, An
                     logger.warning(f"Could not extract date from {departure_datetime}, skipping")
                     continue
                 
+                # Validate price (required field)
+                price = flight.get("price_usd")
+                if price is None:
+                    logger.warning(f"Missing price_usd for flight {flight}, skipping")
+                    continue
+                
                 # Prepare row data
                 row_data = {
                     "user_id": user_id,
@@ -328,7 +338,7 @@ async def execute_store_price_history(arguments: Dict[str, Any]) -> Dict[str, An
                     "origin": flight.get("origin", ""),
                     "destination": flight.get("destination", ""),
                     "departure_date": departure_date,
-                    "price": flight.get("price_usd"),
+                    "price": price,
                     "duration_minutes": flight.get("duration_minutes"),
                     "stops": flight.get("stops"),
                     "airline": flight.get("airline", ""),
@@ -436,10 +446,10 @@ async def execute_get_price_history(arguments: Dict[str, Any]) -> Dict[str, Any]
 
 async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Record a flight deal alert in the database.
+    Record a formatted email alert in the database for delivery.
     
     Args:
-        arguments: Tool arguments containing user_id, preference_id, alert_type, etc.
+        arguments: Tool arguments containing user_id, preference_id, alert_type, email_subject, email_body_html, reference_price, reasoning
     
     Returns:
         Dict with confirmation and alert_id
@@ -448,11 +458,12 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
         user_id = arguments.get("user_id")
         preference_id = arguments.get("preference_id")
         alert_type = arguments.get("alert_type")
-        flight_details = arguments.get("flight_details")
+        email_subject = arguments.get("email_subject")
+        email_body_html = arguments.get("email_body_html")
         reference_price = arguments.get("reference_price")
         reasoning = arguments.get("reasoning")
         
-        required_fields = ["user_id", "preference_id", "alert_type", "flight_details", "reference_price", "reasoning"]
+        required_fields = ["user_id", "preference_id", "alert_type", "email_subject", "email_body_html", "reference_price", "reasoning"]
         if not all(arguments.get(field) for field in required_fields):
             return {"error": f"Missing required parameters: {', '.join(required_fields)}"}
         
@@ -460,14 +471,15 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
         alert_id = str(uuid.uuid4())
         now_iso = datetime.now(timezone.utc).isoformat()
         
-        # Insert alert record
+        # Insert alert record with formatted email content
         alert_data = {
             "id": alert_id,
             "user_id": user_id,
             "preference_id": preference_id,
             "alert_type": alert_type,
+            "email_subject": email_subject,
+            "email_body_html": email_body_html,
             "reference_price": reference_price,
-            "details": flight_details,  # JSONB field
             "score": None,  # Can be NULL for now
             "reasoning": reasoning,
             "sent_at": now_iso

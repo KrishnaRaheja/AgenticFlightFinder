@@ -12,6 +12,7 @@ from pytz import timezone
 
 from backend.claude_service import call_claude_for_monitoring
 from backend.database import get_supabase
+from backend.email_service import send_daily_alert_emails
 
 # Configure logging for scheduler events
 logging.basicConfig(
@@ -73,6 +74,10 @@ def run_monitoring_job():
     """
     Wrapper function to execute the async monitoring job.
     
+    NOTE: This wrapper exists because APScheduler expects synchronous functions,
+    but monitor_all_active_preferences is async. This bridges the gap by using
+    asyncio.run() to properly execute the async function.
+    
     This function runs the async monitor_all_active_preferences function using
     asyncio.run() and includes error handling for any unexpected issues.
     """
@@ -88,12 +93,20 @@ def run_email_job():
     """
     Execute the email delivery job.
     
-    Sends queued email notifications to users. This is a placeholder
-    that logs when the email job would run.
+    Sends queued email notifications to users by calling the email service.
+    Logs the number of emails sent and any failures.
     """
     try:
-        logger.info("Email delivery job would run here")
-        # TODO: Implement email delivery logic
+        logger.info("Starting email delivery job")
+        result = asyncio.run(send_daily_alert_emails())
+        
+        sent_count = result.get("sent_count", 0)
+        failed_count = result.get("failed_count", 0)
+        
+        logger.info(f"Email delivery completed: {sent_count} sent, {failed_count} failed")
+        
+        if failed_count > 0:
+            logger.warning(f"Email delivery job had {failed_count} failures")
     except Exception as e:
         logger.error(f"Error executing email job: {str(e)}", exc_info=True)
 
