@@ -16,8 +16,8 @@ function PreferenceCard({ preference, isExpanded, onToggle }) {
               <p className="font-semibold text-lg">{preference.destination}</p>
             </div>
             <div>
-              <p className="text-gray-600 text-sm">Timeframe</p>
-              <p className="font-semibold text-lg">{preference.timeframe}</p>
+              <p className="text-gray-600 text-sm">Departure</p>
+              <p className="font-semibold text-lg">{preference.departure_period}</p>
             </div>
             <div>
               <p className="text-gray-600 text-sm">Budget</p>
@@ -42,6 +42,10 @@ function PreferenceCard({ preference, isExpanded, onToggle }) {
             <div>
               <h3 className="font-semibold text-gray-700 mb-4">Flight Details</h3>
               <div className="space-y-3">
+                <div>
+                  <p className="text-gray-600 text-sm">Return</p>
+                  <p className="font-medium">{preference.return_period || 'Not specified (one-way)'}</p>
+                </div>
                 <div>
                   <p className="text-gray-600 text-sm">Max Stops</p>
                   <p className="font-medium">{preference.max_stops}</p>

@@ -15,7 +15,7 @@ import sys
 import uuid
 from anthropic import Anthropic
 from dotenv import load_dotenv
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import logging
@@ -25,7 +25,6 @@ from backend.database import get_supabase
 # Add parent directory to path for adapter imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from adapters.fast_flights_adapter import FastFlightsAdapter
-from models.universal_flight_model import FlightItinerary, UniversalFlight
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -74,6 +73,15 @@ def get_tool_definitions() -> List[Dict[str, Any]]:
                     "departure_date": {
                         "type": "string",
                         "description": "Departure date in YYYY-MM-DD format (e.g., '2026-03-15')"
+                    },
+                    "trip_type": {
+                        "type": "string",
+                        "enum": ["one-way", "round-trip"],
+                        "description": "Trip type. Use 'round-trip' only when return_date is also provided. Default: 'one-way'"
+                    },
+                    "return_date": {
+                        "type": "string",
+                        "description": "Return date in YYYY-MM-DD format. Required when trip_type is 'round-trip'"
                     },
                     "max_stops": {
                         "type": "integer",
@@ -230,22 +238,36 @@ async def execute_search_flights(arguments: Dict[str, Any]) -> Dict[str, Any]:
         origin = arguments.get("origin", "").upper()
         destination = arguments.get("destination", "").upper()
         departure_date = arguments.get("departure_date", "")
+        trip_type = arguments.get("trip_type", "one-way")
+        return_date = arguments.get("return_date")
         max_stops = arguments.get("max_stops", 2)
         cabin_class = arguments.get("cabin_class", "economy")
         
         # Validate required parameters
         if not origin or not destination or not departure_date:
             return {"error": "Missing required parameters: origin, destination, departure_date"}
+
+        if trip_type not in ["one-way", "round-trip"]:
+            return {"error": "Invalid trip_type. Must be 'one-way' or 'round-trip'"}
+
+        if trip_type == "round-trip" and not return_date:
+            return {"error": "return_date is required when trip_type='round-trip'"}
+
+        if trip_type == "one-way":
+            return_date = None
         
-        logger.info(f"Searching flights: {origin} → {destination} on {departure_date}")
+        logger.info(
+            f"Searching flights: {origin} → {destination}, departure={departure_date}, "
+            f"trip_type={trip_type}, return_date={return_date}"
+        )
         
         # Call adapter
         itineraries = flight_adapter.search_flights(
             origin=origin,
             destination=destination,
             departure_date=departure_date,
-            trip_type="one-way",
-            return_date=None,
+            trip_type=trip_type,
+            return_date=return_date,
             seat_class=cabin_class,
             max_stops=max_stops
         )
@@ -271,7 +293,16 @@ async def execute_search_flights(arguments: Dict[str, Any]) -> Dict[str, Any]:
                 "arrival_datetime": itinerary.outbound.arrival_datetime,
                 "price_indicator": itinerary.outbound.price_indicator,
                 "trip_type": itinerary.trip_type,
-                "route_path": itinerary.outbound.route_path
+                "route_path": itinerary.outbound.route_path,
+                "return_flight": {
+                    "duration_minutes": itinerary.return_flight.duration_minutes,
+                    "stops": itinerary.return_flight.stops,
+                    "airline": itinerary.return_flight.airline,
+                    "departure_datetime": itinerary.return_flight.departure_datetime,
+                    "arrival_datetime": itinerary.return_flight.arrival_datetime,
+                    "price_indicator": itinerary.return_flight.price_indicator,
+                    "route_path": itinerary.return_flight.route_path,
+                } if itinerary.return_flight else None
             }
             flights_data.append(flight_dict)
         

@@ -16,7 +16,8 @@ class FlightPreferenceCreate(BaseModel):
     """Data model for creating a new flight preference"""
     origin: str = Field(..., min_length=3, max_length=3)
     destination: str = Field(..., min_length=3, max_length=3)
-    timeframe: str
+    departure_period: str
+    return_period: Optional[str] = None
     max_stops: int = Field(default=2, ge=0, le=3)
     cabin_class: str = Field(default="economy")
     budget: Optional[int] = Field(None, gt=0)

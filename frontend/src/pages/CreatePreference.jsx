@@ -13,7 +13,8 @@ function CreatePreference() {
     // Required fields
     origin: '',
     destination: '',
-    timeframe: '',
+    departure_period: '',
+    return_period: '',
     
     // Optional fields with defaults
     budget: '',
@@ -56,7 +57,8 @@ function CreatePreference() {
       const payload = {
         origin: formData.origin.toUpperCase(),
         destination: formData.destination.toUpperCase(),
-        timeframe: formData.timeframe,
+        departure_period: formData.departure_period,
+        return_period: formData.return_period || null,
         max_stops: parseInt(formData.max_stops),
         cabin_class: formData.cabin_class,
         budget: formData.budget ? parseInt(formData.budget) : null,
@@ -142,7 +144,7 @@ function CreatePreference() {
                 Required Information
               </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-gray-700 mb-2 font-medium">
                     Origin <span className="text-red-500">*</span>
@@ -179,18 +181,33 @@ function CreatePreference() {
 
                 <div>
                   <label className="block text-gray-700 mb-2 font-medium">
-                    Timeframe <span className="text-red-500">*</span>
+                    Departure <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    name="timeframe"
-                    value={formData.timeframe}
+                    name="departure_period"
+                    value={formData.departure_period}
                     onChange={handleChange}
-                    placeholder="e.g., June 2026, Summer 2026"
+                    placeholder="e.g., 2026-06-15 or June 2026"
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
-                  <p className="text-xs text-gray-500 mt-1">Month/season or date range</p>
+                  <p className="text-xs text-gray-500 mt-1">Enter an exact date or a travel window (month, season, or date range)</p>
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 mb-2 font-medium">
+                    Return
+                  </label>
+                  <input
+                    type="text"
+                    name="return_period"
+                    value={formData.return_period}
+                    onChange={handleChange}
+                    placeholder="e.g., 2026-06-22 or 1-2 weeks later"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Optional: enter an exact date or a return window</p>
                 </div>
               </div>
             </div>

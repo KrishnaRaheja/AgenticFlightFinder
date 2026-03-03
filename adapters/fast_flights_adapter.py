@@ -3,7 +3,7 @@ Fast-Flights Adapter
 
 Purpose:
     Adapts the fast-flights library API to the universal FlightItinerary format.
-    Handles one-way flight searches only (round-trip support planned for Duffel API).
+    Handles one-way flight searches only (round-trip support planned for future adapter swap).
 
 Fast-Flights Specifics:
     - Returns Result object with flights list
@@ -17,7 +17,7 @@ Design Considerations:
     - Robust parsing of string formats with error recovery
     - Graceful handling of malformed data
     - Duplicate removal using price+departure+airline signature
-    - Ready for round-trip support addition via Duffel adapter
+    - Ready for round-trip support addition via future adapter implementation
 """
 
 from fast_flights import get_flights, FlightData, Passengers, Result
@@ -35,8 +35,7 @@ class FastFlightsAdapter(FlightAdapter):
     """
     Adapter for fast-flights library.
     
-    Currently supports one-way flights only. Round-trip support will be added
-    when switching to DuffelAdapter for better API capabilities.
+    Currently supports one-way flights only.
     
     Handles:
         - Duplicate flight removal
@@ -85,21 +84,20 @@ class FastFlightsAdapter(FlightAdapter):
         NotImplementedError
             If trip_type is "round-trip" (not yet supported)
         """
-        
-        # PHASE 1: One-way only
+
+        # One-way only runtime behavior
         if trip_type == "round-trip":
             raise NotImplementedError(
                 "Round-trip searches not yet supported with fast-flights adapter. "
-                "Use one-way searches or switch to DuffelAdapter for round-trip support."
+                "Use one-way searches or switch to another adapter."
             )
-        
+
         try:
             logger.info(
                 f"Searching flights: {origin} → {destination} on {departure_date} "
                 f"(class={seat_class}, max_stops={max_stops})"
             )
-            
-            # Call fast-flights API
+
             result: Result = get_flights(
                 flight_data=[
                     FlightData(
@@ -118,14 +116,13 @@ class FastFlightsAdapter(FlightAdapter):
                 ),
                 fetch_mode="fallback"
             )
-            
+
             if not result or not result.flights:
                 logger.info(
                     f"No flights found for {origin} → {destination} on {departure_date}"
                 )
                 return []
-            
-            # Process flights and remove duplicates
+
             itineraries = self._process_flights(
                 result=result,
                 origin=origin,
@@ -134,21 +131,18 @@ class FastFlightsAdapter(FlightAdapter):
                 max_stops=max_stops,
                 price_indicator=result.current_price
             )
-            
+
             logger.info(
                 f"Found {len(itineraries)} unique flights "
                 f"({len(result.flights)} total raw responses)"
             )
-            
-            # Sort by price (lowest first). More complex sorting/filtering done by Agent.
+
             itineraries.sort(key=lambda x: x.total_price_usd)
-            
             return itineraries
-        
+
         except NotImplementedError:
-            # Re-raise NotImplementedError as-is
             raise
-        
+
         except Exception as e:
             logger.error(
                 f"API call failed for {origin} → {destination}: {type(e).__name__}: {str(e)}",
