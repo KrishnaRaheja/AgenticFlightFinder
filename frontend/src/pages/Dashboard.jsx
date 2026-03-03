@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
@@ -73,7 +73,7 @@ function Dashboard() {
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-lg p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-600">Flight Deal Finder</h1>
+          <Link to="/" className="text-2xl font-bold text-blue-600">Flight Deal Finder</Link>
           <div className="flex items-center gap-4">
             <span className="text-gray-700">{user?.email}</span>
             <button
@@ -123,22 +123,22 @@ function Dashboard() {
             {!loading && preferences.length > 0 && (
               <div className="space-y-4">
                 {/* Active Preferences Section */}
-                {activePreferences.length > 0 && (
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <button
-                      onClick={() => setActiveExpanded(!activeExpanded)}
-                      className="w-full bg-green-50 hover:bg-green-100 p-4 flex justify-between items-center transition"
-                    >
-                      <h3 className="text-lg font-semibold text-green-700">
-                        Active Preferences ({activePreferences.length})
-                      </h3>
-                      <svg className={`w-6 h-6 text-green-700 transition-transform ${activeExpanded ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    {activeExpanded && (
-                      <div className="p-4 space-y-3 bg-white">
-                        {activePreferences.map((preference) => (
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setActiveExpanded(!activeExpanded)}
+                    className="w-full bg-green-50 hover:bg-green-100 p-4 flex justify-between items-center transition"
+                  >
+                    <h3 className="text-lg font-semibold text-green-700">
+                      Active Preferences ({activePreferences.length})
+                    </h3>
+                    <svg className={`w-6 h-6 text-green-700 transition-transform ${activeExpanded ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {activeExpanded && (
+                    <div className="p-4 space-y-3 bg-white">
+                      {activePreferences.length > 0 ? (
+                        activePreferences.map((preference) => (
                           <PreferenceCard
                             key={preference.id}
                             preference={preference}
@@ -147,29 +147,31 @@ function Dashboard() {
                               setExpandedId(expandedId === preference.id ? null : preference.id)
                             }
                           />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                        ))
+                      ) : (
+                        <p className="text-gray-500">No active preferences.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 {/* Inactive Preferences Section */}
-                {inactivePreferences.length > 0 && (
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <button
-                      onClick={() => setInactiveExpanded(!inactiveExpanded)}
-                      className="w-full bg-gray-100 hover:bg-gray-200 p-4 flex justify-between items-center transition"
-                    >
-                      <h3 className="text-lg font-semibold text-gray-700">
-                        Inactive Preferences ({inactivePreferences.length})
-                      </h3>
-                      <svg className={`w-6 h-6 text-gray-700 transition-transform ${inactiveExpanded ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    {inactiveExpanded && (
-                      <div className="p-4 space-y-3 bg-white">
-                        {inactivePreferences.map((preference) => (
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setInactiveExpanded(!inactiveExpanded)}
+                    className="w-full bg-gray-100 hover:bg-gray-200 p-4 flex justify-between items-center transition"
+                  >
+                    <h3 className="text-lg font-semibold text-gray-700">
+                      Inactive Preferences ({inactivePreferences.length})
+                    </h3>
+                    <svg className={`w-6 h-6 text-gray-700 transition-transform ${inactiveExpanded ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {inactiveExpanded && (
+                    <div className="p-4 space-y-3 bg-white">
+                      {inactivePreferences.length > 0 ? (
+                        inactivePreferences.map((preference) => (
                           <PreferenceCard
                             key={preference.id}
                             preference={preference}
@@ -178,11 +180,13 @@ function Dashboard() {
                               setExpandedId(expandedId === preference.id ? null : preference.id)
                             }
                           />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                        ))
+                      ) : (
+                        <p className="text-gray-500">No inactive preferences.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

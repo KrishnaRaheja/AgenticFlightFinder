@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 
@@ -109,7 +109,7 @@ function CreatePreference() {
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-lg p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-600">Flight Deal Finder</h1>
+          <Link to="/" className="text-2xl font-bold text-blue-600">Flight Deal Finder</Link>
           <div className="flex items-center gap-4">
             <span className="text-gray-700">{user?.email}</span>
             <button
@@ -357,7 +357,7 @@ function CreatePreference() {
                   name="additional_context"
                   value={formData.additional_context}
                   onChange={handleChange}
-                  placeholder="Example: I'm planning a family vacation with two kids (ages 6 and 9). We prefer morning flights and need to arrive before 6 PM. We're flexible on exact dates but want to avoid school holidays. Budget-conscious but willing to pay more for direct flights."
+                  placeholder="Example: I'm planning a family vacation with two kids (ages 6 and 9). We prefer morning flights and need to arrive before 6 PM. We're flexible on exact dates but want to avoid school holidays."
                   rows="6"
                   maxLength="1000"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
