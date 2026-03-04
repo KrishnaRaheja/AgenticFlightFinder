@@ -1,11 +1,11 @@
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import PreferenceCard from '../components/PreferenceCard';
+import Footer from '../components/Footer';
+import Navbar from '../components/Navbar';
 
 function Dashboard() {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [preferences, setPreferences] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,34 +57,12 @@ function Dashboard() {
     fetchPreferences();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (err) {
-      console.error('Logout failed:', err);
-    }
-  };
-
   const activePreferences = preferences.filter((preference) => preference.is_active);
   const inactivePreferences = preferences.filter((preference) => !preference.is_active);
 
   return (
     <div className="min-h-screen bg-botanical-bg">
-      <nav className="bg-white shadow-lg p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold text-botanical-subtext">Flight Deal Finder</Link>
-          <div className="flex items-center gap-4">
-            <span className="text-botanical-subtext">{user?.email}</span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="container mx-auto p-8">
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -192,6 +170,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

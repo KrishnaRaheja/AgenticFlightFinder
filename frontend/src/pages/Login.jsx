@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import Footer from '../components/Footer';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -77,6 +78,7 @@ function Login() {
           {isSignup ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
         </button>
       </div>
+      <Footer />
     </div>
   );
 }

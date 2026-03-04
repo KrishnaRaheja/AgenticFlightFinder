@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import Footer from '../components/Footer';
+import Navbar from '../components/Navbar';
 
 function CreatePreference() {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -96,31 +96,9 @@ function CreatePreference() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (err) {
-      console.error('Logout failed:', err);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-botanical-bg">
-      <nav className="bg-white shadow-lg p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold text-botanical-subtext">Flight Deal Finder</Link>
-          <div className="flex items-center gap-4">
-            <span className="text-botanical-subtext">{user?.email}</span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="container mx-auto p-8">
         <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
@@ -394,6 +372,7 @@ function CreatePreference() {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
