@@ -106,15 +106,15 @@ function CreatePreference() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-botanical-bg">
       <nav className="bg-white shadow-lg p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold text-blue-600">Flight Deal Finder</Link>
+          <Link to="/" className="text-2xl font-bold text-botanical-subtext">Flight Deal Finder</Link>
           <div className="flex items-center gap-4">
-            <span className="text-gray-700">{user?.email}</span>
+            <span className="text-botanical-subtext">{user?.email}</span>
             <button
               onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
             >
               Logout
             </button>
@@ -125,29 +125,29 @@ function CreatePreference() {
       <div className="container mx-auto p-8">
         <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold">Create Flight Preference</h2>
-            <p className="text-gray-600 mt-2">
+            <h2 className="text-2xl font-bold text-botanical-subtext">Create Flight Preference</h2>
+            <p className="text-botanical-subtext mt-2">
               Set up your flight monitoring preferences. Claude will search for deals and alert you when prices drop.
             </p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-800">{error}</p>
+            <div className="bg-botanical-error border border-botanical-errorText rounded-lg p-4 mb-6">
+              <p className="text-botanical-errorText">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
             {/* Section 1: Required Fields */}
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
+              <h3 className="text-lg font-semibold text-botanical-subtext mb-4 pb-2 border-b border-botanical-accent">
                 Required Information
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">
-                    Origin <span className="text-red-500">*</span>
+                  <label className="block text-botanical-subtext mb-2 font-medium">
+                    Origin <span className="text-botanical-errorText">*</span>
                   </label>
                   <input
                     type="text"
@@ -156,15 +156,15 @@ function CreatePreference() {
                     onChange={handleChange}
                     placeholder="e.g., JFK"
                     maxLength="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                     required
                   />
-                  <p className="text-xs text-gray-500 mt-1">3-letter airport code</p>
+                  <p className="text-xs text-botanical-subtext mt-1">3-letter airport code</p>
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">
-                    Destination <span className="text-red-500">*</span>
+                  <label className="block text-botanical-subtext mb-2 font-medium">
+                    Destination <span className="text-botanical-errorText">*</span>
                   </label>
                   <input
                     type="text"
@@ -173,15 +173,15 @@ function CreatePreference() {
                     onChange={handleChange}
                     placeholder="e.g., LAX"
                     maxLength="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                     required
                   />
-                  <p className="text-xs text-gray-500 mt-1">3-letter airport code</p>
+                  <p className="text-xs text-botanical-subtext mt-1">3-letter airport code</p>
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">
-                    Departure <span className="text-red-500">*</span>
+                  <label className="block text-botanical-subtext mb-2 font-medium">
+                    Departure <span className="text-botanical-errorText">*</span>
                   </label>
                   <input
                     type="text"
@@ -189,14 +189,14 @@ function CreatePreference() {
                     value={formData.departure_period}
                     onChange={handleChange}
                     placeholder="e.g., 2026-06-15 or June 2026"
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                     required
                   />
-                  <p className="text-xs text-gray-500 mt-1">Enter an exact date or a travel window (month, season, or date range)</p>
+                  <p className="text-xs text-botanical-subtext mt-1">Enter an exact date or a travel window (month, season, or date range)</p>
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">
+                  <label className="block text-botanical-subtext mb-2 font-medium">
                     Return
                   </label>
                   <input
@@ -205,22 +205,22 @@ function CreatePreference() {
                     value={formData.return_period}
                     onChange={handleChange}
                     placeholder="e.g., 2026-06-22 or 1-2 weeks later"
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Optional: enter an exact date or a return window</p>
+                  <p className="text-xs text-botanical-subtext mt-1">Optional: enter an exact date or a return window</p>
                 </div>
               </div>
             </div>
 
             {/* Section 2: Optional Filters */}
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
-                Flight Preferences <span className="text-sm font-normal text-gray-500">(Optional)</span>
+              <h3 className="text-lg font-semibold text-botanical-subtext mb-4 pb-2 border-b border-botanical-accent">
+                Flight Preferences <span className="text-sm font-normal text-botanical-subtext">(Optional)</span>
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">Budget (USD)</label>
+                  <label className="block text-botanical-subtext mb-2 font-medium">Budget (USD)</label>
                   <input
                     type="number"
                     name="budget"
@@ -228,18 +228,18 @@ function CreatePreference() {
                     onChange={handleChange}
                     placeholder="e.g., 500"
                     min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Maximum price you're willing to pay</p>
+                  <p className="text-xs text-botanical-subtext mt-1">Maximum price you're willing to pay</p>
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">Max Stops</label>
+                  <label className="block text-botanical-subtext mb-2 font-medium">Max Stops</label>
                   <select
                     name="max_stops"
                     value={formData.max_stops}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   >
                     <option value="0">Nonstop only</option>
                     <option value="1">Up to 1 stop</option>
@@ -249,12 +249,12 @@ function CreatePreference() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">Cabin Class</label>
+                  <label className="block text-botanical-subtext mb-2 font-medium">Cabin Class</label>
                   <select
                     name="cabin_class"
                     value={formData.cabin_class}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   >
                     <option value="economy">Economy</option>
                     <option value="premium_economy">Premium Economy</option>
@@ -264,12 +264,12 @@ function CreatePreference() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">Date Flexibility</label>
+                  <label className="block text-botanical-subtext mb-2 font-medium">Date Flexibility</label>
                   <select
                     name="date_flexibility"
                     value={formData.date_flexibility}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   >
                     <option value="exact">Exact dates</option>
                     <option value="plus_minus_3">±3 days</option>
@@ -279,12 +279,12 @@ function CreatePreference() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">Priority</label>
+                  <label className="block text-botanical-subtext mb-2 font-medium">Priority</label>
                   <select
                     name="priority"
                     value={formData.priority}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   >
                     <option value="price">Lowest price</option>
                     <option value="balanced">Balanced</option>
@@ -293,12 +293,12 @@ function CreatePreference() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">Alert Frequency</label>
+                  <label className="block text-botanical-subtext mb-2 font-medium">Alert Frequency</label>
                   <select
                     name="alert_frequency"
                     value={formData.alert_frequency}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   >
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
@@ -313,9 +313,9 @@ function CreatePreference() {
                     id="nearby_airports"
                     checked={formData.nearby_airports}
                     onChange={handleChange}
-                    className="mr-2 w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    className="mr-2 w-4 h-4 text-botanical-accent rounded focus:ring-2 focus:ring-botanical-accent"
                   />
-                  <label htmlFor="nearby_airports" className="text-gray-700">
+                  <label htmlFor="nearby_airports" className="text-botanical-subtext">
                     Include nearby airports
                   </label>
                 </div>
@@ -327,9 +327,9 @@ function CreatePreference() {
                     id="prefer_non_work_days"
                     checked={formData.prefer_non_work_days}
                     onChange={handleChange}
-                    className="mr-2 w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    className="mr-2 w-4 h-4 text-botanical-accent rounded focus:ring-2 focus:ring-botanical-accent"
                   />
-                  <label htmlFor="prefer_non_work_days" className="text-gray-700">
+                  <label htmlFor="prefer_non_work_days" className="text-botanical-subtext">
                     Prefer weekends/holidays
                   </label>
                 </div>
@@ -338,16 +338,16 @@ function CreatePreference() {
 
             {/* Section 3: Additional Context (Featured) */}
             <div className="mb-8">
-              <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
+              <div className="bg-botanical-accent/10 rounded-lg p-6 border-2 border-botanical-accent">
                 <div className="flex items-start mb-4">
-                  <svg className="w-6 h-6 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-botanical-accent mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      Additional Context <span className="text-sm font-normal text-gray-600">(Recommended)</span>
+                    <h3 className="text-lg font-semibold text-botanical-subtext">
+                      Additional Context <span className="text-sm font-normal text-botanical-subtext">(Recommended)</span>
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-botanical-subtext mt-1">
                       Help Claude understand your travel needs better.
                     </p>
                   </div>
@@ -360,13 +360,13 @@ function CreatePreference() {
                   placeholder="Example: I'm planning a family vacation with two kids (ages 6 and 9). We prefer morning flights and need to arrive before 6 PM. We're flexible on exact dates but want to avoid school holidays."
                   rows="6"
                   maxLength="1000"
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent resize-none"
                 />
                 <div className="flex justify-between items-center mt-2">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-botanical-subtext">
                     Mention preferences, constraints, or special requirements
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-botanical-subtext">
                     {formData.additional_context.length}/1000
                   </p>
                 </div>
@@ -378,7 +378,7 @@ function CreatePreference() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-3 rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
+                className="flex-1 bg-botanical-accent text-botanical-subtext py-3 rounded hover:bg-[#9ab5b3] disabled:bg-botanical-card disabled:cursor-not-allowed font-medium cursor-pointer"
               >
                 {loading ? 'Creating...' : 'Create Preference'}
               </button>
@@ -386,7 +386,7 @@ function CreatePreference() {
                 type="button"
                 onClick={() => navigate('/')}
                 disabled={loading}
-                className="flex-1 bg-gray-300 text-gray-700 py-3 rounded hover:bg-gray-400 disabled:opacity-50 font-medium"
+                className="flex-1 bg-botanical-card text-botanical-text py-3 rounded hover:bg-botanical-card/80 disabled:opacity-50 font-medium cursor-pointer"
               >
                 Cancel
               </button>

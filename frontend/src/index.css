@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme {
+  --color-botanical-bg: #7b9c98;
+  --color-botanical-card: #72908d;
+  --color-botanical-text: #eaf1f3;
+  --color-botanical-subtext: #495755;
+  --color-botanical-accent: #abc6c4;
+  --color-botanical-error: #f6c9b4;
+  --color-botanical-error-text: #f59a71;
+}

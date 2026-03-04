@@ -70,15 +70,15 @@ function Dashboard() {
   const inactivePreferences = preferences.filter((preference) => !preference.is_active);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-botanical-bg">
       <nav className="bg-white shadow-lg p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold text-blue-600">Flight Deal Finder</Link>
+          <Link to="/" className="text-2xl font-bold text-botanical-subtext">Flight Deal Finder</Link>
           <div className="flex items-center gap-4">
-            <span className="text-gray-700">{user?.email}</span>
+            <span className="text-botanical-subtext">{user?.email}</span>
             <button
               onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
             >
               Logout
             </button>
@@ -88,14 +88,14 @@ function Dashboard() {
 
       <div className="container mx-auto p-8">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Your Flight Preferences</h2>
-          <p className="text-gray-600 mb-6">
-            Create and manage your flight deal preferences here.
+          <h2 className="text-2xl font-bold mb-4 text-botanical-subtext">Your Flight Preferences</h2>
+          <p className="text-botanical-subtext mb-6">
+            We regularly check prices and notify you about deals.
           </p>
 
           <button
             onClick={() => navigate('/create')}
-            className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+            className="bg-botanical-accent text-botanical-subtext px-6 py-3 rounded hover:bg-[#9ab5b3] cursor-pointer font-medium"
           >
             Create New Preference
           </button>
@@ -104,34 +104,34 @@ function Dashboard() {
             {loading && (
               <div className="text-center py-8">
                 <div className="inline-block">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-botanical-accent"></div>
                 </div>
-                <p className="text-gray-600 mt-4">Loading your preferences...</p>
+                <p className="text-botanical-subtext mt-4">Loading your preferences...</p>
               </div>
             )}
             
             {error && !loading && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                <p className="text-red-800">Error: {error}</p>
+              <div className="bg-botanical-error border border-botanical-errorText rounded-lg p-4 mb-6">
+                <p className="text-botanical-errorText">Error: {error}</p>
               </div>
             )}
             
             {!loading && preferences.length === 0 && (
-              <p className="text-gray-500">No preferences yet. Create your first one!</p>
+              <p className="text-botanical-subtext">No preferences yet. Create your first one!</p>
             )}
             
             {!loading && preferences.length > 0 && (
               <div className="space-y-4">
                 {/* Active Preferences Section */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-botanical-accent rounded-lg overflow-hidden">
                   <button
                     onClick={() => setActiveExpanded(!activeExpanded)}
-                    className="w-full bg-green-50 hover:bg-green-100 p-4 flex justify-between items-center transition"
+                    className="w-full bg-botanical-accent/20 hover:bg-botanical-accent/30 p-4 flex justify-between items-center transition cursor-pointer"
                   >
-                    <h3 className="text-lg font-semibold text-green-700">
+                    <h3 className="text-lg font-semibold text-botanical-subtext">
                       Active Preferences ({activePreferences.length})
                     </h3>
-                    <svg className={`w-6 h-6 text-green-700 transition-transform ${activeExpanded ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`w-6 h-6 text-botanical-subtext transition-transform ${activeExpanded ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
@@ -149,22 +149,22 @@ function Dashboard() {
                           />
                         ))
                       ) : (
-                        <p className="text-gray-500">No active preferences.</p>
+                        <p className="text-botanical-subtext">No active preferences.</p>
                       )}
                     </div>
                   )}
                 </div>
 
                 {/* Inactive Preferences Section */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="border border-botanical-accent rounded-lg overflow-hidden">
                   <button
                     onClick={() => setInactiveExpanded(!inactiveExpanded)}
-                    className="w-full bg-gray-100 hover:bg-gray-200 p-4 flex justify-between items-center transition"
+                    className="w-full bg-botanical-accent/20 hover:bg-botanical-accent/30 p-4 flex justify-between items-center transition cursor-pointer"
                   >
-                    <h3 className="text-lg font-semibold text-gray-700">
+                    <h3 className="text-lg font-semibold text-botanical-subtext">
                       Inactive Preferences ({inactivePreferences.length})
                     </h3>
-                    <svg className={`w-6 h-6 text-gray-700 transition-transform ${inactiveExpanded ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`w-6 h-6 text-botanical-subtext transition-transform ${inactiveExpanded ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
@@ -182,7 +182,7 @@ function Dashboard() {
                           />
                         ))
                       ) : (
-                        <p className="text-gray-500">No inactive preferences.</p>
+                        <p className="text-botanical-subtext">No inactive preferences.</p>
                       )}
                     </div>
                   )}
