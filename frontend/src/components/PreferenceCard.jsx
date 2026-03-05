@@ -1,4 +1,15 @@
-function PreferenceCard({ preference, isExpanded, onToggle }) {
+function PreferenceCard({
+  preference,
+  isExpanded,
+  onToggle,
+  onToggleActiveStatus,
+  isStatusUpdating,
+}) {
+  const handleStatusToggle = (e) => {
+    e.stopPropagation();
+    onToggleActiveStatus(!preference.is_active);
+  };
+
   return (
     <div
       className="border border-botanical-accent rounded-lg overflow-hidden hover:shadow-md transition cursor-pointer"
@@ -24,10 +35,28 @@ function PreferenceCard({ preference, isExpanded, onToggle }) {
               <p className="font-semibold text-lg text-botanical-subtext">{preference.budget ? `$${preference.budget}` : 'Not specified'}</p>
             </div>
           </div>
-          <div className={`ml-4 text-botanical-accent transition-transform ${isExpanded ? 'transform rotate-180' : ''}`}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+          <div className="ml-4 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleStatusToggle}
+              disabled={isStatusUpdating}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition cursor-pointer ${
+                preference.is_active
+                  ? 'bg-botanical-accent text-botanical-subtext hover:bg-botanical-accent/80'
+                  : 'border border-botanical-accent bg-botanical-accent/20 text-botanical-subtext hover:bg-botanical-accent/30'
+              } ${isStatusUpdating ? 'opacity-60 cursor-not-allowed' : ''}`}
+            >
+              {isStatusUpdating
+                ? 'Updating...'
+                : preference.is_active
+                  ? 'Make Inactive'
+                  : 'Make Active'}
+            </button>
+            <div className={`text-botanical-accent transition-transform ${isExpanded ? 'transform rotate-180' : ''}`}>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>

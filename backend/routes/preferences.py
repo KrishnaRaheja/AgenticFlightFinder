@@ -11,7 +11,11 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException
 from backend.auth import get_current_user
-from backend.models import FlightPreferenceCreate, FlightPreferenceResponse
+from backend.models import (
+    FlightPreferenceCreate,
+    FlightPreferenceResponse,
+    FlightPreferenceStatusUpdate,
+)
 from backend.database import get_supabase
 from backend.claude_service import call_claude_for_monitoring
 import uuid
@@ -162,6 +166,53 @@ async def update_preference(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update preference: {str(e)}")
+
+
+@router.patch("/{preference_id}/status", response_model=FlightPreferenceResponse)
+async def update_preference_status(
+    preference_id: UUID,
+    status_update: FlightPreferenceStatusUpdate,
+    current_user: str = Depends(get_current_user),
+):
+    """
+    Update only the active status of an existing flight preference
+    """
+    try:
+        supabase = get_supabase()
+
+        verify_response = (
+            supabase.table("flight_preferences")
+            .select("*")
+            .eq("id", str(preference_id))
+            .eq("user_id", current_user)
+            .execute()
+        )
+
+        if not verify_response.data:
+            raise HTTPException(status_code=404, detail="Preference not found")
+
+        response = (
+            supabase.table("flight_preferences")
+            .update(
+                {
+                    "is_active": status_update.is_active,
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }
+            )
+            .eq("id", str(preference_id))
+            .eq("user_id", current_user)
+            .execute()
+        )
+
+        return response.data[0]
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to update preference status: {str(e)}",
+        )
 
 
 @router.delete("/{preference_id}")

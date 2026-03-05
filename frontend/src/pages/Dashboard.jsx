@@ -15,6 +15,7 @@ function Dashboard() {
   const [expandedId, setExpandedId] = useState(null);
   const [activeExpanded, setActiveExpanded] = useState(true);
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
+  const [statusUpdatingId, setStatusUpdatingId] = useState(null);
 
   useEffect(() => {
     const fetchPreferences = async () => {
@@ -58,6 +59,46 @@ function Dashboard() {
     
     fetchPreferences();
   }, []);
+
+  const handleTogglePreferenceStatus = async (preferenceId, nextIsActive) => {
+    try {
+      setStatusUpdatingId(preferenceId);
+      setError('');
+
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        throw new Error('Authentication required');
+      }
+
+      const response = await fetch(`http://localhost:8000/api/preferences/${preferenceId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ is_active: nextIsActive })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to update preference status');
+      }
+
+      const updatedPreference = await response.json();
+
+      setPreferences((currentPreferences) =>
+        currentPreferences.map((preference) =>
+          preference.id === updatedPreference.id ? updatedPreference : preference
+        )
+      );
+    } catch (err) {
+      console.error('Error updating preference status:', err);
+      setError(err.message);
+    } finally {
+      setStatusUpdatingId(null);
+    }
+  };
 
   const activePreferences = preferences.filter((preference) => preference.is_active);
   const inactivePreferences = preferences.filter((preference) => !preference.is_active);
@@ -123,8 +164,12 @@ function Dashboard() {
                             key={preference.id}
                             preference={preference}
                             isExpanded={expandedId === preference.id}
+                            isStatusUpdating={statusUpdatingId === preference.id}
                             onToggle={() =>
                               setExpandedId(expandedId === preference.id ? null : preference.id)
+                            }
+                            onToggleActiveStatus={(nextIsActive) =>
+                              handleTogglePreferenceStatus(preference.id, nextIsActive)
                             }
                           />
                         ))
@@ -156,8 +201,12 @@ function Dashboard() {
                             key={preference.id}
                             preference={preference}
                             isExpanded={expandedId === preference.id}
+                            isStatusUpdating={statusUpdatingId === preference.id}
                             onToggle={() =>
                               setExpandedId(expandedId === preference.id ? null : preference.id)
+                            }
+                            onToggleActiveStatus={(nextIsActive) =>
+                              handleTogglePreferenceStatus(preference.id, nextIsActive)
                             }
                           />
                         ))
