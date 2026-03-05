@@ -170,7 +170,7 @@ function CreatePreference() {
                     className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                     required
                   />
-                  <p className="text-xs text-botanical-subtext mt-1">Enter an exact date or a travel window (month, season, or date range)</p>
+                  <p className="text-xs text-botanical-subtext mt-1">Exact date or a travel window (month, season, or date range)</p>
                 </div>
 
                 <div>
@@ -185,7 +185,7 @@ function CreatePreference() {
                     placeholder="e.g., 2026-06-22 or 1-2 weeks later"
                     className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   />
-                  <p className="text-xs text-botanical-subtext mt-1">Optional: enter an exact date or a return window</p>
+                  <p className="text-xs text-botanical-subtext mt-1">Optional: Exact date or a return window (month, season, or date range)</p>
                 </div>
               </div>
             </div>
@@ -250,8 +250,8 @@ function CreatePreference() {
                     className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent"
                   >
                     <option value="exact">Exact dates</option>
-                    <option value="plus_minus_3">±3 days</option>
-                    <option value="plus_minus_7">±7 days</option>
+                    <option value="plus_minus_2">±2 days</option>
+                    <option value="plus_minus_5">±5 days</option>
                     <option value="flexible">Flexible</option>
                   </select>
                 </div>

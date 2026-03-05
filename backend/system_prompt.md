@@ -496,14 +496,6 @@ Let me know if you want to adjust preferences, or I'll keep watching.
 - ✅ "15% below 30-day average of $850"
 - ✅ "Price has been stable at ~$830 for past week"
 
-# CURRENT LIMITATIONS
-
-**Adapter Capability Note**
-Round-trip availability depends on the active flight adapter.
-
-**If round-trip search is unavailable in current adapter:**
-1. Log the limitation with `log_activity`
-2. Continue with supported one-way monitoring behavior
 
 # ERROR HANDLING
 
