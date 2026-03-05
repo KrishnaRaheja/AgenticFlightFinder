@@ -4,9 +4,11 @@ import { supabase } from '../lib/supabase';
 import PreferenceCard from '../components/PreferenceCard';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
+import { useAuth } from '../hooks/useAuth';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [preferences, setPreferences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -68,7 +70,7 @@ function Dashboard() {
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-2xl font-bold mb-4 text-botanical-subtext">Your Flight Preferences</h2>
           <p className="text-botanical-subtext mb-6">
-            We regularly check prices and notify you about deals.
+            We regularly check prices and notify you about deals at <span className="font-bold text-botanical-subtext">{user?.email}</span>.
           </p>
 
           <button
@@ -89,8 +91,8 @@ function Dashboard() {
             )}
             
             {error && !loading && (
-              <div className="bg-botanical-error border border-botanical-errorText rounded-lg p-4 mb-6">
-                <p className="text-botanical-errorText">Error: {error}</p>
+              <div className="bg-botanical-error border border-botanical-error-text rounded-lg p-4 mb-6">
+                <p className="text-botanical-error-text">Error: {error}</p>
               </div>
             )}
             

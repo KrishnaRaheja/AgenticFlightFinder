@@ -35,7 +35,7 @@ function Login() {
         </h1>
 
         {error && (
-          <div className="bg-botanical-error text-botanical-errorText p-3 rounded mb-4">
+          <div className="bg-botanical-error text-botanical-error-text p-3 rounded mb-4">
             {error}
           </div>
         )}
@@ -73,7 +73,7 @@ function Login() {
 
         <button
           onClick={() => setIsSignup(!isSignup)}
-          className="mt-4 text-botanical-accent hover:text-botanical-subtext cursor-pointer"
+          className="mt-4 text-botanical hover:text-botanical-subtext cursor-pointer"
         >
           {isSignup ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
         </button>

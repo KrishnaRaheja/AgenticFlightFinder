@@ -23,10 +23,6 @@ function PreferenceCard({ preference, isExpanded, onToggle }) {
               <p className="text-botanical-subtext text-sm">Budget</p>
               <p className="font-semibold text-lg text-botanical-subtext">{preference.budget ? `$${preference.budget}` : 'Not specified'}</p>
             </div>
-            <div>
-              <p className="text-botanical-subtext text-sm">Alert Frequency</p>
-              <p className="font-semibold text-lg text-botanical-subtext">{preference.alert_frequency}</p>
-            </div>
           </div>
           <div className={`ml-4 text-botanical-accent transition-transform ${isExpanded ? 'transform rotate-180' : ''}`}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,6 +78,10 @@ function PreferenceCard({ preference, isExpanded, onToggle }) {
                     <p className="font-medium text-botanical-subtext">{preference.additional_context}</p>
                   </div>
                 )}
+                <div>
+                  <p className="text-botanical-subtext text-sm">Alert Frequency</p>
+                  <p className="font-medium text-botanical-subtext">{preference.alert_frequency}</p>
+                </div>
                 <div>
                   <p className="text-botanical-subtext text-sm">Status</p>
                   <p className="font-medium text-botanical-subtext">{preference.is_active ? 'Active' : 'Inactive'}</p>

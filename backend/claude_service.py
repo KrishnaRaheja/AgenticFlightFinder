@@ -21,6 +21,7 @@ from datetime import datetime, timezone, timedelta
 import logging
 
 from backend.database import get_supabase
+from backend.email_service import send_email_via_smtp
 
 # Add parent directory to path for adapter imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -479,6 +480,8 @@ async def execute_get_price_history(arguments: Dict[str, Any]) -> Dict[str, Any]
 async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """
     Record a formatted email alert in the database for delivery.
+    If this is the first alert for the preference, send email immediately.
+    Otherwise, queue for 8pm EST scheduled delivery.
     
     Args:
         arguments: Tool arguments containing user_id, preference_id, alert_type, email_subject, email_body_html, reference_price, reasoning
@@ -503,6 +506,14 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
         alert_id = str(uuid.uuid4())
         now_iso = datetime.now(timezone.utc).isoformat()
         
+        # Check if this is the first alert for this preference
+        previous_alerts = supabase.table("alerts_sent")\
+            .select("id", count="exact")\
+            .eq("preference_id", preference_id)\
+            .execute()
+        
+        is_first_alert = (previous_alerts.count == 0)
+        
         # Insert alert record with formatted email content
         alert_data = {
             "id": alert_id,
@@ -519,10 +530,30 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
         
         supabase.table("alerts_sent").insert(alert_data).execute()
         
+        # If this is the first alert, send email immediately
+        if is_first_alert:
+            try:
+                # Fetch user's email from auth
+                user_response = supabase.auth.admin.get_user_by_id(user_id)
+                user_email = user_response.user.email if user_response and user_response.user else None
+                
+                if user_email:
+                    # Send email immediately
+                    email_result = await send_email_via_smtp(user_email, email_subject, email_body_html)
+                    if email_result.get("success"):
+                        logger.info(f"Sent immediate welcome email for preference {preference_id} to {user_email}")
+                    else:
+                        logger.error(f"Failed to send immediate email: {email_result.get('error')}")
+                else:
+                    logger.error(f"Could not fetch email for user {user_id}")
+            except Exception as email_error:
+                # Don't fail the whole operation if email sending fails
+                logger.error(f"Error sending immediate email: {str(email_error)}", exc_info=True)
+        
         return {
             "success": True,
             "alert_id": alert_id,
-            "message": f"Alert recorded: {alert_type}"
+            "message": f"Alert recorded: {alert_type}" + (" (sent immediately)" if is_first_alert else " (queued for 8pm)")
         }
     
     except Exception as e:

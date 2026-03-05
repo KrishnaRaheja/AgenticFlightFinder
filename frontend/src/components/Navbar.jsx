@@ -22,7 +22,7 @@ function Navbar() {
           <span className="text-botanical-subtext">{user?.email}</span>
           <button
             onClick={handleLogout}
-            className="bg-[var(--color-logout)] text-white px-4 py-2 rounded hover:opacity-90 transition cursor-pointer"
+            className="bg-botanical-error text-white px-4 py-2 rounded hover:bg-botanical-error-text transition cursor-pointer"
           >
             Logout
           </button>

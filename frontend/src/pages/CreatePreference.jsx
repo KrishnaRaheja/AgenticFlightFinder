@@ -110,8 +110,8 @@ function CreatePreference() {
           </div>
 
           {error && (
-            <div className="bg-botanical-error border border-botanical-errorText rounded-lg p-4 mb-6">
-              <p className="text-botanical-errorText">{error}</p>
+            <div className="bg-botanical-error border border-botanical-error-text rounded-lg p-4 mb-6">
+              <p className="text-botanical-error-text">{error}</p>
             </div>
           )}
 
@@ -125,7 +125,7 @@ function CreatePreference() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-botanical-subtext mb-2 font-medium">
-                    Origin <span className="text-botanical-errorText">*</span>
+                    Origin <span className="text-botanical-error-text">*</span>
                   </label>
                   <input
                     type="text"
@@ -142,7 +142,7 @@ function CreatePreference() {
 
                 <div>
                   <label className="block text-botanical-subtext mb-2 font-medium">
-                    Destination <span className="text-botanical-errorText">*</span>
+                    Destination <span className="text-botanical-error-text">*</span>
                   </label>
                   <input
                     type="text"
@@ -159,7 +159,7 @@ function CreatePreference() {
 
                 <div>
                   <label className="block text-botanical-subtext mb-2 font-medium">
-                    Departure <span className="text-botanical-errorText">*</span>
+                    Departure <span className="text-botanical-error-text">*</span>
                   </label>
                   <input
                     type="text"
@@ -364,7 +364,7 @@ function CreatePreference() {
                 type="button"
                 onClick={() => navigate('/')}
                 disabled={loading}
-                className="flex-1 bg-botanical-card text-botanical-text py-3 rounded hover:bg-botanical-card/80 disabled:opacity-50 font-medium cursor-pointer"
+                className="flex-1 bg-botanical-error text-white py-3 rounded hover:bg-botanical-error-text font-medium cursor-pointer"
               >
                 Cancel
               </button>
