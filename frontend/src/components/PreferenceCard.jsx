@@ -11,58 +11,104 @@ function PreferenceCard({
   };
 
   return (
-    <div
-      className="border border-botanical-accent rounded-lg overflow-hidden hover:shadow-md transition cursor-pointer"
-      onClick={onToggle}
-    >
-      <div className="bg-botanical-accent/10 p-4">
-        <div className="flex justify-between items-start">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 flex-1">
-            <div>
-              <p className="text-botanical-subtext text-sm">From</p>
-              <p className="font-semibold text-lg text-botanical-subtext">{preference.origin}</p>
+    <div>
+      <style>{`
+        @keyframes expandDown {
+          from {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+          }
+          to {
+            opacity: 1;
+            max-height: 1000px;
+            overflow: visible;
+          }
+        }
+
+        .expand-section {
+          animation: expandDown 0.3s ease-out;
+        }
+
+        .card-hover {
+          transition: all 0.2s ease-out;
+        }
+
+        .card-hover:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          transform: translateY(-2px);
+        }
+
+        .status-button {
+          transition: all 0.2s ease-out;
+        }
+
+        .status-button:hover:not(:disabled) {
+          transform: translateY(-1px);
+        }
+
+        .status-button:active:not(:disabled) {
+          transform: translateY(1px);
+        }
+
+        .chevron-rotate {
+          transition: transform 0.3s ease-out;
+        }
+      `}</style>
+
+      <div
+        className="border border-botanical-accent rounded-lg overflow-hidden card-hover cursor-pointer"
+        onClick={onToggle}
+      >
+        <div className="bg-botanical-accent/10 p-4">
+          <div className="flex justify-between items-start">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 flex-1">
+              <div>
+                <p className="text-botanical-subtext text-sm">From</p>
+                <p className="font-semibold text-lg text-botanical-subtext">{preference.origin}</p>
+              </div>
+              <div>
+                <p className="text-botanical-subtext text-sm">To</p>
+                <p className="font-semibold text-lg text-botanical-subtext">{preference.destination}</p>
+              </div>
+              <div>
+                <p className="text-botanical-subtext text-sm">Departure</p>
+                <p className="font-semibold text-lg text-botanical-subtext">{preference.departure_period}</p>
+              </div>
+              <div>
+                <p className="text-botanical-subtext text-sm">Budget</p>
+                <p className="font-semibold text-lg text-botanical-subtext">{preference.budget ? `$${preference.budget}` : 'Not specified'}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-botanical-subtext text-sm">To</p>
-              <p className="font-semibold text-lg text-botanical-subtext">{preference.destination}</p>
-            </div>
-            <div>
-              <p className="text-botanical-subtext text-sm">Departure</p>
-              <p className="font-semibold text-lg text-botanical-subtext">{preference.departure_period}</p>
-            </div>
-            <div>
-              <p className="text-botanical-subtext text-sm">Budget</p>
-              <p className="font-semibold text-lg text-botanical-subtext">{preference.budget ? `$${preference.budget}` : 'Not specified'}</p>
-            </div>
-          </div>
-          <div className="ml-4 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleStatusToggle}
-              disabled={isStatusUpdating}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition cursor-pointer ${
-                preference.is_active
-                  ? 'bg-botanical-accent text-botanical-subtext hover:bg-botanical-accent/80'
-                  : 'border border-botanical-accent bg-botanical-accent/20 text-botanical-subtext hover:bg-botanical-accent/30'
-              } ${isStatusUpdating ? 'opacity-60 cursor-not-allowed' : ''}`}
-            >
-              {isStatusUpdating
-                ? 'Updating...'
-                : preference.is_active
-                  ? 'Make Inactive'
-                  : 'Make Active'}
-            </button>
-            <div className={`text-botanical-accent transition-transform ${isExpanded ? 'transform rotate-180' : ''}`}>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+            <div className="ml-4 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleStatusToggle}
+                disabled={isStatusUpdating}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition status-button ${
+                  preference.is_active
+                    ? 'bg-botanical-accent text-botanical-subtext hover:bg-botanical-accent/80'
+                    : 'border border-botanical-accent bg-botanical-accent/20 text-botanical-subtext hover:bg-botanical-accent/30'
+                } ${isStatusUpdating ? 'opacity-60 cursor-not-allowed' : ''}`}
+              >
+                {isStatusUpdating
+                  ? 'Updating...'
+                  : preference.is_active
+                    ? 'Make Inactive'
+                    : 'Make Active'}
+              </button>
+              <div className={`text-botanical-accent chevron-rotate ${isExpanded ? 'transform rotate-180' : ''}`}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="border-t border-botanical-accent p-4 bg-white">
+        <div className="border-t border-botanical-accent p-4 bg-white expand-section">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-botanical-subtext mb-4">Flight Details</h3>
