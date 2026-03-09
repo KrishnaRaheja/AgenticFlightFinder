@@ -102,7 +102,7 @@ function AlertsModal({ isOpen, onClose, alerts, loading, error, preference }) {
         aria-hidden="true"
       />
 
-      <div className={`relative w-full max-w-3xl max-h-[85vh] overflow-hidden rounded-xl bg-white shadow-2xl border border-botanical-accent modal-content ${isClosing ? 'closing' : ''}`}>
+      <div className={`relative w-full max-w-5xl max-h-[90vh] overflow-hidden rounded-xl bg-white shadow-2xl border border-botanical-accent modal-content ${isClosing ? 'closing' : ''}`}>
         <div className="flex items-center justify-between border-b border-botanical-accent/40 px-5 py-4 bg-botanical-accent/10">
           <div>
             <h3 className="text-lg font-semibold text-botanical-subtext">Alert History</h3>
@@ -121,7 +121,7 @@ function AlertsModal({ isOpen, onClose, alerts, loading, error, preference }) {
           </button>
         </div>
 
-        <div className="max-h-[calc(85vh-80px)] overflow-y-auto p-5">
+        <div className="max-h-[calc(90vh-80px)] overflow-y-auto p-5">
           {loading && (
             <div className="text-center py-8">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-botanical-accent" />
@@ -149,9 +149,6 @@ function AlertsModal({ isOpen, onClose, alerts, loading, error, preference }) {
               {alerts.map((alert) => (
                 <article key={alert.id} className="rounded-lg border border-botanical-accent/40 bg-white overflow-hidden">
                   <div className="px-4 py-3 bg-botanical-accent/5 flex flex-wrap items-center gap-3">
-                    <span className="inline-flex rounded-full bg-botanical-accent/20 px-2.5 py-1 text-xs font-semibold text-botanical-subtext">
-                      {alert.alert_type}
-                    </span>
                     <span className="text-xs text-botanical-subtext/70">
                       Sent {new Date(alert.sent_at).toLocaleString()}
                     </span>
@@ -168,13 +165,13 @@ function AlertsModal({ isOpen, onClose, alerts, loading, error, preference }) {
 
                   <details className="p-4">
                     <summary className="cursor-pointer text-sm font-medium text-botanical-subtext hover:text-botanical-accent transition-colors">
-                      View full alert email
+                      View full email
                     </summary>
                     <div className="mt-3 details-expanded">
                       <iframe
                         title={`email-preview-${alert.id}`}
                         srcDoc={alert.email_body_html || '<p>No email HTML available.</p>'}
-                        className="h-[420px] w-full rounded border border-botanical-accent/30 bg-white"
+                        className="h-[550px] w-full rounded border border-botanical-accent/30 bg-white"
                       />
                     </div>
                   </details>
