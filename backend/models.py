@@ -40,3 +40,14 @@ class FlightPreferenceResponse(FlightPreferenceCreate):
 class FlightPreferenceStatusUpdate(BaseModel):
     """Data model for toggling preference active status"""
     is_active: bool
+
+
+class AlertResponse(BaseModel):
+    """Response model for flight alerts"""
+    id: UUID
+    email_subject: str
+    email_body_html: str
+    sent_at: str
+    reasoning: str
+    reference_price: Optional[float] = None
+    alert_type: str

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import PreferenceCard from '../components/PreferenceCard';
+import AlertsModal from '../components/AlertsModal';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../hooks/useAuth';
@@ -17,6 +18,11 @@ function Dashboard() {
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
   const [statusUpdatingId, setStatusUpdatingId] = useState(null);
   const [fadeIn, setFadeIn] = useState(false);
+  const [alertsOpen, setAlertsOpen] = useState(false);
+  const [selectedPreference, setSelectedPreference] = useState(null);
+  const [alerts, setAlerts] = useState([]);
+  const [alertsLoading, setAlertsLoading] = useState(false);
+  const [alertsError, setAlertsError] = useState('');
 
   // Fade-in animation on mount
   useEffect(() => {
@@ -104,6 +110,51 @@ function Dashboard() {
     } finally {
       setStatusUpdatingId(null);
     }
+  };
+
+  const handleViewAlerts = async (preference) => {
+    try {
+      setSelectedPreference(preference);
+      setAlertsOpen(true);
+      setAlerts([]);
+      setAlertsError('');
+      setAlertsLoading(true);
+
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        throw new Error('Authentication required');
+      }
+
+      const response = await fetch(`http://localhost:8000/api/preferences/${preference.id}/alerts`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to load alerts');
+      }
+
+      const data = await response.json();
+      setAlerts(data);
+    } catch (err) {
+      console.error('Error loading alerts:', err);
+      setAlertsError(err.message);
+    } finally {
+      setAlertsLoading(false);
+    }
+  };
+
+  const handleCloseAlerts = () => {
+    setAlertsOpen(false);
+    setSelectedPreference(null);
+    setAlerts([]);
+    setAlertsError('');
+    setAlertsLoading(false);
   };
 
   const activePreferences = preferences.filter((preference) => preference.is_active);
@@ -225,6 +276,7 @@ function Dashboard() {
                               onToggleActiveStatus={(nextIsActive) =>
                                 handleTogglePreferenceStatus(preference.id, nextIsActive)
                               }
+                              onViewAlerts={() => handleViewAlerts(preference)}
                             />
                           </div>
                         ))
@@ -263,6 +315,7 @@ function Dashboard() {
                               onToggleActiveStatus={(nextIsActive) =>
                                 handleTogglePreferenceStatus(preference.id, nextIsActive)
                               }
+                              onViewAlerts={() => handleViewAlerts(preference)}
                             />
                           </div>
                         ))
@@ -277,6 +330,16 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      <AlertsModal
+        isOpen={alertsOpen}
+        onClose={handleCloseAlerts}
+        alerts={alerts}
+        loading={alertsLoading}
+        error={alertsError}
+        preference={selectedPreference}
+      />
+
       <Footer />
     </div>
   );

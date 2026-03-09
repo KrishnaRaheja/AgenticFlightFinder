@@ -4,10 +4,16 @@ function PreferenceCard({
   onToggle,
   onToggleActiveStatus,
   isStatusUpdating,
+  onViewAlerts,
 }) {
   const handleStatusToggle = (e) => {
     e.stopPropagation();
     onToggleActiveStatus(!preference.is_active);
+  };
+
+  const handleViewAlerts = (e) => {
+    e.stopPropagation();
+    onViewAlerts();
   };
 
   return (
@@ -81,6 +87,13 @@ function PreferenceCard({
               </div>
             </div>
             <div className="ml-4 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleViewAlerts}
+                className="px-3 py-1 rounded-md text-sm font-medium border border-botanical-accent bg-white text-botanical-subtext hover:bg-botanical-accent/20 cursor-pointer status-button"
+              >
+                View Alerts
+              </button>
               <button
                 type="button"
                 onClick={handleStatusToggle}

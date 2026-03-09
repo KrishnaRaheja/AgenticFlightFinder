@@ -161,7 +161,7 @@ function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="your password"
               className="w-full px-4 py-3 border-2 border-[#abc6c4] border-opacity-40 rounded-lg input-focus bg-white text-botanical-subtext placeholder-[#72908d] placeholder-opacity-50 transition-all duration-200"
               required
               disabled={isLoading}

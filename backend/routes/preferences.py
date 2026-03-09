@@ -15,6 +15,7 @@ from backend.models import (
     FlightPreferenceCreate,
     FlightPreferenceResponse,
     FlightPreferenceStatusUpdate,
+    AlertResponse,
 )
 from backend.database import get_supabase
 from backend.claude_service import call_claude_for_monitoring
@@ -242,3 +243,39 @@ async def delete_preference(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete preference: {str(e)}")
+
+
+@router.get("/{preference_id}/alerts", response_model=list[AlertResponse])
+async def get_preference_alerts(
+    preference_id: UUID,
+    current_user: str = Depends(get_current_user),
+):
+    """
+    Get all alerts sent for a specific flight preference
+    
+    Returns alerts ordered by most recent first, including:
+    - Email subject and HTML body
+    - Send timestamp and reasoning
+    - Reference price and alert type
+    """
+    try:
+        supabase = get_supabase()
+        
+        # First verify the preference exists and belongs to the current user
+        verify_response = supabase.table("flight_preferences").select("*").eq("id", str(preference_id)).eq("user_id", current_user).execute()
+        
+        if not verify_response.data:
+            raise HTTPException(status_code=404, detail="Preference not found")
+        
+        # Query all alerts for this preference, ordered by most recent first
+        response = supabase.table("alerts_sent").select(
+            "id,email_subject,email_body_html,sent_at,reasoning,reference_price,alert_type"
+        ).eq("preference_id", str(preference_id)).order("sent_at", desc=True).execute()
+        
+        # Return the alerts
+        return response.data if response.data else []
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve alerts: {str(e)}")
