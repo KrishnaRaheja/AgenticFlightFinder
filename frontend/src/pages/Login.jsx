@@ -172,7 +172,7 @@ function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-botanical-accent text-botanical-subtext py-3 rounded-lg font-semibold text-base hover:bg-[#9ab5b3] active:bg-[#8aa3a1] transition-all duration-200 button-ripple disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-botanical-accent text-botanical-subtext py-3 rounded-lg font-semibold text-base hover:bg-[#9ab5b3] active:bg-[#8aa3a1] transition-all duration-200 button-ripple disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
