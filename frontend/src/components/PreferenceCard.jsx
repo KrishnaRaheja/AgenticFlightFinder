@@ -68,7 +68,7 @@ function PreferenceCard({
       >
         <div className="bg-botanical-accent/10 p-4">
           <div className="flex justify-between items-start">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 flex-1">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-10 flex-1">
               <div>
                 <p className="text-botanical-subtext text-sm">From</p>
                 <p className="font-semibold text-lg text-botanical-subtext">{preference.origin}</p>
@@ -90,7 +90,7 @@ function PreferenceCard({
               <button
                 type="button"
                 onClick={handleViewAlerts}
-                className="px-3 py-1 rounded-md text-sm font-medium border border-botanical-accent bg-white text-botanical-subtext hover:bg-botanical-accent/20 cursor-pointer status-button"
+                className="min-h-11 px-5 py-2 rounded-md text-base font-semibold border border-botanical-accent bg-white text-botanical-subtext hover:bg-botanical-accent/20 cursor-pointer status-button"
               >
                 View Alerts
               </button>
@@ -98,7 +98,7 @@ function PreferenceCard({
                 type="button"
                 onClick={handleStatusToggle}
                 disabled={isStatusUpdating}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition status-button ${
+                className={`min-h-11 px-5 py-2 rounded-md text-base font-semibold transition cursor-pointer status-button ${
                   preference.is_active
                     ? 'bg-botanical-accent text-botanical-subtext hover:bg-botanical-accent/80'
                     : 'border border-botanical-accent bg-botanical-accent/20 text-botanical-subtext hover:bg-botanical-accent/30'
