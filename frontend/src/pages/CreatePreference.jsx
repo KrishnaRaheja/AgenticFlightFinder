@@ -78,7 +78,7 @@ function CreatePreference() {
       };
       
       // Submit to backend
-      const response = await fetch(`${API_URL}/api/preferences`, {
+      const response = await fetch(`${API_URL}/api/preferences/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,

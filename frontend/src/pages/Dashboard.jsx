@@ -48,7 +48,7 @@ function Dashboard() {
         }
         
         // Fetch preferences from backend with authorization header
-        const response = await fetch(`${API_URL}/api/preferences`, {
+        const response = await fetch(`${API_URL}/api/preferences/`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
