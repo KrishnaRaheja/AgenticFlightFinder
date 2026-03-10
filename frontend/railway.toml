@@ -1,6 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm ci && npm run build"
+buildCommand = "npm install && npm run build"
 
 [deploy]
 startCommand = "npx serve -s dist -l $PORT"
+
+[build.nixpacksPlan.phases.setup]
+nixPkgs = ["nodejs_20"]
