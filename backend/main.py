@@ -14,6 +14,7 @@ The API uses Supabase for database and authentication services.
 """
 
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -48,14 +49,18 @@ logger = logging.getLogger(__name__)
 security = HTTPBearer()
 
 # Add CORS middleware to allow requests from React frontend
+_allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://*.vercel.app",
+]
+_frontend_url = os.getenv("FRONTEND_URL")
+if _frontend_url:
+    _allowed_origins.append(_frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "https://*.vercel.app",  # Allow all Vercel preview deployments
-        # Add your production domain here once you have it
-    ],
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
