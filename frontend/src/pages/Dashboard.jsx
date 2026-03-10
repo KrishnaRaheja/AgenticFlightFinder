@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { API_URL } from '../config';
 import PreferenceCard from '../components/PreferenceCard';
 import AlertsModal from '../components/AlertsModal';
 import Footer from '../components/Footer';
@@ -47,7 +48,7 @@ function Dashboard() {
         }
         
         // Fetch preferences from backend with authorization header
-        const response = await fetch('http://localhost:8000/api/preferences', {
+        const response = await fetch(`${API_URL}/api/preferences`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
@@ -83,7 +84,7 @@ function Dashboard() {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:8000/api/preferences/${preferenceId}/status`, {
+      const response = await fetch(`${API_URL}/api/preferences/${preferenceId}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
@@ -126,7 +127,7 @@ function Dashboard() {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:8000/api/preferences/${preference.id}/alerts`, {
+      const response = await fetch(`${API_URL}/api/preferences/${preference.id}/alerts`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${session.access_token}`,

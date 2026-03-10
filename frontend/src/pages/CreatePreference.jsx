@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { API_URL } from '../config';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 
@@ -77,7 +78,7 @@ function CreatePreference() {
       };
       
       // Submit to backend
-      const response = await fetch('http://localhost:8000/api/preferences', {
+      const response = await fetch(`${API_URL}/api/preferences`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
