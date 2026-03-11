@@ -721,7 +721,7 @@ Refer to system prompt for instructions."""
         
         tools_used = []
         conversation_turns = 0
-        max_turns = 5
+        max_turns = 7
         
         logger.info(f"Starting Claude monitoring for user {user_id}, preference {preference_id}")
         

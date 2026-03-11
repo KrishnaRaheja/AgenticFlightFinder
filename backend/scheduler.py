@@ -10,9 +10,8 @@ import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import timezone
 
-from backend.claude_service import call_claude_for_monitoring
-from backend.database import get_supabase
 from backend.email_service import send_daily_alert_emails
+from backend.services import MonitoringService
 
 # Configure logging for scheduler events
 logging.basicConfig(
@@ -20,6 +19,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+monitoring_service = MonitoringService()
 
 
 async def monitor_all_active_preferences():
@@ -33,41 +33,7 @@ async def monitor_all_active_preferences():
     Returns:
         int: Number of preferences successfully processed
     """
-    try:
-        supabase = get_supabase()
-        
-        # Query for all active preferences
-        response = supabase.table('flight_preferences').select('*').eq('is_active', True).execute()
-        active_preferences = response.data
-        
-        logger.info(f"Found {len(active_preferences)} active preferences to monitor")
-        
-        processed_count = 0
-        for preference in active_preferences:
-            try:
-                user_id = preference['user_id']
-                preference_id = preference['id']
-                
-                # Call Claude for monitoring this preference
-                await call_claude_for_monitoring(user_id, preference_id)
-                processed_count += 1
-                logger.debug(f"Successfully monitored preference {preference_id} for user {user_id}")
-                
-            except Exception as e:
-                logger.error(
-                    f"Error monitoring preference {preference.get('id')} "
-                    f"for user {preference.get('user_id')}: {str(e)}",
-                    exc_info=True
-                )
-                # Continue to next preference if one fails
-                continue
-        
-        logger.info(f"Monitoring job completed. Processed {processed_count}/{len(active_preferences)} preferences")
-        return processed_count
-        
-    except Exception as e:
-        logger.error(f"Error in monitor_all_active_preferences: {str(e)}", exc_info=True)
-        return 0
+    return await monitoring_service.monitor_all_active_preferences()
 
 
 def run_monitoring_job():
