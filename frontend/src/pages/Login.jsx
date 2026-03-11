@@ -129,11 +129,11 @@ function Login() {
             className="text-center mb-8"
             style={{ animation: fadeIn ? 'fadeIn 0.8s ease-in-out 0.2s both' : 'none' }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-botanical-text mb-4 leading-tight">
-              Flight Deal Finder
+            <h1 className="text-4xl md:text-5xl font-bold text-botanical-text mb-4 leading-tight">
+              Agentic Flight Finder
             </h1>
             <p className="text-xl md:text-2xl text-[#abc6c4] font-black tracking-wide uppercase">
-              Agentic flight finder
+              Search once, never again.
             </p>
           </div>
 
