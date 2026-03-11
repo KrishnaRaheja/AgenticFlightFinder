@@ -108,101 +108,144 @@ function Login() {
         }
       `}</style>
 
-      {/* Hero Section */}
-      <div className="text-center max-w-2xl mt-8 mb-8" style={{
-        animation: fadeIn ? 'fadeIn 0.8s ease-in-out 0.2s both' : 'none'
-      }}>
-        <h1 className="text-5xl md:text-6xl font-bold text-botanical-text mb-4 leading-tight">
-          Flight Deal Finder
-        </h1>
-        <p className="text-xl md:text-2xl text-[#abc6c4] font-light">
-          Autonomous flight finder
-        </p>
-      </div>
+      {/* Three Column Layout: left | center (title + card) | right */}
+      <div className="w-full flex flex-col md:flex-row md:items-center md:justify-center gap-8 md:gap-12 my-8 px-8">
 
-      {/* Login Card */}
-      <div 
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-10 border border-[#abc6c4] border-opacity-30 card-hover transition-all duration-300"
-        style={{
-          animation: fadeIn ? 'fadeIn 0.8s ease-in-out 0.4s both' : 'none'
-        }}
-      >
-        <h2 className="text-3xl font-bold text-botanical-subtext mb-8 text-center">
-          {isSignup ? 'Create Account' : 'Welcome Back'}
-        </h2>
-
-        {/* Error Message */}
-        {error && (
-          <div className="bg-botanical-error text-white p-4 rounded-lg mb-6 fade-in-error border border-[#f59a71] border-opacity-50">
-            <p className="font-medium">{error}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          {/* Email Input */}
-          <div className="mb-6">
-            <label className="block text-botanical-subtext mb-3 font-semibold text-sm">
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full px-4 py-3 border-2 border-[#abc6c4] border-opacity-40 rounded-lg input-focus bg-white text-botanical-subtext placeholder-[#72908d] placeholder-opacity-50 transition-all duration-200"
-              required
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Password Input */}
-          <div className="mb-8">
-            <label className="block text-botanical-subtext mb-3 font-semibold text-sm">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="your password"
-              className="w-full px-4 py-3 border-2 border-[#abc6c4] border-opacity-40 rounded-lg input-focus bg-white text-botanical-subtext placeholder-[#72908d] placeholder-opacity-50 transition-all duration-200"
-              required
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-botanical-accent text-botanical-subtext py-3 rounded-lg font-semibold text-base hover:bg-[#9ab5b3] active:bg-[#8aa3a1] transition-all duration-200 button-ripple disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <>
-                <div className="spinner"></div>
-                {isSignup ? 'Creating Account...' : 'Logging In...'}
-              </>
-            ) : (
-              isSignup ? 'Create Account' : 'Login'
-            )}
-          </button>
-        </form>
-
-        {/* Toggle Button */}
-        <button
-          onClick={() => {
-            setIsSignup(!isSignup);
-            setError('');
-          }}
-          disabled={isLoading}
-          className="mt-6 text-center w-full text-botanical-card hover:text-botanical-subtext transition-colors duration-200 font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        {/* LEFT COLUMN: "THE WORLD'S FIRST" */}
+        <div
+          className="order-2 md:order-1 md:flex-1 text-center md:text-right"
+          style={{ animation: fadeIn ? 'fadeIn 0.8s ease-in-out 0.3s both' : 'none' }}
         >
-          {isSignup ? (
-            <span>Already have an account? <span className="text-botanical-accent">Login</span></span>
-          ) : (
-            <span>Don't have an account? <span className="text-botanical-accent">Sign Up</span></span>
-          )}
-        </button>
+          <p className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-none tracking-tight text-[#abc6c4] opacity-80">
+            THE<br />WORLD'S<br />FIRST
+          </p>
+        </div>
+
+        {/* MIDDLE COLUMN: Title + Subtitle + Login Card */}
+        <div className="order-1 md:order-2 flex-none flex flex-col items-center">
+
+          {/* Title */}
+          <div
+            className="text-center mb-8"
+            style={{ animation: fadeIn ? 'fadeIn 0.8s ease-in-out 0.2s both' : 'none' }}
+          >
+            <h1 className="text-5xl md:text-6xl font-bold text-botanical-text mb-4 leading-tight">
+              Flight Deal Finder
+            </h1>
+            <p className="text-xl md:text-2xl text-[#abc6c4] font-black tracking-wide uppercase">
+              Agentic flight finder
+            </p>
+          </div>
+
+          {/* Login Card */}
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-10 border border-[#abc6c4] border-opacity-30 card-hover transition-all duration-300"
+            style={{ animation: fadeIn ? 'fadeIn 0.8s ease-in-out 0.4s both' : 'none' }}
+          >
+            <h2 className="text-3xl font-bold text-botanical-subtext mb-8 text-center">
+              {isSignup ? 'Create Account' : 'Welcome Back'}
+            </h2>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-botanical-error text-white p-4 rounded-lg mb-6 fade-in-error border border-[#f59a71] border-opacity-50">
+                <p className="font-medium">{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              {/* Email Input */}
+              <div className="mb-6">
+                <label className="block text-botanical-subtext mb-3 font-semibold text-sm">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full px-4 py-3 border-2 border-[#abc6c4] border-opacity-40 rounded-lg input-focus bg-white text-botanical-subtext placeholder-[#72908d] placeholder-opacity-50 transition-all duration-200"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+
+              {/* Password Input */}
+              <div className="mb-8">
+                <label className="block text-botanical-subtext mb-3 font-semibold text-sm">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="your password"
+                  className="w-full px-4 py-3 border-2 border-[#abc6c4] border-opacity-40 rounded-lg input-focus bg-white text-botanical-subtext placeholder-[#72908d] placeholder-opacity-50 transition-all duration-200"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-botanical-accent text-botanical-subtext py-3 rounded-lg font-semibold text-base hover:bg-[#9ab5b3] active:bg-[#8aa3a1] transition-all duration-200 button-ripple disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="spinner"></div>
+                    {isSignup ? 'Creating Account...' : 'Logging In...'}
+                  </>
+                ) : (
+                  isSignup ? 'Create Account' : 'Login'
+                )}
+              </button>
+            </form>
+
+            {/* Toggle Button */}
+            <button
+              onClick={() => {
+                setIsSignup(!isSignup);
+                setError('');
+              }}
+              disabled={isLoading}
+              className="mt-6 text-center w-full text-botanical-card hover:text-botanical-subtext transition-colors duration-200 font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSignup ? (
+                <span>Already have an account? <span className="text-botanical-accent">Login</span></span>
+              ) : (
+                <span>Don't have an account? <span className="text-botanical-accent">Sign Up</span></span>
+              )}
+            </button>
+          </div>
+
+        </div>
+
+        {/* RIGHT COLUMN: Editorial description */}
+        <div
+          className="order-3 md:order-3 md:flex-1 text-center md:text-left mt-8 md:mt-14"
+          style={{ animation: fadeIn ? 'fadeIn 0.8s ease-in-out 0.4s both' : 'none' }}
+        >
+          <div className="text-lg md:text-xl text-[#abc6c4] font-semibold leading-relaxed opacity-90 space-y-3">
+            <p>
+              <span className="text-white font-black tracking-wide uppercase text-xl md:text-2xl">AI-powered:</span>
+              <br />
+              <span className="text-base md:text-lg text-[#abc6c4] font-medium tracking-normal normal-case">Claude decides when to search</span>
+            </p>
+            <p>
+              <span className="text-white font-black tracking-wide uppercase text-xl md:text-2xl">Set it and forget it:</span>
+              <br />
+              <span className="text-base md:text-lg text-[#abc6c4] font-medium tracking-normal normal-case">Set preferences once, agent handles the rest</span>
+            </p>
+            <p>
+              <span className="text-white font-black tracking-wide uppercase text-xl md:text-2xl">Intelligent scoring:</span>
+              <br />
+              <span className="text-base md:text-lg text-[#abc6c4] font-medium tracking-normal normal-case">Understands context, not just price drops</span>
+            </p>
+          </div>
+        </div>
+
       </div>
 
       {/* Footer - Positioned at Bottom */}
