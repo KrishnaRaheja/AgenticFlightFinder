@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { API_URL } from '../config';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
+import AirportSearch from '../components/AirportSearch';
 
 function CreatePreference() {
   const navigate = useNavigate();
@@ -49,11 +50,11 @@ function CreatePreference() {
     setError('');
     
     try {
-      // Validate IATA codes
-      if (formData.origin.length !== 3 || formData.destination.length !== 3) {
-        throw new Error('Origin and destination must be 3-letter airport codes');
+      // Validate IATA codes were selected from autocomplete
+      if (!formData.origin || !formData.destination) {
+        throw new Error('Please select an origin and destination airport from the suggestions');
       }
-      
+
       // Get session token
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !session) {
@@ -211,34 +212,26 @@ function CreatePreference() {
                   <label className="block text-botanical-subtext mb-2 font-medium">
                     Origin <span className="text-botanical-error-text">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <AirportSearch
                     name="origin"
                     value={formData.origin}
-                    onChange={handleChange}
-                    placeholder="e.g., JFK"
-                    maxLength="3"
-                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent input-smooth"
+                    onChange={(iata) => setFormData((prev) => ({ ...prev, origin: iata }))}
+                    placeholder="Search by city or airport code"
                     required
                   />
-                  <p className="text-xs text-botanical-subtext mt-1">3-letter airport code</p>
                 </div>
 
                 <div>
                   <label className="block text-botanical-subtext mb-2 font-medium">
                     Destination <span className="text-botanical-error-text">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <AirportSearch
                     name="destination"
                     value={formData.destination}
-                    onChange={handleChange}
-                    placeholder="e.g., LAX"
-                    maxLength="3"
-                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent input-smooth"
+                    onChange={(iata) => setFormData((prev) => ({ ...prev, destination: iata }))}
+                    placeholder="Search by city or airport code"
                     required
                   />
-                  <p className="text-xs text-botanical-subtext mt-1">3-letter airport code</p>
                 </div>
 
                 <div>
