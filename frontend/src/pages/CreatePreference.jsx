@@ -288,11 +288,10 @@ function CreatePreference() {
                     name="budget"
                     value={formData.budget}
                     onChange={handleChange}
-                    placeholder="e.g., 500"
+                    placeholder="Maximum price you're willing to pay (e.g., 500)"
                     min="0"
                     className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent input-smooth"
                   />
-                  <p className="text-xs text-botanical-subtext mt-1">Maximum price you're willing to pay</p>
                 </div>
 
                 <div>
@@ -326,7 +325,7 @@ function CreatePreference() {
                 </div>
 
                 <div>
-                  <label className="block text-botanical-subtext mb-2 font-medium">Date Flexibility</label>
+                  <label className="block text-botanical-subtext mb-2 font-medium">How flexible are your dates?</label>
                   <select
                     name="date_flexibility"
                     value={formData.date_flexibility}
@@ -340,33 +339,6 @@ function CreatePreference() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-botanical-subtext mb-2 font-medium">Priority</label>
-                  <select
-                    name="priority"
-                    value={formData.priority}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent input-smooth"
-                  >
-                    <option value="price">Lowest price</option>
-                    <option value="balanced">Balanced</option>
-                    <option value="convenience">Convenience</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-botanical-subtext mb-2 font-medium">Alert Frequency</label>
-                  <select
-                    name="alert_frequency"
-                    value={formData.alert_frequency}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent input-smooth"
-                  >
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                  </select>
-                </div>
-
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -377,7 +349,7 @@ function CreatePreference() {
                     className="mr-2 w-4 h-4 text-botanical-accent rounded focus:ring-2 focus:ring-botanical-accent"
                   />
                   <label htmlFor="nearby_airports" className="text-botanical-subtext">
-                    Include nearby airports
+                    Include nearby airports in search?
                   </label>
                 </div>
 
@@ -391,8 +363,60 @@ function CreatePreference() {
                     className="mr-2 w-4 h-4 text-botanical-accent rounded focus:ring-2 focus:ring-botanical-accent"
                   />
                   <label htmlFor="prefer_non_work_days" className="text-botanical-subtext">
-                    Prefer weekends/holidays
+                    Prefer weekend & holiday departure dates?
                   </label>
+                </div>
+
+                <div>
+                  <label className="block text-botanical-subtext mb-2 font-medium">Priority</label>
+                  <div className="space-y-2">
+                    {[
+                      { value: 'price', label: 'Lowest price', desc: 'cheapest fare, any schedule' },
+                      { value: 'balanced', label: 'Balanced', desc: 'mix of price & comfort' },
+                      { value: 'convenience', label: 'Convenience', desc: 'fewer stops, better times' },
+                    ].map(({ value, label, desc }) => (
+                      <label key={value} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="priority"
+                          value={value}
+                          checked={formData.priority === value}
+                          onChange={handleChange}
+                          className="text-botanical-accent focus:ring-botanical-accent"
+                        />
+                        <span className="text-botanical-subtext">{label}</span>
+                        <span className="text-xs italic text-botanical-subtext/50">— {desc}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-botanical-subtext mb-2 font-medium">Alert Frequency</label>
+                  <div className="space-y-2">
+                    {[
+                      { value: 'daily', label: 'Daily', desc: 'notified every day' },
+                      { value: 'weekly', label: 'Weekly', desc: 'notified once a week' },
+                    ].map(({ value, label, desc }) => (
+                      <label key={value} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="alert_frequency"
+                          value={value}
+                          checked={formData.alert_frequency === value}
+                          onChange={handleChange}
+                          className="text-botanical-accent focus:ring-botanical-accent"
+                        />
+                        <span className="text-botanical-subtext">{label}</span>
+                        <span className="text-xs italic text-botanical-subtext/50">— {desc}</span>
+                      </label>
+                    ))}
+                    <label className="flex items-center gap-2 cursor-not-allowed opacity-70">
+                      <input type="radio" disabled className="text-botanical-accent" />
+                      <span className="text-botanical-subtext line-through">Good deals only</span>
+                      <span className="text-xs italic text-botanical-subtext/50">— alert when price drops significantly</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -418,7 +442,7 @@ function CreatePreference() {
                   name="additional_context"
                   value={formData.additional_context}
                   onChange={handleChange}
-                  placeholder={"Things you could mention:\n- Preferred airlines (e.g., Delta, United, ANA)\n- Ideal departure/arrival times (5 AM, 9 PM, etc.)\n- Important constraints (bags, seat needs, accessibility)\n- Airports/layovers to avoid"}
+                  placeholder={"Examples:\n- Preferred airlines (e.g., Delta, United, ANA)\n- Ideal departure/arrival times (5 AM, 9 PM, etc.)\n- Shorter flights \n- Regions to avoid"}
                   rows="6"
                   maxLength="500"
                   className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent resize-none input-smooth"
