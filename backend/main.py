@@ -30,7 +30,7 @@ from backend.routes.preferences import router as preferences_router
 async def lifespan(app: FastAPI):
     start_scheduler()
     logger.info(
-        "Scheduler running: monitoring at 7:00 AM EST / 12:00 UTC and 3:00 PM EST / 20:00 UTC"
+        "Scheduler running in PT: monitoring at 7:00 AM and 3:00 PM, email delivery at 8:00 PM"
     )
     yield
 

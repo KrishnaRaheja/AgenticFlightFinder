@@ -154,7 +154,7 @@ def get_tool_definitions() -> List[Dict[str, Any]]:
         },
         {
             "name": "send_alert",
-            "description": "Create a complete formatted email alert. Provide email_subject and email_body_html which will be sent to users at 8pm EST. Also provide a brief reasoning summary for database records.",
+            "description": "Create a complete formatted email alert. Provide email_subject and email_body_html which will be sent to users at 8pm PT. Also provide a brief reasoning summary for database records.",
             "input_schema": {
                 "type": "object",
                 "properties": {
@@ -481,7 +481,7 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """
     Record a formatted email alert in the database for delivery.
     If this is the first alert for the preference, send email immediately.
-    Otherwise, queue for 8pm EST scheduled delivery.
+    Otherwise, queue for 8pm PT scheduled delivery.
     
     Args:
         arguments: Tool arguments containing user_id, preference_id, alert_type, email_subject, email_body_html, reference_price, reasoning

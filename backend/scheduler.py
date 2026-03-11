@@ -7,8 +7,8 @@ ensuring that active user preferences are checked on a regular schedule.
 
 import asyncio
 import logging
+from zoneinfo import ZoneInfo
 from apscheduler.schedulers.background import BackgroundScheduler
-from pytz import timezone
 
 from backend.email_service import send_daily_alert_emails
 from backend.services import MonitoringService
@@ -81,52 +81,52 @@ def start_scheduler():
     """
     Initialize and start the background scheduler for autonomous flight monitoring.
     
-    Sets up scheduled jobs:
-    - Morning monitoring: 7:00 AM EST (12:00 UTC)
-    - Afternoon monitoring: 3:00 PM EST (20:00 UTC)
-    - Email delivery: 8:00 PM EST (01:00 UTC next day)
+    Sets up scheduled jobs in Pacific Time (PST/PDT):
+    - Morning monitoring: 7:00 AM PT
+    - Afternoon monitoring: 3:00 PM PT
+    - Email delivery: 8:00 PM PT
     
     Returns:
         BackgroundScheduler: The initialized scheduler instance
     """
-    # Initialize scheduler with UTC timezone
-    scheduler = BackgroundScheduler(timezone=timezone('UTC'))
+    # Initialize scheduler with Pacific timezone (auto handles PST/PDT)
+    scheduler = BackgroundScheduler(timezone=ZoneInfo('America/Los_Angeles'))
     
-    # Add morning monitoring job (7am EST = 12:00 UTC)
+    # Add morning monitoring job (7am PT)
     scheduler.add_job(
         run_monitoring_job,
         'cron',
-        hour=12,
+        hour=7,
         minute=0,
         id='morning_monitoring',
-        name='Morning Flight Monitoring (7am EST)',
+        name='Morning Flight Monitoring (7am PT)',
         replace_existing=True
     )
-    logger.info("Added morning monitoring job (7am EST / 12:00 UTC)")
+    logger.info("Added morning monitoring job (7am PT)")
     
-    # Add afternoon monitoring job (3pm EST = 20:00 UTC)
+    # Add afternoon monitoring job (3pm PT)
     scheduler.add_job(
         run_monitoring_job,
         'cron',
-        hour=20,
+        hour=15,
         minute=0,
         id='afternoon_monitoring',
-        name='Afternoon Flight Monitoring (3pm EST)',
+        name='Afternoon Flight Monitoring (3pm PT)',
         replace_existing=True
     )
-    logger.info("Added afternoon monitoring job (3pm EST / 20:00 UTC)")
+    logger.info("Added afternoon monitoring job (3pm PT)")
     
-    # Add email delivery job (8pm EST = 01:00 UTC next day)
+    # Add email delivery job (8pm PT)
     scheduler.add_job(
         run_email_job,
         'cron',
-        hour=1,
+        hour=20,
         minute=0,
         id='email_delivery',
-        name='Email Delivery (8pm EST)',
+        name='Email Delivery (8pm PT)',
         replace_existing=True
     )
-    logger.info("Added email delivery job (8pm EST / 01:00 UTC)")
+    logger.info("Added email delivery job (8pm PT)")
     
     # Start the scheduler
     scheduler.start()
