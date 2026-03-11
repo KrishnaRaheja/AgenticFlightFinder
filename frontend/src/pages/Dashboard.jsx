@@ -220,6 +220,38 @@ function Dashboard() {
             We regularly check prices and notify you about deals at <span className="font-bold text-botanical-subtext">{user?.email}</span>.
           </p>
 
+
+          <div
+            className="mb-6 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-left text-amber-900"
+            role="status"
+            aria-live="polite"
+          >
+
+            {/* --- EMAIL ALERT NOTICE ---
+                Comment/uncomment this notice when something is working/not working
+            */}
+            <svg
+              className="mt-0.5 h-5 w-5 shrink-0 text-amber-700"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10A8 8 0 114 4.03V4a8 8 0 0114 6zm-9-3a1 1 0 112 0v3a1 1 0 11-2 0V7zm1 8a1.25 1.25 0 100-2.5A1.25 1.25 0 0010 15z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <div>
+              <p className="font-semibold">Email alerts are temporarily unavailable.</p>
+              <p className="mt-1 text-sm text-amber-800">
+                We are still tracking deals, but emails are not being sent right now. You can review any alerts from the dashboard until email delivery is set up.
+              </p>
+            </div>
+          </div>
+            {/* --- END EMAIL ALERT NOTICE --- */}
+          
+
           <button
             onClick={() => navigate('/create')}
             className="bg-botanical-accent text-botanical-subtext px-6 py-3 rounded hover:bg-[#9ab5b3] cursor-pointer font-medium smooth-button-transition"
