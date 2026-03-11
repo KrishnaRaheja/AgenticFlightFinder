@@ -194,8 +194,8 @@ function CreatePreference() {
           </div>
 
           {error && (
-            <div className="bg-botanical-error border border-botanical-error-text rounded-lg p-4 mb-6 error-slide-in">
-              <p className="text-botanical-error-text">{error}</p>
+            <div className="bg-botanical-error text-white border border-botanical-error-text rounded-lg p-4 mb-6 error-slide-in">
+              <p>{error}</p>
             </div>
           )}
 

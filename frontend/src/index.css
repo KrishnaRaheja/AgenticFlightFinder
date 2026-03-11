@@ -6,6 +6,8 @@
   --color-botanical-text: #eaf1f3;
   --color-botanical-subtext: #495755;
   --color-botanical-accent: #abc6c4;
-  --color-botanical-error: #f6c9b4;
-  --color-botanical-error-text: #f59a71;
+  /* --color-botanical-error: #f6c9b4; */
+  --color-botanical-error: #ff5c5c;
+  /* --color-botanical-error-text: #f59a71; */
+  --color-botanical-error-text: #ff2e2e;
 }

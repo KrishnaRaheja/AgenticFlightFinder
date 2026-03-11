@@ -44,7 +44,7 @@ function Dashboard() {
         }
         
         if (!session) {
-          throw new Error('No active session');
+          throw new Error('Check your inbox and verify your email, there is no active session');
         }
         
         // Fetch preferences from backend with authorization header
@@ -238,8 +238,8 @@ function Dashboard() {
             )}
             
             {error && !loading && (
-              <div className="bg-botanical-error border border-botanical-error-text rounded-lg p-4 mb-6">
-                <p className="text-botanical-error-text">Error: {error}</p>
+              <div className="bg-botanical-error text-white border border-botanical-error-text rounded-lg p-4 mb-6">
+                <p>Error: {error}</p>
               </div>
             )}
             

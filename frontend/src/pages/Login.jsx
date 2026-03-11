@@ -31,7 +31,10 @@ function Login() {
       }
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Authentication failed');
+      const errorMessage = err.message === 'Email not confirmed'
+        ? 'Email not confirmed, check your inbox to verify email'
+        : (err.message || 'Authentication failed');
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -130,7 +133,7 @@ function Login() {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-botanical-error text-botanical-error-text p-4 rounded-lg mb-6 fade-in-error border border-[#f59a71] border-opacity-50">
+          <div className="bg-botanical-error text-white p-4 rounded-lg mb-6 fade-in-error border border-[#f59a71] border-opacity-50">
             <p className="font-medium">{error}</p>
           </div>
         )}
