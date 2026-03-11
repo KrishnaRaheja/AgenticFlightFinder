@@ -231,17 +231,17 @@ function Login() {
             <p>
               <span className="text-white font-black tracking-wide uppercase text-xl md:text-2xl">AI-powered:</span>
               <br />
-              <span className="text-base md:text-lg text-[#abc6c4] font-medium tracking-normal normal-case">Claude decides when to search</span>
+              <span className="text-base md:text-lg text-[#abc6c4] font-medium tracking-normal normal-case">Agent understands context, not just price drops</span>
+            </p>
+            <p>
+              <span className="text-white font-black tracking-wide uppercase text-xl md:text-2xl">Talk to it!</span>
+              <br />
+              <span className="text-base md:text-lg text-[#abc6c4] font-medium tracking-normal normal-case">Intelligent searching based on Natural Language</span>
             </p>
             <p>
               <span className="text-white font-black tracking-wide uppercase text-xl md:text-2xl">Set it and forget it:</span>
               <br />
               <span className="text-base md:text-lg text-[#abc6c4] font-medium tracking-normal normal-case">Set preferences once, agent handles the rest</span>
-            </p>
-            <p>
-              <span className="text-white font-black tracking-wide uppercase text-xl md:text-2xl">Intelligent scoring:</span>
-              <br />
-              <span className="text-base md:text-lg text-[#abc6c4] font-medium tracking-normal normal-case">Understands context, not just price drops</span>
             </p>
           </div>
         </div>

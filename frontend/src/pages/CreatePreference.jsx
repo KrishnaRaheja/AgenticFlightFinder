@@ -409,7 +409,7 @@ function CreatePreference() {
                       Additional Context <span className="text-sm font-normal text-botanical-subtext">(Recommended)</span>
                     </h3>
                     <p className="text-sm text-botanical-subtext mt-1">
-                      Help Claude understand your travel needs better.
+                      Help us understand your travel needs better.
                     </p>
                   </div>
                 </div>
@@ -418,9 +418,9 @@ function CreatePreference() {
                   name="additional_context"
                   value={formData.additional_context}
                   onChange={handleChange}
-                  placeholder="Example: I'm planning a family vacation with two kids (ages 6 and 9). We prefer morning flights and need to arrive before 6 PM. We're flexible on exact dates but want to avoid school holidays."
+                  placeholder={"Things you could mention:\n- Preferred airlines (e.g., Delta, United, ANA)\n- Ideal departure/arrival times (5 AM, 9 PM, etc.)\n- Important constraints (bags, seat needs, accessibility)\n- Airports/layovers to avoid"}
                   rows="6"
-                  maxLength="1000"
+                  maxLength="500"
                   className="w-full px-3 py-2 border border-botanical-card rounded focus:outline-none focus:ring-2 focus:ring-botanical-accent resize-none input-smooth"
                 />
                 <div className="flex justify-between items-center mt-2">
@@ -428,7 +428,7 @@ function CreatePreference() {
                     Mention preferences, constraints, or special requirements
                   </p>
                   <p className="text-xs text-botanical-subtext">
-                    {formData.additional_context.length}/1000
+                    {formData.additional_context.length}/500
                   </p>
                 </div>
               </div>
