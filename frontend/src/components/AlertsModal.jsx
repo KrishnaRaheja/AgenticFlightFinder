@@ -150,7 +150,7 @@ function AlertsModal({ isOpen, onClose, alerts, loading, error, preference }) {
                 <article key={alert.id} className="rounded-lg border border-botanical-accent/40 bg-white overflow-hidden">
                   <div className="px-4 py-3 bg-botanical-accent/5 flex flex-wrap items-center gap-3">
                     <span className="text-xs text-botanical-subtext/70">
-                      Sent {new Date(alert.sent_at).toLocaleString()}
+                      Sent {new Date(alert.sent_at).toLocaleString('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' })}
                     </span>
                     {alert.reference_price !== null && alert.reference_price !== undefined && (
                       <span className="text-xs text-botanical-subtext/70">
