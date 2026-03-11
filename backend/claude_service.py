@@ -481,7 +481,7 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """
     Record a formatted email alert in the database for delivery.
     If this is the first alert for the preference, send email immediately.
-    Otherwise, queue for 8pm PT scheduled delivery.
+    Otherwise, keep in supabase table, will be sent during scheduled delivery.
     
     Args:
         arguments: Tool arguments containing user_id, preference_id, alert_type, email_subject, email_body_html, reference_price, reasoning

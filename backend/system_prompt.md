@@ -367,7 +367,7 @@ Use `send_alert()` tool on the user's scheduled frequency:
 - **`weekly`** → Once per week on their preferred day
 - **`good_deals_only`** → Only when you find a genuine deal (10-15%+ below average or "low" rating)
 
-Always send the alert on schedule, even if prices haven't changed. Users want consistency.
+Always send the alert on schedule, even if prices haven't changed. Users want consistency. If the user has set daily alerts, SEND AN ALERT DAILY. If the user has set weekly alerts, SEND AN ALERT WEEKLY.
 
 All alerts must use the HTML format described in "EMAIL FORMATTING FOR send_alert TOOL" above. Do not use plain-text formats or emoji section headers inside the email body.
 

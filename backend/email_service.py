@@ -1,7 +1,8 @@
 import asyncio
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from email.message import EmailMessage
 
 from aiosmtplib import SMTPException, send
@@ -47,8 +48,10 @@ async def send_email_via_smtp(to_email: str, subject: str, html_body: str) -> di
 
 
 async def send_daily_alert_emails() -> dict:
+    """Loops through alerts stored in database, sending logic handled by send_email_via_smtp function."""
     supabase = get_supabase()
-    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    PT = ZoneInfo('America/Los_Angeles')
+    today_start = datetime.now(PT).replace(hour=0, minute=0, second=0, microsecond=0)
 
     sent_count = 0
     failed_count = 0
@@ -90,6 +93,7 @@ async def send_daily_alert_emails() -> dict:
             failed_count += 1
             continue
 
+        # sending the email logic done by send_email_via_smtp function
         result = await send_email_via_smtp(to_email, subject, html_body)
         if result.get("success"):
             logger.info("Sent alert email for alert %s", alert_id)
