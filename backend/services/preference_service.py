@@ -7,7 +7,6 @@ from uuid import UUID
 from backend.database import get_supabase
 from backend.models import FlightPreferenceCreate, FlightPreferenceStatusUpdate
 from backend.services.exceptions import PreferenceNotFoundError, PreferenceServiceError
-from backend.services.monitoring_service import MonitoringService
 
 logger = logging.getLogger(__name__)
 
@@ -16,12 +15,8 @@ class PreferenceService:
     def __init__(
         self,
         supabase_factory: Callable = get_supabase,
-        monitoring_service: MonitoringService | None = None,
     ):
         self._supabase_factory = supabase_factory
-        self._monitoring_service = monitoring_service or MonitoringService(
-            supabase_factory=supabase_factory,
-        )
 
     def _supabase(self):
         return self._supabase_factory()
@@ -62,10 +57,6 @@ class PreferenceService:
             response = self._supabase().table("flight_preferences").insert(preference_dict).execute()
             created_preference = response.data[0]
 
-            self._monitoring_service.trigger_immediate_monitoring(
-                user_id,
-                created_preference["id"],
-            )
             return created_preference
         except PreferenceServiceError:
             raise

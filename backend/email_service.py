@@ -48,7 +48,7 @@ async def send_email_via_smtp(to_email: str, subject: str, html_body: str) -> di
 
 
 async def send_daily_alert_emails() -> dict:
-    """Loops through alerts stored in database, sending logic handled by send_email_via_smtp function."""
+    """Send all alerts created today to their respective users. Applies across all frequency types."""
     supabase = get_supabase()
     PT = ZoneInfo('America/Los_Angeles')
     today_start = datetime.now(PT).replace(hour=0, minute=0, second=0, microsecond=0)

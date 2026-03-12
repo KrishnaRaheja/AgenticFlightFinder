@@ -80,56 +80,43 @@ def run_email_job():
 def start_scheduler():
     """
     Initialize and start the background scheduler for autonomous flight monitoring.
-    
-    Sets up scheduled jobs in Pacific Time (PST/PDT):
-    - Morning monitoring: 7:00 AM PT
-    - Afternoon monitoring: 3:00 PM PT
-    - Email delivery: 8:00 PM PT
-    
+
+    Sets up scheduled jobs in Pacific Time (PST/PDT) at configured schedule times:
+    - Daily monitoring job
+    - Daily email delivery job
+
     Returns:
         BackgroundScheduler: The initialized scheduler instance
     """
     # Initialize scheduler with Pacific timezone (auto handles PST/PDT)
     scheduler = BackgroundScheduler(timezone=ZoneInfo('America/Los_Angeles'))
-    
-    # Add morning monitoring job (7am PT)
+
+    # Add daily monitoring job
     scheduler.add_job(
         run_monitoring_job,
         'cron',
-        hour=7,
+        hour=5,
         minute=0,
-        id='morning_monitoring',
-        name='Morning Flight Monitoring (7am PT)',
+        id='daily_monitoring',
+        name='Daily Flight Monitoring',
         replace_existing=True
     )
-    logger.info("Added morning monitoring job (7am PT)")
-    
-    # Add afternoon monitoring job (3pm PT)
-    scheduler.add_job(
-        run_monitoring_job,
-        'cron',
-        hour=15,
-        minute=0,
-        id='afternoon_monitoring',
-        name='Afternoon Flight Monitoring (3pm PT)',
-        replace_existing=True
-    )
-    logger.info("Added afternoon monitoring job (3pm PT)")
-    
-    # Add email delivery job (8pm PT)
+    logger.info("Added daily monitoring job at configured scheduled time")
+
+    # Add email delivery job
     scheduler.add_job(
         run_email_job,
         'cron',
-        hour=20,
+        hour=17,
         minute=0,
         id='email_delivery',
-        name='Email Delivery (8pm PT)',
+        name='Daily Email Delivery',
         replace_existing=True
     )
-    logger.info("Added email delivery job (8pm PT)")
-    
+    logger.info("Added email delivery job at configured scheduled time")
+
     # Start the scheduler
     scheduler.start()
     logger.info("Background scheduler started successfully")
-    
+
     return scheduler

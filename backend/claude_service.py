@@ -154,7 +154,7 @@ def get_tool_definitions() -> List[Dict[str, Any]]:
         },
         {
             "name": "send_alert",
-            "description": "Create a complete formatted email alert. Provide email_subject and email_body_html which will be sent to users at 8pm PT. Also provide a brief reasoning summary for database records.",
+            "description": "Create a complete formatted email alert. Provide email_subject and email_body_html which will be queued for scheduled delivery. Also provide a brief reasoning summary for database records.",
             "input_schema": {
                 "type": "object",
                 "properties": {
@@ -553,7 +553,7 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "success": True,
             "alert_id": alert_id,
-            "message": f"Alert recorded: {alert_type}" + (" (sent immediately)" if is_first_alert else " (queued for 8pm)")
+            "message": f"Alert recorded: {alert_type}" + (" (sent immediately)" if is_first_alert else " (queued for scheduled delivery)")
         }
     
     except Exception as e:
