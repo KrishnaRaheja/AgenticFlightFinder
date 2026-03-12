@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from backend.auth import get_current_user
-from backend.models import (
+from backend.schemas import (
     FlightPreferenceCreate,
     FlightPreferenceResponse,
     FlightPreferenceStatusUpdate,

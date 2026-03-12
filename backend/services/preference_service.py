@@ -5,7 +5,7 @@ from typing import Callable
 from uuid import UUID
 
 from backend.database import get_supabase
-from backend.models import FlightPreferenceCreate, FlightPreferenceStatusUpdate
+from backend.schemas import FlightPreferenceCreate, FlightPreferenceStatusUpdate
 from backend.services.exceptions import PreferenceNotFoundError, PreferenceServiceError
 
 logger = logging.getLogger(__name__)

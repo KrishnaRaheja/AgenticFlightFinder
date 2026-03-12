@@ -11,7 +11,6 @@ Functions:
 
 import os
 import json
-import sys
 import uuid
 from anthropic import Anthropic
 from dotenv import load_dotenv
@@ -22,10 +21,7 @@ import logging
 
 from backend.database import get_supabase
 from backend.email_service import send_email
-
-# Add parent directory to path for adapter imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from adapters.fast_flights_adapter import FastFlightsAdapter
+from backend.adapters.flights.fast_flights_adapter import FastFlightsAdapter
 
 # Set up logging
 logger = logging.getLogger(__name__)

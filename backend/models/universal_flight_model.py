@@ -14,7 +14,7 @@ Design Principle:
 Structure:
     - UniversalFlight: Represents a single flight leg (one direction only)
     - FlightItinerary: Container for complete trips (one-way or round-trip)
-    
+
     This design supports:
         * One-way trips: 1 leg
         * Round-trip flights: 2 legs (outbound + return)
@@ -29,10 +29,10 @@ from typing import List, Optional
 class UniversalFlight:
     """
     Represents a single flight leg (one direction only).
-    
+
     This is the atomic unit of flight data. For complete trips (one-way or round-trip),
     see FlightItinerary which combines one or more UniversalFlight objects.
-    
+
     Required Fields:
         price_usd: Flight cost in USD (price for this leg only)
         duration_minutes: Total travel time in minutes
@@ -42,7 +42,7 @@ class UniversalFlight:
         airline: Primary carrier name
         route: Origin-destination pair in format "ORIGIN-DESTINATION" (e.g., "SFO-DEL")
         leg_type: Type of leg - "one-way", "outbound", or "return"
-    
+
     Optional Fields:
         price_indicator: Price assessment ("low"/"typical"/"high") from provider
         is_best: Whether the provider recommends this flight
@@ -53,7 +53,7 @@ class UniversalFlight:
             - None for data sources that don't provide layover information (e.g., fast-flights)
             - Populated for data sources that do provide it (e.g., future Duffel adapter)
     """
-    
+
     # Required fields
     price_usd: float
     duration_minutes: int
@@ -65,7 +65,7 @@ class UniversalFlight:
     route: str
     # one way, outbound, return (for round-trip legs)
     leg_type: str
-    
+
     # Optional fields
     price_indicator: Optional[str] = None
     is_best: Optional[bool] = None
@@ -78,32 +78,32 @@ class UniversalFlight:
 class FlightItinerary:
     """
     Container for a complete trip (one-way or round-trip).
-    
+
     This is what adapters return and what the agent works with.
     UniversalFlight represents individual legs; FlightItinerary represents the complete journey.
-    
+
     Examples:
         One-way trip: SFO→DEL
             - outbound: UniversalFlight(leg_type="one-way", price_usd=750.0, ...)
             - return_flight: None
             - total_price_usd: 750.0 (same as outbound price)
             - trip_type: "one-way"
-            
+
         Round-trip: SFO→DEL→SFO
             - outbound: UniversalFlight(leg_type="outbound", price_usd=700.0, route="SFO-DEL", ...)
             - return_flight: UniversalFlight(leg_type="return", price_usd=500.0, route="DEL-SFO", ...)
             - total_price_usd: 1200.0 (combined price for both legs)
             - trip_type: "round-trip"
-    
+
     Required Fields:
         outbound: The first/only flight leg
         total_price_usd: Total cost for entire trip (all legs combined)
         trip_type: Either "one-way" or "round-trip"
-    
+
     Optional Fields:
         return_flight: The return leg (None for one-way, UniversalFlight for round-trip)
     """
-    
+
     # Required fields
 
     # If one-way, then only outbound
@@ -112,15 +112,15 @@ class FlightItinerary:
     trip_type: str  # "one-way" or "round-trip"
     # If round-trip, then there is a return_flight (Optional)
     return_flight: Optional[UniversalFlight] = None
-    
+
     def validate(self) -> None:
         """
         Validate that the itinerary is internally consistent.
-        
+
         Checks:
             - trip_type matches the presence/absence of return_flight
             - trip_type is one of the allowed values
-        
+
         Raises:
             ValueError: If validation fails
         """

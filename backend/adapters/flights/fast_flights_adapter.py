@@ -21,8 +21,8 @@ Design Considerations:
 """
 
 from fast_flights import get_flights, FlightData, Passengers, Result
-from adapters.adapter_interface import FlightAdapter
-from models.universal_flight_model import UniversalFlight, FlightItinerary
+from backend.adapters.flights.adapter_interface import FlightAdapter
+from backend.models.universal_flight_model import UniversalFlight, FlightItinerary
 from typing import List, Optional, Set, Tuple
 from datetime import datetime, timedelta
 import re
@@ -34,9 +34,9 @@ logger = logging.getLogger(__name__)
 class FastFlightsAdapter(FlightAdapter):
     """
     Adapter for fast-flights library.
-    
+
     Currently supports one-way flights only.
-    
+
     Handles:
         - Duplicate flight removal
         - String format parsing (price, duration, datetime)
@@ -56,7 +56,7 @@ class FastFlightsAdapter(FlightAdapter):
     ) -> List[FlightItinerary]:
         """
         Search for flights using fast-flights library.
-        
+
         Parameters:
         -----------
         origin : str
@@ -73,12 +73,12 @@ class FastFlightsAdapter(FlightAdapter):
             Cabin class: "economy", "premium_economy", "business", "first"
         max_stops : int
             Maximum number of stops allowed
-        
+
         Returns:
         --------
         List[FlightItinerary]
             List of matching flight itineraries, sorted by price
-        
+
         Raises:
         -------
         NotImplementedError
@@ -161,13 +161,13 @@ class FastFlightsAdapter(FlightAdapter):
     ) -> List[FlightItinerary]:
         """
         Process raw fast-flights results into universal format.
-        
+
         Handles:
             - Duplicate removal (fast-flights returns each flight twice)
             - Filtering by max_stops
             - Parsing of all string formats
             - Per-flight error recovery
-        
+
         Parameters:
         -----------
         result : Result
@@ -182,16 +182,16 @@ class FastFlightsAdapter(FlightAdapter):
             Maximum stops filter
         price_indicator : Optional[str]
             Google's price assessment ("low", "typical", "high")
-        
+
         Returns:
         --------
         List[FlightItinerary]
             Processed itineraries (duplicates removed)
         """
-        
+
         seen_flights: Set[Tuple[str, str, str]] = set()
         itineraries: List[FlightItinerary] = []
-        
+
         for flight in result.flights:
             try:
                 # Skip if already processed (duplicate removal)
@@ -200,12 +200,12 @@ class FastFlightsAdapter(FlightAdapter):
                     flight.departure,
                     flight.name
                 )
-                
+
                 if flight_signature in seen_flights:
                     continue
-                
+
                 seen_flights.add(flight_signature)
-                
+
                 # Filter by max_stops
                 if flight.stops > max_stops:
                     logger.debug(
@@ -213,7 +213,7 @@ class FastFlightsAdapter(FlightAdapter):
                         f"(max_stops={max_stops})"
                     )
                     continue
-                
+
                 # Parse all fields
                 price_usd = self._parse_price(flight.price)
                 duration_minutes = self._parse_duration(flight.duration)
@@ -227,7 +227,7 @@ class FastFlightsAdapter(FlightAdapter):
                     departure_date,
                     days_ahead=flight.arrival_time_ahead
                 )
-                
+
                 # Create UniversalFlight
                 universal_flight = UniversalFlight(
                     price_usd=price_usd,
@@ -243,7 +243,7 @@ class FastFlightsAdapter(FlightAdapter):
                     booking_url=None,  # Will be added when booking integration added
                     baggage_info=None   # Will be added when baggage data available
                 )
-                
+
                 # Create FlightItinerary
                 itinerary = FlightItinerary(
                     outbound=universal_flight,
@@ -251,12 +251,12 @@ class FastFlightsAdapter(FlightAdapter):
                     total_price_usd=price_usd,
                     trip_type="one-way"
                 )
-                
+
                 # Validate structure
                 itinerary.validate()
-                
+
                 itineraries.append(itinerary)
-            
+
             except Exception as e:
                 # Log and skip individual flight errors
                 logger.warning(
@@ -265,23 +265,23 @@ class FastFlightsAdapter(FlightAdapter):
                     exc_info=False
                 )
                 continue
-        
+
         return itineraries
 
     def _parse_price(self, price_str: str) -> float:
         """
         Parse price string to float.
-        
+
         Examples:
             "$181" → 181.0
             "$1,234" → 1234.0
             "1234.56" → 1234.56
-        
+
         Parameters:
         -----------
         price_str : str
             Price string from fast-flights
-        
+
         Returns:
         --------
         float
@@ -300,17 +300,17 @@ class FastFlightsAdapter(FlightAdapter):
     def _parse_duration(self, duration_str: str) -> int:
         """
         Parse duration string to minutes.
-        
+
         Handles:
             "2 hr 13 min" → 133
             "45 min" → 45
             "5 hr" → 300
-        
+
         Parameters:
         -----------
         duration_str : str
             Duration string from fast-flights (e.g., "2 hr 13 min")
-        
+
         Returns:
         --------
         int
@@ -318,19 +318,19 @@ class FastFlightsAdapter(FlightAdapter):
         """
         try:
             total_minutes = 0
-            
+
             # Extract hours
             hours_match = re.search(r'(\d+)\s*hr', duration_str)
             if hours_match:
                 total_minutes += int(hours_match.group(1)) * 60
-            
+
             # Extract minutes
             minutes_match = re.search(r'(\d+)\s*min', duration_str)
             if minutes_match:
                 total_minutes += int(minutes_match.group(1))
-            
+
             return total_minutes if total_minutes > 0 else 0
-        
+
         except Exception as e:
             logger.warning(
                 f"Failed to parse duration '{duration_str}': {type(e).__name__}"
@@ -345,17 +345,17 @@ class FastFlightsAdapter(FlightAdapter):
     ) -> str:
         """
         Parse fast-flights datetime format to ISO 8601.
-        
+
         Examples:
-            ("9:45 PM on Thu, Mar 12", "2026-03-12", "") 
+            ("9:45 PM on Thu, Mar 12", "2026-03-12", "")
             → "2026-03-12T21:45:00"
-            
-            ("11:58 PM on Thu, Mar 12", "2026-03-12", "+1") 
+
+            ("11:58 PM on Thu, Mar 12", "2026-03-12", "+1")
             → "2026-03-13T23:58:00"
-            
+
             ("2:30 AM on Fri, Mar 13", "2026-03-12", "+1")
             → "2026-03-13T02:30:00"
-        
+
         Parameters:
         -----------
         time_str : str
@@ -364,7 +364,7 @@ class FastFlightsAdapter(FlightAdapter):
             Base date in ISO 8601 format (YYYY-MM-DD)
         days_ahead : str
             Days offset (e.g., "", "+1", "+2")
-        
+
         Returns:
         --------
         str
@@ -376,39 +376,39 @@ class FastFlightsAdapter(FlightAdapter):
                 "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
                 "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12
             }
-            
+
             # Extract time (e.g., "9:45 PM")
             time_match = re.search(r'(\d{1,2}):(\d{2})\s*(AM|PM)', time_str)
             if not time_match:
                 raise ValueError(f"Could not extract time from '{time_str}'")
-            
+
             hour = int(time_match.group(1))
             minute = int(time_match.group(2))
             am_pm = time_match.group(3)
-            
+
             # Convert to 24-hour format
             if am_pm == "PM" and hour != 12:
                 hour += 12
             elif am_pm == "AM" and hour == 12:
                 hour = 0
-            
+
             # Parse base date
             base_date = datetime.fromisoformat(base_date_str)
-            
+
             # Parse days_ahead offset
             days_offset = 0
             if days_ahead:
                 days_match = re.search(r'([+-]\d+)', days_ahead)
                 if days_match:
                     days_offset = int(days_match.group(1))
-            
+
             # Create final datetime
             final_date = base_date + timedelta(days=days_offset)
             result_datetime = final_date.replace(hour=hour, minute=minute, second=0)
-            
+
             # Return ISO 8601 format
             return result_datetime.strftime("%Y-%m-%dT%H:%M:%S")
-        
+
         except Exception as e:
             logger.warning(
                 f"Failed to parse datetime '{time_str}' with base_date='{base_date_str}', "

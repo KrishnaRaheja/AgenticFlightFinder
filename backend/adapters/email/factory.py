@@ -1,8 +1,8 @@
 import os
 
-from backend.email_adapters.adapter_interface import EmailAdapter
-from backend.email_adapters.api_adapter import APIEmailAdapter
-from backend.email_adapters.smtp_adapter import SMTPEmailAdapter
+from backend.adapters.email.adapter_interface import EmailAdapter
+from backend.adapters.email.api_adapter import APIEmailAdapter
+from backend.adapters.email.smtp_adapter import SMTPEmailAdapter
 
 
 def get_email_adapter() -> EmailAdapter:

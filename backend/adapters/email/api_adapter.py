@@ -3,7 +3,7 @@ import os
 
 import httpx
 
-from backend.email_adapters.adapter_interface import EmailAdapter
+from backend.adapters.email.adapter_interface import EmailAdapter
 
 logger = logging.getLogger(__name__)
 

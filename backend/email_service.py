@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
 from backend.database import get_supabase
-from backend.email_adapters import get_email_adapter
+from backend.adapters.email import get_email_adapter
 
 load_dotenv()
 
