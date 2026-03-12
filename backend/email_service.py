@@ -1,50 +1,40 @@
 import asyncio
 import logging
-import os
+from functools import lru_cache
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from email.message import EmailMessage
 
-from aiosmtplib import SMTPException, send
 from dotenv import load_dotenv
 
 from backend.database import get_supabase
+from backend.email_adapters import get_email_adapter
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-GMAIL_USER = os.getenv("GMAIL_USER")
-GMAIL_PASS = os.getenv("GMAIL_PASS")
+# When this is redeployed to Railway, this python process will restart and check .env
+# This gets the email adapter instance and caches it for the entire deployment lifetime, so we dont have to again
+@lru_cache(maxsize=1)
+def _resolve_email_adapter():
+    return get_email_adapter()
 
-if not GMAIL_USER or not GMAIL_PASS:
-    raise ValueError("Missing Gmail credentials: GMAIL_USER and GMAIL_PASS are required.")
+
+async def send_email(to_email: str, subject: str, html_body: str) -> dict:
+    try:
+        adapter = _resolve_email_adapter()
+        return await adapter.send_email(to_email, subject, html_body)
+    except ValueError:
+        logger.exception("Email provider configuration error")
+        return {"success": False, "error": "Email provider configuration error"}
+    except Exception:
+        logger.exception("Unexpected error sending email to %s", to_email)
+        return {"success": False, "error": "Unexpected email sending error"}
 
 
 async def send_email_via_smtp(to_email: str, subject: str, html_body: str) -> dict:
-    message = EmailMessage()
-    message["From"] = GMAIL_USER
-    message["To"] = to_email
-    message["Subject"] = subject
-    message.set_content("This email requires an HTML-capable client.")
-    message.add_alternative(html_body, subtype="html")
-
-    try:
-        await send(
-            message,
-            hostname="smtp.gmail.com",
-            port=587,
-            start_tls=True,
-            username=GMAIL_USER,
-            password=GMAIL_PASS,
-        )
-        return {"success": True}
-    except SMTPException as exc:
-        logger.exception("SMTP error sending email to %s", to_email)
-        return {"success": False, "error": str(exc)}
-    except Exception as exc:
-        logger.exception("Unexpected error sending email to %s", to_email)
-        return {"success": False, "error": str(exc)}
+    """Backward-compatible wrapper; now routes via configured email adapter."""
+    return await send_email(to_email, subject, html_body)
 
 
 async def send_daily_alert_emails() -> dict:
@@ -73,8 +63,6 @@ async def send_daily_alert_emails() -> dict:
         user_id = alert.get("user_id")
         subject = alert.get("email_subject")
         html_body = alert.get("email_body_html")
-        reasoning = alert.get("reasoning") or ""
-
         if not subject or not html_body:
             logger.error("Missing email_subject or email_body_html for alert %s", alert_id)
             failed_count += 1
@@ -83,7 +71,7 @@ async def send_daily_alert_emails() -> dict:
         try:
             user_response = supabase.auth.admin.get_user_by_id(user_id)
             to_email = user_response.user.email if user_response and user_response.user else None
-        except Exception as exc:
+        except Exception:
             logger.exception("Failed to fetch user email for alert %s", alert_id)
             failed_count += 1
             continue
@@ -93,8 +81,8 @@ async def send_daily_alert_emails() -> dict:
             failed_count += 1
             continue
 
-        # sending the email logic done by send_email_via_smtp function
-        result = await send_email_via_smtp(to_email, subject, html_body)
+        # Send using configured email provider adapter.
+        result = await send_email(to_email, subject, html_body)
         if result.get("success"):
             logger.info("Sent alert email for alert %s", alert_id)
             sent_count += 1

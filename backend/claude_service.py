@@ -21,7 +21,7 @@ from datetime import datetime, timezone, timedelta
 import logging
 
 from backend.database import get_supabase
-from backend.email_service import send_email_via_smtp
+from backend.email_service import send_email
 
 # Add parent directory to path for adapter imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -539,7 +539,7 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
                 
                 if user_email:
                     # Send email immediately
-                    email_result = await send_email_via_smtp(user_email, email_subject, email_body_html)
+                    email_result = await send_email(user_email, email_subject, email_body_html)
                     if email_result.get("success"):
                         logger.info(f"Sent immediate welcome email for preference {preference_id} to {user_email}")
                     else:
@@ -733,7 +733,7 @@ Refer to system prompt for instructions."""
             # Call Claude with tools
             response = client.messages.create(
                 model="claude-haiku-4-5-20251001",
-                max_tokens=4000,
+                max_tokens=5000,
                 system=system_prompt,
                 tools=tools,
                 messages=messages

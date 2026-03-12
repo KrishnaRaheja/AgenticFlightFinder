@@ -18,6 +18,9 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Claude agent local files
+.claude/
+
 # Testing files
 testing/
 
