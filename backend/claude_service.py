@@ -212,7 +212,8 @@ def get_tool_definitions() -> List[Dict[str, Any]]:
                     }
                 },
                 "required": ["user_id", "preference_id", "activity_type", "reasoning"]
-            }
+            },
+            "cache_control": {"type": "ephemeral"}
         }
     ]
 
@@ -730,7 +731,7 @@ Refer to system prompt for instructions."""
             response = client.messages.create(
                 model="claude-haiku-4-5-20251001",
                 max_tokens=5000,
-                system=system_prompt,
+                system=[{"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}],
                 tools=tools,
                 messages=messages
             )
