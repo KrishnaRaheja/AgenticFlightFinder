@@ -8,11 +8,12 @@ from backend.schemas import (
     FlightPreferenceStatusUpdate,
     AlertResponse,
 )
-from backend.services import PreferenceNotFoundError, PreferenceService, PreferenceServiceError
+from backend.services import MonitoringService, PreferenceNotFoundError, PreferenceService, PreferenceServiceError
 from uuid import UUID
 
 router = APIRouter(prefix="/api/preferences", tags=["preferences"])
 preference_service = PreferenceService()
+monitoring_service = MonitoringService()
 
 
 @router.post("/", response_model=FlightPreferenceResponse)
@@ -24,7 +25,9 @@ async def create_preference(
     Create a new flight preference for a user. Runs monitoring as soon as preference is created.
     """
     try:
-        return await preference_service.create_preference(preference, current_user)
+        created = await preference_service.create_preference(preference, current_user)
+        monitoring_service.trigger_immediate_monitoring(current_user, created["id"])
+        return created
     except PreferenceServiceError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
