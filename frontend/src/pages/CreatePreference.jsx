@@ -58,7 +58,7 @@ function CreatePreference() {
       // Get session token
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !session) {
-        throw new Error('Authentication required');
+        throw new Error('Authentication required, check your inbox/spam mail to verify your email');
       }
       
       // Prepare payload (convert empty budget to null)

@@ -44,7 +44,7 @@ function Dashboard() {
         }
         
         if (!session) {
-          throw new Error('Check your inbox and verify your email, there is no active session');
+          throw new Error('Check your inbox/spam mail to verify your email, there is no active session');
         }
         
         // Fetch preferences from backend with authorization header
