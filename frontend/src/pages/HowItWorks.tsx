@@ -9,7 +9,7 @@ const STEPS = [
     icon: PlaneTakeoff,
     title: 'Tell it where you want to go',
     description:
-      'Set your origin, destination, and travel window — as specific or flexible as you like. Add a budget, preferred cabin, max stops, or just describe what you want in plain English.',
+      'Set your origin, destination, and travel window as specific or flexible as you like. Add a budget, preferred cabin, max stops, or just describe what you want in plain English.',
     detail: 'You can say things like "I want to fly business class, no red-eyes, prefer Star Alliance airlines, and I\'m flexible on dates by a week." Claude understands context, not just checkboxes.',
   },
   {
@@ -17,14 +17,14 @@ const STEPS = [
     title: 'Claude monitors prices every day',
     description:
       'A Claude agent runs daily at 5 AM PT, searching flights for each of your active monitors. It analyzes results against your preferences, taking into account price trends, schedule, and your specific context.',
-    detail: 'Claude doesn\'t just check if a price is below your budget — it reasons about whether a deal is genuinely good given current market rates, your flexibility, and your stated priorities.',
+    detail: 'Claude doesn\'t just check if a price is below your budget, it reasons about whether a deal is genuinely good given current market rates, your flexibility, and your stated priorities.',
   },
   {
     icon: Mail,
     title: 'You get alerted when a deal appears',
     description:
       'When Claude finds something worth flagging, it composes a clear, human-readable email explaining exactly why it thinks this is a good deal and what you should know before booking.',
-    detail: 'Alerts include the reasoning, a reference price (so you can see what "normal" looks like), and the key flight details. No noise — only alerts when something genuinely stands out.',
+    detail: 'Alerts include the reasoning, a reference price (so you can see what "normal" looks like), and the key flight details. No noise. Only alerts when something genuinely stands out.',
   },
 ]
 
@@ -95,15 +95,11 @@ export default function HowItWorks() {
             },
             {
               q: 'Do I get alerted every day?',
-              a: 'No — only when Claude determines there\'s a genuinely good deal worth your attention. If it finds nothing interesting, you won\'t hear from it.',
-            },
-            {
-              q: 'Can I monitor multiple routes?',
-              a: 'Yes, you can create as many monitors as you need. Pause or delete them at any time.',
+              a: 'Depends on your preference, you can choose how often you want to receive alerts (daily, weekly, good deals only).',
             },
             {
               q: 'Does it actually book flights?',
-              a: 'No. Agentic Flight Finder is an alert system — it tells you about deals, but you book through your preferred site or agent.',
+              a: 'Not yet - that functionality is coming soon. For now, we alert you about deals, but you book through your preferred site or agent.',
             },
           ].map(({ q, a }) => (
             <div key={q}>

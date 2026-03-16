@@ -1,88 +1,62 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn, formatDate, formatShortDate } from '@/lib/utils'
+import { apiFetch } from '@/lib/api'
 import {
   PlaneTakeoff, PlaneLanding, ChevronDown,
   Loader2, Bell, BellOff, Clock
 } from 'lucide-react'
-import { API_URL } from '@/config'
-import { supabase } from '@/lib/supabase'
+import type { Preference, Alert } from '@/types'
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export interface Preference {
-  id: string
-  origin: string
-  destination: string
-  departure_period: string
-  return_period?: string
-  budget?: number
-  max_stops: number
-  cabin_class: string
-  date_flexibility: string
-  nearby_airports: boolean
-  priority: string
-  alert_frequency: string
-  additional_context?: string
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface Alert {
-  id: string
-  email_subject: string
-  email_body_html: string
-  sent_at: string
-  reasoning: string
-  reference_price: number | null
-  alert_type: string
-}
+// Re-export so existing imports from PreferenceCard still work during transition.
+export type { Preference, Alert }
 
 interface PreferenceCardProps {
   preference: Preference
   onStatusChange: (id: string, active: boolean) => void
   onAlertSelect: (alert: Alert) => void
   selectedAlertId?: string | null
+  defaultExpanded?: boolean
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function PreferenceCard({ preference, onStatusChange, onAlertSelect, selectedAlertId }: PreferenceCardProps) {
-  const [expanded, setExpanded] = useState(false)
+export function PreferenceCard({ preference, onStatusChange, onAlertSelect, selectedAlertId, defaultExpanded = false }: PreferenceCardProps) {
+  const [expanded, setExpanded] = useState(defaultExpanded)
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [alertsLoading, setAlertsLoading] = useState(false)
   const [alertsLoaded, setAlertsLoaded] = useState(false)
   const [toggling, setToggling] = useState(false)
 
+  // If this card starts expanded, load alerts immediately on mount
+  const loadAlerts = async () => {
+    if (alertsLoaded) return
+    setAlertsLoading(true)
+    try {
+      const res = await apiFetch(`/api/preferences/${preference.id}/alerts`)
+      if (res.ok) setAlerts(await res.json())
+      setAlertsLoaded(true)
+    } finally {
+      setAlertsLoading(false)
+    }
+  }
+
+  // Load alerts immediately when card starts expanded
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (defaultExpanded) loadAlerts() }, [])
+
   const handleExpand = async () => {
     const next = !expanded
     setExpanded(next)
-    if (next && !alertsLoaded) {
-      setAlertsLoading(true)
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-        const token = session?.access_token
-        const res = await fetch(`${API_URL}/api/preferences/${preference.id}/alerts`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        if (res.ok) setAlerts(await res.json())
-        setAlertsLoaded(true)
-      } finally {
-        setAlertsLoading(false)
-      }
-    }
+    if (next) loadAlerts()
   }
 
   const handleToggleStatus = async (e: React.MouseEvent) => {
     e.stopPropagation()
     setToggling(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const token = session?.access_token
-      const res = await fetch(`${API_URL}/api/preferences/${preference.id}/status`, {
+      const res = await apiFetch(`/api/preferences/${preference.id}/status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ is_active: !preference.is_active }),
       })
       if (res.ok) onStatusChange(preference.id, !preference.is_active)
@@ -153,9 +127,12 @@ export function PreferenceCard({ preference, onStatusChange, onAlertSelect, sele
         >
           {/* Alert history section */}
           <div className="px-4 pt-3 pb-2">
-            <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider mb-2">
-              Alert History
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">
+                Past Alerts
+              </p>
+              <p className="text-xs text-muted-foreground/40 italic">click to preview email</p>
+            </div>
 
             {alertsLoading ? (
               <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground">
@@ -193,7 +170,7 @@ export function PreferenceCard({ preference, onStatusChange, onAlertSelect, sele
           >
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground/50">
               <Clock className="h-3 w-3" />
-              Created {new Date(preference.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              Created {formatDate(preference.created_at)}
             </div>
             <Button
               size="sm"
@@ -231,8 +208,7 @@ function AlertSubCard({
 }: {
   alert: Alert; selected: boolean; onSelect: () => void
 }) {
-  const sentDate = new Date(alert.sent_at)
-  const dateStr = sentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const dateStr = formatShortDate(alert.sent_at)
 
   return (
     <div

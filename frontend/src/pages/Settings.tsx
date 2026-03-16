@@ -1,17 +1,12 @@
 import { Navbar } from '@/components/Navbar'
 import { useAuth } from '@/hooks/useAuth'
+import { useLogout } from '@/hooks/useLogout'
 import { Settings as SettingsIcon, Mail, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useNavigate } from 'react-router-dom'
 
 export default function Settings() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-
-  const handleLogout = async () => {
-    await logout()
-    navigate('/')
-  }
+  const { user } = useAuth()
+  const handleLogout = useLogout()
 
   return (
     <div className="min-h-screen bg-background">

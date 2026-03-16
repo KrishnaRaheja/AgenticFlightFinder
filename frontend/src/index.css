@@ -192,3 +192,17 @@ a:focus-visible,
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
+
+/* ─── Autofill override ────────────────────────────────────────────────────── */
+
+/* Browsers force a light background on autofilled inputs via :-webkit-autofill.
+   The only reliable way to override it is box-shadow inset, which paints over
+   the browser's autofill colour without affecting the actual background value. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 30px var(--elevated) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground);
+  transition: background-color 0s;
+}

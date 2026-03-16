@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Globe } from '@/components/Globe'
 import { Navbar } from '@/components/Navbar'
 import { PreferenceWizard } from '@/components/PreferenceWizard'
-import { PreferenceCard, type Preference, type Alert } from '@/components/PreferenceCard'
+import { PreferenceCard } from '@/components/PreferenceCard'
 import { AuthModal } from '@/components/AuthModal'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/useAuth'
-import { API_URL } from '@/config'
-import { supabase } from '@/lib/supabase'
-import { cn } from '@/lib/utils'
+import { apiFetch } from '@/lib/api'
+import { cn, formatDate } from '@/lib/utils'
+import type { Preference, Alert } from '@/types'
 import {
-  Plus, PlaneTakeoff, Sparkles, Bell,
+  Plus, PlaneTakeoff, Bell,
   ChevronRight, Loader2, X
 } from 'lucide-react'
 
@@ -25,29 +25,22 @@ export default function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null)
 
-  // Track previous user to detect sign-in event
-  const [prevUser, setPrevUser] = useState(user)
+  // Use a ref to track the previous user so we can detect the sign-in transition
+  // without adding stale-closure risk to the effect deps.
+  const prevUserRef = useRef(user)
   useEffect(() => {
-    if (!prevUser && user) {
-      // Just signed in — open wizard if no preferences yet (slight delay so
-      // the dashboard state renders first)
-      setTimeout(() => {
-        if (preferences.length === 0) setWizardOpen(true)
-      }, 400)
+    const wasLoggedOut = !prevUserRef.current
+    prevUserRef.current = user
+    if (wasLoggedOut && user && preferences.length === 0) {
+      setTimeout(() => setWizardOpen(true), 400)
     }
-    setPrevUser(user)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
+  }, [user, preferences.length])
 
   const fetchPreferences = useCallback(async () => {
     if (!user) return
     setPrefsLoading(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const token = session?.access_token
-      const res = await fetch(`${API_URL}/api/preferences/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await apiFetch('/api/preferences/')
       if (res.ok) setPreferences(await res.json())
     } finally {
       setPrefsLoading(false)
@@ -103,12 +96,18 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="mt-4 text-base text-muted-foreground max-w-sm mx-auto">
-              Set your route once. Claude monitors prices around the clock and alerts you when a deal appears.
+              Set your route once. We monitor prices around the clock and alert you about deals.
             </p>
           </div>
 
-          <div className="pointer-events-auto w-full max-w-sm mx-4" style={{ animation: 'fadeUp 0.8s 0.08s ease-out both' }}>
-            <WizardTeaser onOpen={() => setWizardOpen(true)} />
+          <div className="pointer-events-auto" style={{ animation: 'fadeUp 0.8s 0.08s ease-out both' }}>
+            <Button
+              onClick={() => setWizardOpen(true)}
+              className="rounded-full bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground shadow-lg shadow-primary/25 gap-2 cursor-pointer transition-all duration-200 hover:shadow-primary/40 hover:-translate-y-0.5 px-6 py-5 text-base"
+            >
+              <Plus className="h-4 w-4" />
+              Monitor a flight
+            </Button>
           </div>
 
           <p className="mt-4 text-xs text-muted-foreground/60 pointer-events-auto" style={{ animation: 'fadeUp 0.9s 0.15s ease-out both' }}>
@@ -201,6 +200,7 @@ export default function HomePage() {
                           onStatusChange={handleStatusChange}
                           onAlertSelect={a => setSelectedAlert(prev => prev?.id === a.id ? null : a)}
                           selectedAlertId={selectedAlert?.id}
+                          defaultExpanded={i === 0}
                         />
                       </div>
                     ))}
@@ -216,6 +216,7 @@ export default function HomePage() {
                           onStatusChange={handleStatusChange}
                           onAlertSelect={a => setSelectedAlert(prev => prev?.id === a.id ? null : a)}
                           selectedAlertId={selectedAlert?.id}
+                          defaultExpanded={i === 0}
                         />
                       </div>
                     ))}
@@ -257,7 +258,7 @@ export default function HomePage() {
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground leading-snug truncate">{selectedAlert.email_subject}</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(selectedAlert.sent_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {formatDate(selectedAlert.sent_at)}
                         {selectedAlert.reference_price && (
                           <span className="text-success font-mono ml-2">${Math.round(selectedAlert.reference_price)}</span>
                         )}
@@ -311,35 +312,6 @@ export default function HomePage() {
 
       {/* ── Auth modal (sign-in link on homepage / navbar) ── */}
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
-    </div>
-  )
-}
-
-// ── Wizard teaser ─────────────────────────────────────────────────────────────
-
-function WizardTeaser({ onOpen }: { onOpen: () => void }) {
-  return (
-    <div
-      className="bg-surface/80 backdrop-blur-sm border border-border rounded-2xl p-4 shadow-2xl shadow-black/40 cursor-pointer transition-all duration-200 hover:border-primary/40 hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.99]"
-      onClick={onOpen}
-    >
-      <div className="flex items-center gap-2 mb-3">
-        <Sparkles className="h-4 w-4 text-accent" />
-        <span className="text-sm font-medium text-foreground">Monitor a flight</span>
-      </div>
-      <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-elevated rounded-lg px-3 py-2 flex items-center gap-2 text-sm text-muted-foreground border border-border/60 transition-colors duration-150 hover:border-border">
-          <PlaneTakeoff className="h-3.5 w-3.5 shrink-0" />
-          <span>From</span>
-        </div>
-        <div className="bg-elevated rounded-lg px-3 py-2 flex items-center gap-2 text-sm text-muted-foreground border border-border/60 transition-colors duration-150 hover:border-border">
-          <Bell className="h-3.5 w-3.5 shrink-0" />
-          <span>To</span>
-        </div>
-      </div>
-      <button className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] text-primary-foreground text-sm font-medium rounded-lg py-2 transition-all duration-150 cursor-pointer">
-        Set up alert
-      </button>
     </div>
   )
 }

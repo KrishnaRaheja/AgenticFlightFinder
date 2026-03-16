@@ -1,22 +1,18 @@
 import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { useLogout } from '@/hooks/useLogout'
 import { AuthModal } from '@/components/AuthModal'
 import { Button } from '@/components/ui/button'
 import { PlaneTakeoff, Settings, LogOut, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function Navbar() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
+  const handleLogout = useLogout()
   const location = useLocation()
   const [authOpen, setAuthOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-
-  const handleLogout = async () => {
-    await logout()
-    navigate('/')
-  }
 
   const isActive = (path: string) => location.pathname === path
 
@@ -30,7 +26,7 @@ export function Navbar() {
         >
           <PlaneTakeoff className="h-5 w-5 text-accent" strokeWidth={2} />
           <span className="font-semibold text-sm tracking-tight">
-            Agentic<span className="text-accent">Flight</span>
+            Agentic Flight Finder
           </span>
         </Link>
 

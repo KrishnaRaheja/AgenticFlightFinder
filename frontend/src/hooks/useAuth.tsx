@@ -2,6 +2,14 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
+/** Thrown by signup() when the email address is already registered. */
+export class DuplicateEmailError extends Error {
+  constructor() {
+    super('User already registered')
+    this.name = 'DuplicateEmailError'
+  }
+}
+
 interface AuthContextValue {
   user: User | null
   loading: boolean
@@ -25,6 +33,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
+    // Supabase returns a fake success with empty identities when the email is already registered
+    if (data.user?.identities?.length === 0) {
+      throw new DuplicateEmailError()
+    }
     setUser(data.user)
   }
 

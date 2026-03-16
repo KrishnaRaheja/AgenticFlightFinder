@@ -8,3 +8,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+/** Returns the current session's Bearer token, or undefined if not signed in. */
+export async function getAuthToken(): Promise<string | undefined> {
+  const { data: { session } } = await supabase.auth.getSession()
+  return session?.access_token
+}
