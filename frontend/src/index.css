@@ -1,13 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --color-botanical-bg: #7b9c98;
-  --color-botanical-card: #72908d;
-  --color-botanical-text: #eaf1f3;
-  --color-botanical-subtext: #495755;
-  --color-botanical-accent: #abc6c4;
-  /* --color-botanical-error: #f6c9b4; */
-  --color-botanical-error: #ff5c5c;
-  /* --color-botanical-error-text: #f59a71; */
-  --color-botanical-error-text: #ff2e2e;
+/* ─── Dark Intelligence Design System ─────────────────────────────────────── */
+
+@theme inline {
+  /* Shadcn-compatible semantic tokens (maps CSS vars → Tailwind utilities) */
+  --color-background:           var(--background);
+  --color-foreground:           var(--foreground);
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+  --color-popover:              var(--popover);
+  --color-popover-foreground:   var(--popover-foreground);
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+  --color-secondary:            var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+  --color-destructive:          var(--destructive);
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-ring:                 var(--ring);
+
+  /* Brand palette utilities */
+  --color-surface:              var(--surface);
+  --color-elevated:             var(--elevated);
+  --color-success:              var(--success);
+  --color-warning:              var(--warning);
+
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radius scale */
+  --radius-sm:  calc(var(--radius) - 4px);
+  --radius-md:  calc(var(--radius) - 2px);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+/* ─── CSS Variable Definitions (Dark-first) ───────────────────────────────── */
+
+:root {
+  /* Core backgrounds */
+  --background: #020617;   /* slate-950 — page bg */
+  --surface:    #0F172A;   /* slate-900 — cards, panels */
+  --elevated:   #1E293B;   /* slate-800 — modals, dropdowns */
+
+  /* Semantic shadcn tokens */
+  --foreground:           #F8FAFC;   /* slate-50  */
+  --card:                 #0F172A;
+  --card-foreground:      #F8FAFC;
+  --popover:              #1E293B;
+  --popover-foreground:   #F8FAFC;
+  --primary:              #0EA5E9;   /* sky-500   */
+  --primary-foreground:   #020617;
+  --secondary:            #1E293B;   /* slate-800 */
+  --secondary-foreground: #F8FAFC;
+  --muted:                #1E293B;
+  --muted-foreground:     #94A3B8;   /* slate-400 */
+  --accent:               #38BDF8;   /* sky-400   */
+  --accent-foreground:    #020617;
+  --destructive:          #EF4444;   /* red-500   */
+  --border:               #334155;   /* slate-700 */
+  --input:                #1E293B;
+  --ring:                 #38BDF8;
+
+  /* Status colors */
+  --success: #22C55E;   /* green-500 */
+  --warning: #F59E0B;   /* amber-500 */
+
+  /* Radius */
+  --radius: 0.5rem;
+}
+
+/* ─── Base Styles ─────────────────────────────────────────────────────────── */
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Monospace elements inherit the mono font */
+code, kbd, samp, pre, .font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ─── Global interaction animations ──────────────────────────────────────── */
+
+/* Smooth transitions on all interactive elements */
+button, a, [role="button"] {
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Press scale feedback — gives tactile feel to every button click */
+button:not(:disabled):active,
+[role="button"]:not(:disabled):active {
+  transform: scale(0.96);
+  transition-duration: 80ms;
+}
+
+/* Focus ring polish for keyboard nav */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* Card hover lift */
+.card-lift {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+.card-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+}
+
+/* Sidebar slide */
+.sidebar-enter {
+  animation: slideInFromRight 250ms ease both;
+}
+
+/* ─── Keyframe library ────────────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to   { opacity: 1 }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-10px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96) translateY(6px) }
+  to   { opacity: 1; transform: scale(1) translateY(0) }
+}
+@keyframes slideInFromRight {
+  from { opacity: 0; transform: translateX(20px) }
+  to   { opacity: 1; transform: translateX(0) }
+}
+@keyframes slideInFromLeft {
+  from { opacity: 0; transform: translateX(-20px) }
+  to   { opacity: 1; transform: translateX(0) }
+}
+@keyframes expandDown {
+  from { opacity: 0; transform: translateY(-8px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.95) translateY(4px) }
+  to   { opacity: 1; transform: scale(1) translateY(0) }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.6 }
+  100% { transform: scale(2.2); opacity: 0 }
+}
+
+/* ─── Scrollbar styling ────────────────────────────────────────────────────── */
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
 }
