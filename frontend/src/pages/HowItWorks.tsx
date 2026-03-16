@@ -98,8 +98,12 @@ export default function HowItWorks() {
               a: 'Depends on your preference, you can choose how often you want to receive alerts (daily, weekly, good deals only).',
             },
             {
-              q: 'Does it actually book flights?',
+              q: 'Do we actually book flights?',
               a: 'Not yet - that functionality is coming soon. For now, we alert you about deals, but you book through your preferred site or agent.',
+            },
+            {
+              q: 'What if my preference is invalid, e.g. innapropriate context?',
+              a: 'Your preference will be ignored.',
             },
           ].map(({ q, a }) => (
             <div key={q}>

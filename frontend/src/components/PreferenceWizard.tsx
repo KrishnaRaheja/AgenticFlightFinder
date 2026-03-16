@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import AirportSearch from '@/components/AirportSearch'
 import { AuthForm } from '@/components/AuthForm'
@@ -260,6 +260,9 @@ export function PreferenceWizard({ open, onClose, onCreated }: PreferenceWizardP
 // ── Step: Route ────────────────────────────────────────────────────────────────
 
 function StepRoute({ data, update }: { data: WizardData; update: (p: Partial<WizardData>) => void }) {
+  const [departureISO, setDepartureISO] = useState('')
+  const [returnISO, setReturnISO] = useState('')
+
   return (
     <div className="px-6 py-6 space-y-5">
       <div>
@@ -304,12 +307,11 @@ function StepRoute({ data, update }: { data: WizardData; update: (p: Partial<Wiz
               <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
               <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Departure</span>
             </div>
-            <input
-              placeholder="e.g. June 2026 or 2026-06-15"
+            <DateField
               value={data.departure_period}
-              onChange={e => update({ departure_period: e.target.value })}
-              className="w-full bg-transparent border-0 p-0 text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
-              required
+              isoValue={departureISO}
+              placeholder="Select a date"
+              onDateSelect={(display, iso) => { update({ departure_period: display }); setDepartureISO(iso) }}
             />
           </div>
           <div className="flex flex-col px-5 py-4">
@@ -320,11 +322,12 @@ function StepRoute({ data, update }: { data: WizardData; update: (p: Partial<Wiz
                 <span className="normal-case font-normal text-muted-foreground/50">(optional)</span>
               </span>
             </div>
-            <input
-              placeholder="e.g. July 2026 or one-way"
+            <DateField
               value={data.return_period}
-              onChange={e => update({ return_period: e.target.value })}
-              className="w-full bg-transparent border-0 p-0 text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
+              isoValue={returnISO}
+              placeholder="Optional"
+              onDateSelect={(display, iso) => { update({ return_period: display }); setReturnISO(iso) }}
+              minDate={departureISO || undefined}
             />
           </div>
         </div>
@@ -464,6 +467,62 @@ function StepContext({
         )}>{remaining}</span>
       </div>
       {error && <p className="text-destructive text-sm">{error}</p>}
+    </div>
+  )
+}
+
+// ── DateField ──────────────────────────────────────────────────────────────────
+
+interface DateFieldProps {
+  value: string        // formatted display string, e.g. "June 15, 2026"
+  isoValue: string     // ISO "YYYY-MM-DD" — kept in sync by caller
+  placeholder: string
+  onDateSelect: (display: string, iso: string) => void
+  minDate?: string     // ISO "YYYY-MM-DD" — disables earlier dates in picker
+}
+
+function DateField({ value, isoValue, placeholder, onDateSelect, minDate }: DateFieldProps) {
+  const hiddenRef = useRef<HTMLInputElement>(null)
+
+  const openPicker = (e: React.MouseEvent) => {
+    e.preventDefault()
+    hiddenRef.current?.showPicker?.()
+  }
+
+  const handleNativeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const iso = e.target.value
+    if (!iso) return
+    const [year, month, day] = iso.split('-').map(Number)
+    const display = new Date(year, month - 1, day).toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric',
+    })
+    onDateSelect(display, iso)
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={openPicker}
+        className="flex items-center justify-between w-full gap-2 cursor-pointer group"
+      >
+        <span className={cn(
+          'text-sm font-medium',
+          value ? 'text-foreground' : 'text-muted-foreground/50',
+        )}>
+          {value || placeholder}
+        </span>
+        <Calendar className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-muted-foreground shrink-0 transition-colors duration-150" />
+      </button>
+      <input
+        ref={hiddenRef}
+        type="date"
+        value={isoValue}
+        min={minDate}
+        onChange={handleNativeChange}
+        tabIndex={-1}
+        className="absolute right-0 bottom-0 opacity-0 pointer-events-none w-px h-px"
+      />
     </div>
   )
 }

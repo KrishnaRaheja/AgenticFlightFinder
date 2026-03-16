@@ -40,7 +40,7 @@ export default function Settings() {
         {/* Coming soon placeholder */}
         <div className="rounded-xl border border-border/40 bg-surface/50 px-4 py-6 text-center mb-8">
           <p className="text-sm text-muted-foreground">
-            More settings coming soon — notification preferences, email digest timing, and account management.
+            More settings coming soon.
           </p>
         </div>
 
