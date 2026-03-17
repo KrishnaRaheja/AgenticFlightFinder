@@ -37,7 +37,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data.user?.identities?.length === 0) {
       throw new DuplicateEmailError()
     }
-    setUser(data.user)
+    // Do NOT set user here — the user must confirm their email first.
+    // They will become authenticated only after calling login() post-confirmation.
   }
 
   const logout = async () => {

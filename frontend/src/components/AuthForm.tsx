@@ -51,13 +51,13 @@ export function AuthForm({ onSuccess, defaultTab = 'signup' }: AuthFormProps) {
         <p className="text-foreground font-medium">Check your email</p>
         <p className="text-sm text-muted-foreground">
           We sent a confirmation link to <span className="text-foreground">{email}</span>.
-          <br />Confirm your email, then sign in below.
+          <br />Check your inbox or junk folder to authenticate yourself.
         </p>
         <button
           onClick={() => { setSignupDone(false); setTab('signin') }}
           className="text-sm text-accent hover:text-accent/80 underline underline-offset-2 cursor-pointer transition-colors"
         >
-          Sign in instead
+          Sign in
         </button>
       </div>
     )
