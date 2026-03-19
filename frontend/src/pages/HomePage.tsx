@@ -293,7 +293,8 @@ export default function HomePage() {
                           onAlertSelect={handleAlertSelect}
                           onInfoOpen={handleInfoOpen}
                           selectedAlertId={selectedAlertId}
-                          defaultExpanded={i === 0}
+                          // Shouldn't be opened for inactive preferences
+                          // defaultExpanded={i === 0}
                         />
                       </div>
                     ))}
