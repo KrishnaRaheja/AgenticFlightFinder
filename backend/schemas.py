@@ -9,7 +9,7 @@ These models provide data validation, serialization, and OpenAPI documentation.
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Literal, Optional
 from uuid import UUID
 
 class FlightPreferenceCreate(BaseModel):
@@ -19,14 +19,18 @@ class FlightPreferenceCreate(BaseModel):
     departure_period: str
     return_period: Optional[str] = None
     max_stops: int = Field(default=2, ge=0, le=3)
-    cabin_class: str = Field(default="economy")
+    # NOTE: allowed values below must stay in sync with PreferenceWizard.tsx (StepPreferences)
+    cabin_class: Literal["economy", "premium_economy", "business", "first"] = "economy"
     budget: Optional[int] = Field(None, gt=0)
     nearby_airports: bool = Field(default=False)
-    date_flexibility: str = Field(default="exact")
-    priority: str = Field(default="balanced")
+    # NOTE: allowed values below must stay in sync with PreferenceWizard.tsx (StepPreferences)
+    date_flexibility: Literal["exact", "plus_minus_2", "plus_minus_5", "flexible"] = "exact"
+    # NOTE: allowed values below must stay in sync with PreferenceWizard.tsx (StepPreferences)
+    priority: Literal["price", "balanced", "convenience"] = "balanced"
     prefer_non_work_days: bool = Field(default=False)
-    alert_frequency: str = Field(default="weekly")
-    additional_context: Optional[str] = None
+    # NOTE: allowed values below must stay in sync with PreferenceWizard.tsx (StepPreferences)
+    alert_frequency: Literal["daily", "weekly"] = "daily"
+    additional_context: Optional[str] = Field(None, max_length=500)  # NOTE: max_length must stay in sync with PreferenceWizard.tsx (StepContext, maxLength prop)
 
 class FlightPreferenceResponse(FlightPreferenceCreate):
     """Response includes DB-generated fields"""

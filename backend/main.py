@@ -118,5 +118,5 @@ async def health_check():
         # Test database connection by querying flight_preferences table
         supabase.table("flight_preferences").select("count", count="exact").execute()
         return {"status": "healthy", "database": "connected"}
-    except Exception as e:
-        return {"status": "unhealthy", "error": str(e)}
+    except Exception:
+        return {"status": "unhealthy", "error": "Database connection failed"}

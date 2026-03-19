@@ -381,6 +381,7 @@ function StepPreferences({ data, update }: { data: WizardData; update: (p: Parti
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Cabin class</Label>
+          {/* SYNC: values must match backend schemas.py FlightPreferenceCreate.cabin_class Literal */}
           <Select value={data.cabin_class} onValueChange={v => update({ cabin_class: v })}>
             <SelectTrigger className="bg-elevated border-border text-foreground text-sm focus:ring-ring cursor-pointer"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-elevated border-border">
@@ -392,6 +393,7 @@ function StepPreferences({ data, update }: { data: WizardData; update: (p: Parti
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Date flexibility</Label>
+          {/* SYNC: values must match backend schemas.py FlightPreferenceCreate.date_flexibility Literal */}
           <Select value={data.date_flexibility} onValueChange={v => update({ date_flexibility: v })}>
             <SelectTrigger className="bg-elevated border-border text-foreground text-sm focus:ring-ring cursor-pointer"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-elevated border-border">
@@ -405,6 +407,7 @@ function StepPreferences({ data, update }: { data: WizardData; update: (p: Parti
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Priority</Label>
+          {/* SYNC: values must match backend schemas.py FlightPreferenceCreate.priority Literal */}
           <Select value={data.priority} onValueChange={v => update({ priority: v })}>
             <SelectTrigger className="bg-elevated border-border text-foreground text-sm focus:ring-ring cursor-pointer"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-elevated border-border">
@@ -416,6 +419,7 @@ function StepPreferences({ data, update }: { data: WizardData; update: (p: Parti
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">Alert frequency</Label>
+          {/* SYNC: values must match backend schemas.py FlightPreferenceCreate.alert_frequency Literal */}
           <Select value={data.alert_frequency} onValueChange={v => update({ alert_frequency: v })}>
             <SelectTrigger className="bg-elevated border-border text-foreground text-sm focus:ring-ring cursor-pointer"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-elevated border-border">
@@ -454,6 +458,7 @@ function StepContext({
         </div>
       </div>
       <div className="relative">
+        {/* SYNC: maxLength must match backend schemas.py FlightPreferenceCreate.additional_context max_length */}
         <Textarea
           placeholder="e.g. I prefer morning departures and want to avoid Spirit Airlines. Layovers under 2 hours only. Happy to fly out of Newark instead of JFK if it saves money."
           value={data.additional_context}

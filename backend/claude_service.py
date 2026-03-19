@@ -765,13 +765,22 @@ Refer to system prompt for instructions."""
                         tool_use_id = content.id
                         
                         logger.info(f"Claude requested tool: {tool_name}")
-                        
+
                         if tool_name not in tools_used:
                             tools_used.append(tool_name)
-                        
+
+                        # Override user_id/preference_id with authoritative values from
+                        # call context to prevent prompt injection or hallucination from
+                        # accessing/writing data for other users.
+                        tool_input_safe = dict(tool_input)
+                        if "user_id" in tool_input_safe:
+                            tool_input_safe["user_id"] = user_id
+                        if "preference_id" in tool_input_safe:
+                            tool_input_safe["preference_id"] = preference_id
+
                         # Execute the tool
                         try:
-                            tool_result = await execute_tool(tool_name, tool_input)
+                            tool_result = await execute_tool(tool_name, tool_input_safe)
                             logger.info(f"Tool {tool_name} executed: {tool_result}")
                         except Exception as e:
                             tool_result = {"error": f"Tool execution failed: {str(e)}"}
