@@ -53,6 +53,8 @@ _allowed_origins = [
     "http://localhost:3000",
     "http://localhost:5173",
     "https://*.vercel.app",
+    "https://flightfinders.org",
+    "https://www.flightfinders.org",
 ]
 _frontend_url = os.getenv("FRONTEND_URL")
 if _frontend_url:
