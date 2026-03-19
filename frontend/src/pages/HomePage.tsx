@@ -33,6 +33,7 @@ export default function HomePage() {
   const [authOpen, setAuthOpen] = useState(false)
 
   const [preferences, setPreferences] = useState<Preference[]>([])
+  const [activeLimit, setActiveLimit] = useState<number>(Infinity)
   const [prefsLoading, setPrefsLoading] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [panelContent, setPanelContent] = useState<PanelContent | null>(null)
@@ -85,7 +86,11 @@ export default function HomePage() {
     setPrefsLoading(true)
     try {
       const res = await apiFetch('/api/preferences/')
-      if (res.ok) setPreferences(await res.json())
+      if (res.ok) {
+        const body = await res.json()
+        setPreferences(body.preferences)
+        setActiveLimit(body.active_limit)
+      }
     } finally {
       setPrefsLoading(false)
     }
@@ -122,6 +127,7 @@ export default function HomePage() {
   const activePrefs = preferences.filter(p => p.is_active)
   const pausedPrefs = preferences.filter(p => !p.is_active)
   const activeCount = activePrefs.length
+  const atLimit = activeCount >= activeLimit
   const selectedAlertId = panelContent?.type === 'alert' ? panelContent.data.id : null
 
   if (loading) {
@@ -232,7 +238,8 @@ export default function HomePage() {
               <Button
                 size="sm"
                 onClick={() => setWizardOpen(true)}
-                className="h-7 px-2.5 bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground text-xs cursor-pointer gap-1 transition-all duration-150"
+                disabled={atLimit}
+                className="h-7 px-2.5 bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground text-xs cursor-pointer gap-1 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus className="h-3 w-3" />
                 New Tracker
@@ -265,6 +272,8 @@ export default function HomePage() {
                     </TabsTrigger>
                   </TabsList>
 
+                  {atLimit && <LimitNotice />}
+
                   <TabsContent value="active" className="mt-0 space-y-2">
                     {activePrefs.length === 0 ? (
                       <p className="text-xs text-muted-foreground text-center py-6">No active trackers.</p>
@@ -293,6 +302,7 @@ export default function HomePage() {
                           onAlertSelect={handleAlertSelect}
                           onInfoOpen={handleInfoOpen}
                           selectedAlertId={selectedAlertId}
+                          atLimit={atLimit}
                           // Shouldn't be opened for inactive preferences
                           // defaultExpanded={i === 0}
                         />
@@ -350,7 +360,7 @@ export default function HomePage() {
       )}
 
       {/* ── Wizard overlay ── */}
-      <PreferenceWizard open={wizardOpen} onClose={() => setWizardOpen(false)} onCreated={fetchPreferences} />
+      <PreferenceWizard open={wizardOpen} onClose={() => setWizardOpen(false)} onCreated={fetchPreferences} atLimit={atLimit} />
 
       {/* ── Auth modal ── */}
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
@@ -474,6 +484,19 @@ function PreferenceDetailPanel({ preference, onClose, closing }: { preference: P
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+// ── Limit notice ──────────────────────────────────────────────────────────────
+
+function LimitNotice() {
+  return (
+    <div className="flex items-center gap-2 bg-surface/70 backdrop-blur-sm border border-amber-500/30 rounded-lg px-3 py-2 mb-3 transition-all duration-300">
+      <TriangleAlert className="h-3 w-3 text-amber-400 shrink-0" />
+      <span className="text-xs text-muted-foreground">
+        <span className="text-amber-400">Limit reached.</span> Pause a tracker to add a new one.
+      </span>
     </div>
   )
 }

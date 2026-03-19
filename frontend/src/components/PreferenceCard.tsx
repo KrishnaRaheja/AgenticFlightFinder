@@ -4,7 +4,7 @@ import { cn, formatDate, formatShortDate } from '@/lib/utils'
 import { apiFetch } from '@/lib/api'
 import {
   PlaneTakeoff, PlaneLanding, ChevronDown,
-  Loader2, Bell, BellOff, Clock, Info, ArrowLeftRight, Eye
+  Loader2, Bell, BellOff, Clock, Info, ArrowLeftRight, Eye, TriangleAlert
 } from 'lucide-react'
 import type { Preference, Alert } from '@/types'
 
@@ -18,11 +18,12 @@ interface PreferenceCardProps {
   onInfoOpen: (preference: Preference) => void
   selectedAlertId?: string | null
   defaultExpanded?: boolean
+  atLimit?: boolean
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function PreferenceCard({ preference, onStatusChange, onAlertSelect, onInfoOpen, selectedAlertId, defaultExpanded = false }: PreferenceCardProps) {
+export function PreferenceCard({ preference, onStatusChange, onAlertSelect, onInfoOpen, selectedAlertId, defaultExpanded = false, atLimit = false }: PreferenceCardProps) {
   const [expanded, setExpanded] = useState(defaultExpanded)
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [alertsLoading, setAlertsLoading] = useState(false)
@@ -174,28 +175,39 @@ export function PreferenceCard({ preference, onStatusChange, onAlertSelect, onIn
 
           {/* Controls row */}
           <div
-            className="flex items-center justify-between px-4 py-2.5 border-t border-border/40"
+            className="border-t border-border/40"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/50">
-              <Clock className="h-3 w-3" />
-              Created {formatDate(preference.created_at)}
+            {!preference.is_active && atLimit && (
+              <div className="flex items-center gap-2 px-4 py-2 border-b border-amber-500/20">
+                <TriangleAlert className="h-3 w-3 text-amber-400 shrink-0" />
+                <span className="text-xs text-muted-foreground">
+                  Pause an <span className="text-amber-400">active tracker</span> to resume this one.
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between px-4 py-2.5">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground/50">
+                <Clock className="h-3 w-3" />
+                Created {formatDate(preference.created_at)}
+              </div>
+              <Button
+                size="sm"
+                onClick={handleToggleStatus}
+                disabled={toggling || (!preference.is_active && atLimit)}
+                className={cn(
+                  'text-xs h-7 px-3 cursor-pointer border font-medium transition-all duration-150 active:scale-95',
+                  preference.is_active
+                    ? 'bg-background border-border/80 text-foreground/70 hover:bg-elevated hover:text-foreground hover:border-border'
+                    : 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20',
+                  !preference.is_active && atLimit && 'opacity-50 cursor-not-allowed',
+                )}
+              >
+                {toggling && <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />}
+                {!toggling && <Bell className="h-3 w-3 mr-1.5" />}
+                {preference.is_active ? 'Pause' : 'Resume'}
+              </Button>
             </div>
-            <Button
-              size="sm"
-              onClick={handleToggleStatus}
-              disabled={toggling}
-              className={cn(
-                'text-xs h-7 px-3 cursor-pointer border font-medium transition-all duration-150 active:scale-95',
-                preference.is_active
-                  ? 'bg-background border-border/80 text-foreground/70 hover:bg-elevated hover:text-foreground hover:border-border'
-                  : 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20',
-              )}
-            >
-              {toggling && <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />}
-              {!toggling && <Bell className="h-3 w-3 mr-1.5" />}
-              {preference.is_active ? 'Pause' : 'Resume'}
-            </Button>
           </div>
         </div>
       )}

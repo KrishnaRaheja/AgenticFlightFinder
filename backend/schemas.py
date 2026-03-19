@@ -46,6 +46,13 @@ class FlightPreferenceStatusUpdate(BaseModel):
     is_active: bool
 
 
+class PreferencesListResponse(BaseModel):
+    """Envelope for the preferences list — includes the active limit so the
+    frontend never needs to hardcode it."""
+    preferences: list[FlightPreferenceResponse]
+    active_limit: int
+
+
 class AlertResponse(BaseModel):
     """Response model for flight alerts"""
     id: UUID

@@ -12,7 +12,7 @@ import { API_URL } from '@/config'
 import { cn } from '@/lib/utils'
 import {
   ArrowRight, ArrowLeft, Loader2, Sparkles,
-  PlaneTakeoff, PlaneLanding, Calendar, X
+  PlaneTakeoff, PlaneLanding, Calendar, X, TriangleAlert
 } from 'lucide-react'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -50,9 +50,10 @@ interface PreferenceWizardProps {
   open: boolean
   onClose: () => void
   onCreated?: () => void
+  atLimit?: boolean
 }
 
-export function PreferenceWizard({ open, onClose, onCreated }: PreferenceWizardProps) {
+export function PreferenceWizard({ open, onClose, onCreated, atLimit = false }: PreferenceWizardProps) {
   const { user } = useAuth()
   const [view, setView] = useState<WizardView>('route')
   const [data, setData] = useState<WizardData>(DEFAULT_DATA)
@@ -201,7 +202,7 @@ export function PreferenceWizard({ open, onClose, onCreated }: PreferenceWizardP
             {view === 'route'       && <StepRoute      data={data} update={update} />}
             {view === 'auth'        && <StepAuth        onSuccess={handleAuthSuccess} />}
             {view === 'preferences' && <StepPreferences data={data} update={update} />}
-            {view === 'context'     && <StepContext     data={data} update={update} error={error} />}
+            {view === 'context'     && <StepContext     data={data} update={update} error={error} atLimit={atLimit} />}
           </div>
 
           {/* Footer */}
@@ -228,8 +229,8 @@ export function PreferenceWizard({ open, onClose, onCreated }: PreferenceWizardP
                   </Button>
                 )}
                 {showSubmitBtn && (
-                  <Button onClick={handleSubmit} disabled={submitting}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
+                  <Button onClick={handleSubmit} disabled={submitting || atLimit}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitting ? <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
                                : <Sparkles className="h-3.5 w-3.5 mr-2" />}
@@ -442,9 +443,9 @@ function StepPreferences({ data, update }: { data: WizardData; update: (p: Parti
 // ── Step: Tell Claude (context) ────────────────────────────────────────────────
 
 function StepContext({
-  data, update, error
+  data, update, error, atLimit
 }: {
-  data: WizardData; update: (p: Partial<WizardData>) => void; error: string | null
+  data: WizardData; update: (p: Partial<WizardData>) => void; error: string | null; atLimit: boolean
 }) {
   const remaining = 500 - data.additional_context.length
   return (
@@ -471,7 +472,15 @@ function StepContext({
           remaining < 50 ? 'text-warning' : 'text-muted-foreground/50',
         )}>{remaining}</span>
       </div>
-      {error && <p className="text-destructive text-sm">{error}</p>}
+      {atLimit && (
+        <div className="flex items-center gap-2 bg-surface/70 backdrop-blur-sm border border-amber-500/30 rounded-lg px-3 py-2 transition-all duration-300">
+          <TriangleAlert className="h-3 w-3 text-amber-400 shrink-0" />
+          <span className="text-xs text-muted-foreground">
+            <span className="text-amber-400">Active tracker limit reached.</span> Pause a tracker to add a new one.
+          </span>
+        </div>
+      )}
+      {!atLimit && error && <p className="text-destructive text-sm">{error}</p>}
     </div>
   )
 }

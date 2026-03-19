@@ -5,6 +5,7 @@ from typing import Callable
 from uuid import UUID
 
 from backend.database import get_supabase
+from backend.limits import MAX_ACTIVE_PREFERENCES_PER_USER
 from backend.schemas import FlightPreferenceCreate, FlightPreferenceStatusUpdate
 from backend.services.exceptions import PreferenceNotFoundError, PreferenceServiceError
 
@@ -36,12 +37,30 @@ class PreferenceService:
 
         return response.data[0]
 
+    def _count_active_preferences(self, user_id: str) -> int:
+        response = (
+            self._supabase()
+            .table("flight_preferences")
+            .select("id", count="exact")
+            .eq("user_id", user_id)
+            .eq("is_active", True)
+            .execute()
+        )
+        return response.count or 0
+
     async def create_preference(
         self,
         preference: FlightPreferenceCreate,
         user_id: str,
     ) -> dict:
         try:
+            active_count = self._count_active_preferences(user_id)
+            if active_count >= MAX_ACTIVE_PREFERENCES_PER_USER:
+                raise PreferenceServiceError(
+                    f"Active tracker limit reached ({MAX_ACTIVE_PREFERENCES_PER_USER}). "
+                    "Pause an existing tracker to add a new one."
+                )
+
             current_timestamp = datetime.now(timezone.utc).isoformat()
             preference_dict = preference.model_dump()
             preference_dict.update(
@@ -119,6 +138,14 @@ class PreferenceService:
     ) -> dict:
         try:
             self._get_existing_preference(preference_id, user_id)
+
+            if status_update.is_active:
+                active_count = self._count_active_preferences(user_id)
+                if active_count >= MAX_ACTIVE_PREFERENCES_PER_USER:
+                    raise PreferenceServiceError(
+                        f"Active tracker limit reached ({MAX_ACTIVE_PREFERENCES_PER_USER}). "
+                        "Pause an existing tracker to resume this one."
+                    )
 
             response = (
                 self._supabase()

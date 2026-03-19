@@ -2,10 +2,12 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from backend.auth import get_current_user
+from backend.limits import MAX_ACTIVE_PREFERENCES_PER_USER
 from backend.schemas import (
     FlightPreferenceCreate,
     FlightPreferenceResponse,
     FlightPreferenceStatusUpdate,
+    PreferencesListResponse,
     AlertResponse,
 )
 from backend.services import MonitoringService, PreferenceNotFoundError, PreferenceService, PreferenceServiceError
@@ -32,13 +34,15 @@ async def create_preference(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-@router.get("/", response_model=list[FlightPreferenceResponse])
+@router.get("/", response_model=PreferencesListResponse)
 async def get_preferences(current_user: str = Depends(get_current_user)):
     """
-    Get all flight preferences for the current user, ordered by newest first
+    Get all flight preferences for the current user, ordered by newest first.
+    Also returns the active_limit so the frontend never hardcodes it.
     """
     try:
-        return preference_service.get_preferences(current_user)
+        prefs = preference_service.get_preferences(current_user)
+        return {"preferences": prefs, "active_limit": MAX_ACTIVE_PREFERENCES_PER_USER}
     except PreferenceServiceError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
