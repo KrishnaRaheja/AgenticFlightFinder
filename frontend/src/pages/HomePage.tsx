@@ -51,6 +51,24 @@ export default function HomePage() {
     }
   }, [sidebarOpen])
 
+  // contentClosing drives the exit animation on the active panel card before
+  // it unmounts — used for close and cross-fade when switching between items.
+  const [contentClosing, setContentClosing] = useState(false)
+
+  const closeContent = () => {
+    setContentClosing(true)
+    setTimeout(() => { setPanelContent(null); setContentClosing(false) }, 200)
+  }
+
+  const showContent = (next: PanelContent) => {
+    if (panelContent === null) {
+      setPanelContent(next)
+    } else {
+      setContentClosing(true)
+      setTimeout(() => { setPanelContent(next); setContentClosing(false) }, 180)
+    }
+  }
+
   const prevUserRef = useRef(user)
   useEffect(() => {
     const wasLoggedOut = !prevUserRef.current
@@ -77,23 +95,26 @@ export default function HomePage() {
     setPreferences(prev => prev.map(p => p.id === id ? { ...p, is_active: active } : p))
   }
 
-  // Toggle alert panel — clicking the same alert again closes it.
   const handleAlertSelect = (a: Alert) => {
-    setPanelContent(prev =>
-      prev?.type === 'alert' && prev.data.id === a.id ? null : { type: 'alert', data: a }
-    )
+    if (panelContent?.type === 'alert' && panelContent.data.id === a.id) {
+      closeContent()
+    } else {
+      showContent({ type: 'alert', data: a })
+    }
   }
 
-  // Toggle preference detail panel — clicking the same ⓘ again closes it.
   const handleInfoOpen = (p: Preference) => {
-    setPanelContent(prev =>
-      prev?.type === 'preference' && prev.data.id === p.id ? null : { type: 'preference', data: p }
-    )
+    if (panelContent?.type === 'preference' && panelContent.data.id === p.id) {
+      closeContent()
+    } else {
+      showContent({ type: 'preference', data: p })
+    }
   }
 
   const closeSidebar = () => {
     setSidebarOpen(false)
     setPanelContent(null)
+    setContentClosing(false)
   }
 
   const activePrefs = preferences.filter(p => p.is_active)
@@ -204,7 +225,7 @@ export default function HomePage() {
                 className="h-7 px-2.5 bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground text-xs cursor-pointer gap-1 transition-all duration-150"
               >
                 <Plus className="h-3 w-3" />
-                New
+                New Tracker
               </Button>
             </div>
 
@@ -300,31 +321,20 @@ export default function HomePage() {
               {panelContent?.type === 'alert' && (
                 <AlertPanel
                   alert={panelContent.data}
-                  onClose={() => setPanelContent(null)}
+                  onClose={closeContent}
+                  closing={contentClosing}
                 />
               )}
               {panelContent?.type === 'preference' && (
                 <PreferenceDetailPanel
                   preference={panelContent.data}
-                  onClose={() => setPanelContent(null)}
+                  onClose={closeContent}
+                  closing={contentClosing}
                 />
               )}
             </div>
           )}
 
-          {/* FAB */}
-          <div
-            className="absolute bottom-6 left-6 z-20"
-            style={{ animation: 'fadeUp 400ms 200ms ease both' }}
-          >
-            <Button
-              onClick={() => setWizardOpen(true)}
-              className="rounded-full bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground shadow-lg shadow-primary/25 gap-2 cursor-pointer transition-all duration-200 hover:shadow-primary/40 hover:-translate-y-0.5"
-            >
-              <Plus className="h-4 w-4" />
-              <span>New tracker</span>
-            </Button>
-          </div>
         </>
       )}
 
@@ -340,12 +350,15 @@ export default function HomePage() {
 // ── Alert panel ────────────────────────────────────────────────────────────────
 // Fills the full panel area — email needs the space.
 
-function AlertPanel({ alert, onClose }: { alert: Alert; onClose: () => void }) {
+function AlertPanel({ alert, onClose, closing }: { alert: Alert; onClose: () => void; closing: boolean }) {
   return (
-    <div className={cn(
-      'pointer-events-auto w-full flex flex-col bg-surface/90 backdrop-blur-md',
-      'border border-border rounded-2xl shadow-2xl shadow-black/60 overflow-hidden',
-    )}>
+    <div
+      className={cn(
+        'pointer-events-auto w-full flex flex-col bg-surface/90 backdrop-blur-md',
+        'border border-border rounded-2xl shadow-2xl shadow-black/60 overflow-hidden',
+      )}
+      style={{ animation: closing ? 'fadeOut 180ms ease both' : 'fadeUp 250ms ease both' }}
+    >
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-border shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <div className="p-1.5 rounded-lg bg-warning/10 border border-warning/20 shrink-0">
@@ -387,14 +400,15 @@ function AlertPanel({ alert, onClose }: { alert: Alert; onClose: () => void }) {
 // ── Preference detail panel ────────────────────────────────────────────────────
 // Renders as a centered card — preference details don't need the full width.
 
-function PreferenceDetailPanel({ preference, onClose }: { preference: Preference; onClose: () => void }) {
+function PreferenceDetailPanel({ preference, onClose, closing }: { preference: Preference; onClose: () => void; closing: boolean }) {
   return (
-    <div className={cn(
-      'pointer-events-auto self-center w-full max-w-sm flex flex-col',
-      'bg-surface/90 backdrop-blur-md border border-border',
-      'rounded-2xl shadow-2xl shadow-black/60 overflow-hidden',
-    )}
-    style={{ animation: 'fadeUp 200ms ease both' }}
+    <div
+      className={cn(
+        'pointer-events-auto self-center w-full max-w-sm flex flex-col',
+        'bg-surface/90 backdrop-blur-md border border-border',
+        'rounded-2xl shadow-2xl shadow-black/60 overflow-hidden',
+      )}
+      style={{ animation: closing ? 'fadeOut 180ms ease both' : 'fadeUp 250ms ease both' }}
     >
       {/* Header */}
       <div className="flex items-start justify-between px-5 py-4 border-b border-border/60 shrink-0">
@@ -568,7 +582,7 @@ function IdlePanel({
   return (
     <div
       className="self-center pointer-events-none"
-      style={{ animation: 'fadeUp 350ms 320ms ease both' }}
+      style={{ animation: 'fadeUp 300ms 150ms ease both' }}
     >
       <div className="bg-surface/60 backdrop-blur-md border border-border/50 rounded-2xl px-7 py-5 flex flex-col gap-4 min-w-[260px]">
 
@@ -618,7 +632,7 @@ function IdlePanel({
 
         {/* Hint */}
         <p className="text-xs text-muted-foreground/35 leading-relaxed">
-          Select a deal or tap ⓘ on a tracker to view details here.
+          Trackers are updated at 5 am Pacific Time.
         </p>
 
       </div>
