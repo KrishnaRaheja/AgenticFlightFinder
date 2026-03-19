@@ -233,7 +233,7 @@ export function PreferenceWizard({ open, onClose, onCreated }: PreferenceWizardP
                   >
                     {submitting ? <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />
                                : <Sparkles className="h-3.5 w-3.5 mr-2" />}
-                    Start monitoring
+                    Start tracking
                   </Button>
                 )}
               </div>

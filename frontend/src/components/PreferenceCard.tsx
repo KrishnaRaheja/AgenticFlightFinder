@@ -4,7 +4,7 @@ import { cn, formatDate, formatShortDate } from '@/lib/utils'
 import { apiFetch } from '@/lib/api'
 import {
   PlaneTakeoff, PlaneLanding, ChevronDown,
-  Loader2, Bell, BellOff, Clock
+  Loader2, Bell, BellOff, Clock, Info, ArrowLeftRight, Eye
 } from 'lucide-react'
 import type { Preference, Alert } from '@/types'
 
@@ -15,20 +15,20 @@ interface PreferenceCardProps {
   preference: Preference
   onStatusChange: (id: string, active: boolean) => void
   onAlertSelect: (alert: Alert) => void
+  onInfoOpen: (preference: Preference) => void
   selectedAlertId?: string | null
   defaultExpanded?: boolean
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function PreferenceCard({ preference, onStatusChange, onAlertSelect, selectedAlertId, defaultExpanded = false }: PreferenceCardProps) {
+export function PreferenceCard({ preference, onStatusChange, onAlertSelect, onInfoOpen, selectedAlertId, defaultExpanded = false }: PreferenceCardProps) {
   const [expanded, setExpanded] = useState(defaultExpanded)
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [alertsLoading, setAlertsLoading] = useState(false)
   const [alertsLoaded, setAlertsLoaded] = useState(false)
   const [toggling, setToggling] = useState(false)
 
-  // If this card starts expanded, load alerts immediately on mount
   const loadAlerts = async () => {
     if (alertsLoaded) return
     setAlertsLoading(true)
@@ -41,7 +41,6 @@ export function PreferenceCard({ preference, onStatusChange, onAlertSelect, sele
     }
   }
 
-  // Load alerts immediately when card starts expanded
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (defaultExpanded) loadAlerts() }, [])
 
@@ -75,11 +74,11 @@ export function PreferenceCard({ preference, onStatusChange, onAlertSelect, sele
       )}
     >
       {/* ── Collapsed header ── */}
-      <button
+      <div
         onClick={handleExpand}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer hover:bg-elevated/40 active:bg-elevated/60 transition-all duration-150"
+        className="w-full flex items-center gap-3 px-4 py-3.5 text-left cursor-pointer hover:bg-elevated/40 active:bg-elevated/60 transition-all duration-150"
       >
-        {/* Status dot — no text, card is already segregated by tab */}
+        {/* Status dot */}
         <span className="relative flex h-2 w-2 shrink-0">
           {preference.is_active && (
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-60" />
@@ -101,37 +100,47 @@ export function PreferenceCard({ preference, onStatusChange, onAlertSelect, sele
             </div>
             <span className="font-mono font-bold text-sm text-foreground tracking-widest">{preference.destination}</span>
           </div>
-          {/* Dates on own line — never truncated, always fully visible */}
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {preference.departure_period}
+          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+            <span className="text-xs text-muted-foreground">{preference.departure_period}</span>
             {preference.return_period && (
-              <span className="text-muted-foreground/60"> · return {preference.return_period}</span>
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground/70">
+                <ArrowLeftRight className="h-3 w-3" />
+                {preference.return_period}
+              </span>
             )}
             {preference.budget && (
-              <span className="text-muted-foreground/60"> · ${preference.budget}</span>
+              <span className="text-xs text-muted-foreground/70">${preference.budget}</span>
             )}
-          </p>
+          </div>
         </div>
 
-        <ChevronDown className={cn(
-          'h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200',
-          expanded && 'rotate-180',
-        )} />
-      </button>
+        {/* Info + chevron */}
+        <div className="flex items-center gap-0.5 shrink-0">
+          <button
+            onClick={e => { e.stopPropagation(); onInfoOpen(preference) }}
+            className="p-1.5 rounded-md text-muted-foreground/30 hover:text-muted-foreground hover:bg-elevated transition-colors cursor-pointer"
+          >
+            <Info className="h-5 w-5" />
+          </button>
+          <ChevronDown className={cn(
+            'h-4 w-4 text-muted-foreground transition-transform duration-200',
+            expanded && 'rotate-180',
+          )} />
+        </div>
+      </div>
 
-      {/* ── Expanded: alerts + controls ── */}
+      {/* ── Expanded: deals + controls ── */}
       {expanded && (
         <div
           className="border-t border-border/60"
           style={{ animation: 'expandDown 200ms ease both' }}
         >
-          {/* Alert history section */}
+          {/* Deals section */}
           <div className="px-4 pt-3 pb-2">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center mb-2">
               <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">
-                Past Alerts
+                Deals
               </p>
-              <p className="text-xs text-muted-foreground/40 italic">click to preview email</p>
             </div>
 
             {alertsLoading ? (
@@ -150,7 +159,7 @@ export function PreferenceCard({ preference, onStatusChange, onAlertSelect, sele
                 </div>
               </div>
             ) : (
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 max-h-40 overflow-y-auto">
                 {alerts.map(alert => (
                   <AlertSubCard
                     key={alert.id}
@@ -233,6 +242,7 @@ function AlertSubCard({
             )}
           </div>
         </div>
+        <Eye className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0 mt-0.5" />
       </div>
     </div>
   )

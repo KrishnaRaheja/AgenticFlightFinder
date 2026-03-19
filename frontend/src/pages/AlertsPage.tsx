@@ -93,9 +93,9 @@ export default function AlertsPage() {
             <Bell className="h-5 w-5 text-accent" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Alerts</h1>
+            <h1 className="text-xl font-semibold text-foreground">Deals</h1>
             <p className="text-sm text-muted-foreground">
-              Claude-generated deal alerts across all your monitors
+              Claude-generated deal alerts across all your trackers
             </p>
           </div>
         </div>
@@ -107,9 +107,9 @@ export default function AlertsPage() {
         ) : rows.length === 0 ? (
           <div className="text-center py-20">
             <Inbox className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="text-foreground font-medium">No monitors yet</p>
+            <p className="text-foreground font-medium">No trackers yet</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Create a flight monitor from the home page to start receiving alerts.
+              Add a tracker from the home page to start receiving deals.
             </p>
           </div>
         ) : (
@@ -187,7 +187,7 @@ function PreferenceAlertRow({
           ) : row.alerts.length === 0 ? (
             <div className="text-center py-6">
               <AlertCircle className="h-5 w-5 text-muted-foreground/40 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No alerts sent yet for this route.</p>
+              <p className="text-sm text-muted-foreground">No deals found yet for this route.</p>
               <p className="text-xs text-muted-foreground/60 mt-1">
                 Claude checks daily at 5 AM PT.
               </p>

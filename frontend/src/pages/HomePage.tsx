@@ -11,9 +11,19 @@ import { apiFetch } from '@/lib/api'
 import { cn, formatDate } from '@/lib/utils'
 import type { Preference, Alert } from '@/types'
 import {
-  Plus, PlaneTakeoff, Bell,
-  ChevronRight, Loader2, X
+  Plus, PlaneTakeoff, Bell, Info, ArrowLeftRight,
+  ChevronRight, Loader2, X, Clock
 } from 'lucide-react'
+
+// ── Panel content type ─────────────────────────────────────────────────────────
+// The left panel is a stable region that renders different content based on
+// what the user interacts with in the sidebar.
+
+type PanelContent =
+  | { type: 'alert'; data: Alert }
+  | { type: 'preference'; data: Preference }
+
+// ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
   const { user, loading } = useAuth()
@@ -23,10 +33,24 @@ export default function HomePage() {
   const [preferences, setPreferences] = useState<Preference[]>([])
   const [prefsLoading, setPrefsLoading] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null)
+  const [panelContent, setPanelContent] = useState<PanelContent | null>(null)
 
-  // Use a ref to track the previous user so we can detect the sign-in transition
-  // without adding stale-closure risk to the effect deps.
+  // panelVisible keeps the panel in the DOM during its exit animation.
+  // panelClosing drives the fadeOut keyframe before unmount.
+  const [panelVisible, setPanelVisible] = useState(true)
+  const [panelClosing, setPanelClosing] = useState(false)
+
+  useEffect(() => {
+    if (sidebarOpen) {
+      setPanelClosing(false)
+      setPanelVisible(true)
+    } else {
+      setPanelClosing(true)
+      const t = setTimeout(() => { setPanelVisible(false); setPanelClosing(false) }, 280)
+      return () => clearTimeout(t)
+    }
+  }, [sidebarOpen])
+
   const prevUserRef = useRef(user)
   useEffect(() => {
     const wasLoggedOut = !prevUserRef.current
@@ -53,9 +77,29 @@ export default function HomePage() {
     setPreferences(prev => prev.map(p => p.id === id ? { ...p, is_active: active } : p))
   }
 
+  // Toggle alert panel — clicking the same alert again closes it.
+  const handleAlertSelect = (a: Alert) => {
+    setPanelContent(prev =>
+      prev?.type === 'alert' && prev.data.id === a.id ? null : { type: 'alert', data: a }
+    )
+  }
+
+  // Toggle preference detail panel — clicking the same ⓘ again closes it.
+  const handleInfoOpen = (p: Preference) => {
+    setPanelContent(prev =>
+      prev?.type === 'preference' && prev.data.id === p.id ? null : { type: 'preference', data: p }
+    )
+  }
+
+  const closeSidebar = () => {
+    setSidebarOpen(false)
+    setPanelContent(null)
+  }
+
   const activePrefs = preferences.filter(p => p.is_active)
   const pausedPrefs = preferences.filter(p => !p.is_active)
   const activeCount = activePrefs.length
+  const selectedAlertId = panelContent?.type === 'alert' ? panelContent.data.id : null
 
   if (loading) {
     return (
@@ -106,7 +150,7 @@ export default function HomePage() {
               className="rounded-full bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground shadow-lg shadow-primary/25 gap-2 cursor-pointer transition-all duration-200 hover:shadow-primary/40 hover:-translate-y-0.5 px-6 py-5 text-base"
             >
               <Plus className="h-4 w-4" />
-              Monitor a flight
+              Track a flight
             </Button>
           </div>
 
@@ -133,9 +177,9 @@ export default function HomePage() {
             <StatusStrip activeCount={activeCount} />
           </div>
 
-          {/* "My Flights" sidebar — slides in from right */}
+          {/* Watchlist sidebar — slides in from right */}
           <div className={cn(
-            'absolute top-14 right-0 bottom-0 z-20 w-80 flex flex-col',
+            'absolute top-14 right-0 bottom-0 z-20 w-96 flex flex-col',
             'border-l border-border/40 bg-background/85 backdrop-blur-md',
             'transition-transform duration-300 ease-in-out',
             sidebarOpen ? 'translate-x-0' : 'translate-x-full',
@@ -146,13 +190,13 @@ export default function HomePage() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 shrink-0">
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setSidebarOpen(false)}
+                  onClick={closeSidebar}
                   className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-elevated transition-colors cursor-pointer"
                   title="Collapse sidebar"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
-                <h2 className="text-sm font-semibold text-foreground">My Flights</h2>
+                <h2 className="text-sm font-semibold text-foreground">Watchlist</h2>
               </div>
               <Button
                 size="sm"
@@ -192,14 +236,15 @@ export default function HomePage() {
 
                   <TabsContent value="active" className="mt-0 space-y-2">
                     {activePrefs.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-6">No active monitors.</p>
+                      <p className="text-xs text-muted-foreground text-center py-6">No active trackers.</p>
                     ) : activePrefs.map((p, i) => (
                       <div key={p.id} style={{ animation: `fadeUp 250ms ${i * 40}ms ease both` }}>
                         <PreferenceCard
                           preference={p}
                           onStatusChange={handleStatusChange}
-                          onAlertSelect={a => setSelectedAlert(prev => prev?.id === a.id ? null : a)}
-                          selectedAlertId={selectedAlert?.id}
+                          onAlertSelect={handleAlertSelect}
+                          onInfoOpen={handleInfoOpen}
+                          selectedAlertId={selectedAlertId}
                           defaultExpanded={i === 0}
                         />
                       </div>
@@ -208,14 +253,15 @@ export default function HomePage() {
 
                   <TabsContent value="paused" className="mt-0 space-y-2">
                     {pausedPrefs.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-6">No paused monitors.</p>
+                      <p className="text-xs text-muted-foreground text-center py-6">No paused trackers.</p>
                     ) : pausedPrefs.map((p, i) => (
                       <div key={p.id} style={{ animation: `fadeUp 250ms ${i * 40}ms ease both` }}>
                         <PreferenceCard
                           preference={p}
                           onStatusChange={handleStatusChange}
-                          onAlertSelect={a => setSelectedAlert(prev => prev?.id === a.id ? null : a)}
-                          selectedAlertId={selectedAlert?.id}
+                          onAlertSelect={handleAlertSelect}
+                          onInfoOpen={handleInfoOpen}
+                          selectedAlertId={selectedAlertId}
                           defaultExpanded={i === 0}
                         />
                       </div>
@@ -237,61 +283,36 @@ export default function HomePage() {
             </button>
           )}
 
-          {/* Email panel — renders in globe area when an alert is selected */}
-          <div className={cn(
-            'absolute top-14 left-0 bottom-0 right-80 z-30 p-4',
-            'flex items-stretch justify-center',
-            'transition-opacity duration-200 ease-in-out pointer-events-none',
-            selectedAlert && sidebarOpen ? 'opacity-100' : 'opacity-0',
-          )}>
-            {selectedAlert && (
-              <div className={cn(
-                'pointer-events-auto w-full flex flex-col bg-surface/90 backdrop-blur-md',
-                'border border-border rounded-2xl shadow-2xl shadow-black/60 overflow-hidden',
-              )}>
-                {/* Header */}
-                <div className="flex items-center justify-between px-5 py-3.5 border-b border-border shrink-0">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="p-1.5 rounded-lg bg-warning/10 border border-warning/20 shrink-0">
-                      <Bell className="h-3.5 w-3.5 text-warning" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground leading-snug truncate">{selectedAlert.email_subject}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDate(selectedAlert.sent_at)}
-                        {selectedAlert.reference_price && (
-                          <span className="text-success font-mono ml-2">${Math.round(selectedAlert.reference_price)}</span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 ml-4 shrink-0">
-                    <span className="text-xs text-muted-foreground/50">Email Preview</span>
-                    <button
-                      onClick={() => setSelectedAlert(null)}
-                      className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-elevated transition-colors cursor-pointer"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
+          {/* ── Detail panel — stable left region ──────────────────────────────
+              Always visible when sidebar is open. Idle state shows tracker
+              stats; swaps to content when the user selects a deal or taps ⓘ. */}
+          {panelVisible && (
+            <div
+              className="absolute top-14 left-0 bottom-0 right-96 z-20 p-4 flex items-stretch justify-center pointer-events-none"
+              style={{ animation: panelClosing ? 'fadeOut 280ms ease both' : 'fadeIn 300ms ease both' }}
+            >
+              {panelContent === null && (
+                <IdlePanel
+                  preferences={preferences}
+                  prefsLoading={prefsLoading}
+                />
+              )}
+              {panelContent?.type === 'alert' && (
+                <AlertPanel
+                  alert={panelContent.data}
+                  onClose={() => setPanelContent(null)}
+                />
+              )}
+              {panelContent?.type === 'preference' && (
+                <PreferenceDetailPanel
+                  preference={panelContent.data}
+                  onClose={() => setPanelContent(null)}
+                />
+              )}
+            </div>
+          )}
 
-                {/* Email iframe — fills remaining height */}
-                <div className="flex-1 bg-white overflow-hidden">
-                  <iframe
-                    srcDoc={selectedAlert.email_body_html}
-                    title="Alert email"
-                    className="w-full h-full"
-                    style={{ border: 'none', display: 'block' }}
-                    sandbox="allow-same-origin"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* FAB — always visible for logged-in users.
-              Anchored bottom-left so it never overlaps the sidebar. */}
+          {/* FAB */}
           <div
             className="absolute bottom-6 left-6 z-20"
             style={{ animation: 'fadeUp 400ms 200ms ease both' }}
@@ -301,7 +322,7 @@ export default function HomePage() {
               className="rounded-full bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground shadow-lg shadow-primary/25 gap-2 cursor-pointer transition-all duration-200 hover:shadow-primary/40 hover:-translate-y-0.5"
             >
               <Plus className="h-4 w-4" />
-              <span>New monitor</span>
+              <span>New tracker</span>
             </Button>
           </div>
         </>
@@ -310,8 +331,124 @@ export default function HomePage() {
       {/* ── Wizard overlay ── */}
       <PreferenceWizard open={wizardOpen} onClose={() => setWizardOpen(false)} onCreated={fetchPreferences} />
 
-      {/* ── Auth modal (sign-in link on homepage / navbar) ── */}
+      {/* ── Auth modal ── */}
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
+    </div>
+  )
+}
+
+// ── Alert panel ────────────────────────────────────────────────────────────────
+// Fills the full panel area — email needs the space.
+
+function AlertPanel({ alert, onClose }: { alert: Alert; onClose: () => void }) {
+  return (
+    <div className={cn(
+      'pointer-events-auto w-full flex flex-col bg-surface/90 backdrop-blur-md',
+      'border border-border rounded-2xl shadow-2xl shadow-black/60 overflow-hidden',
+    )}>
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-border shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="p-1.5 rounded-lg bg-warning/10 border border-warning/20 shrink-0">
+            <Bell className="h-3.5 w-3.5 text-warning" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-foreground leading-snug truncate">{alert.email_subject}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatDate(alert.sent_at)}
+              {alert.reference_price && (
+                <span className="text-success font-mono ml-2">${Math.round(alert.reference_price)}</span>
+              )}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 ml-4 shrink-0">
+          <span className="text-xs text-muted-foreground/50">Email Preview</span>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-elevated transition-colors cursor-pointer"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+      <div className="flex-1 bg-white overflow-hidden">
+        <iframe
+          srcDoc={alert.email_body_html}
+          title="Alert email"
+          className="w-full h-full"
+          style={{ border: 'none', display: 'block' }}
+          sandbox="allow-same-origin"
+        />
+      </div>
+    </div>
+  )
+}
+
+// ── Preference detail panel ────────────────────────────────────────────────────
+// Renders as a centered card — preference details don't need the full width.
+
+function PreferenceDetailPanel({ preference, onClose }: { preference: Preference; onClose: () => void }) {
+  return (
+    <div className={cn(
+      'pointer-events-auto self-center w-full max-w-sm flex flex-col',
+      'bg-surface/90 backdrop-blur-md border border-border',
+      'rounded-2xl shadow-2xl shadow-black/60 overflow-hidden',
+    )}
+    style={{ animation: 'fadeUp 200ms ease both' }}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between px-5 py-4 border-b border-border/60 shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="p-1.5 rounded-lg bg-primary/10 border border-primary/20 shrink-0">
+            <Info className="h-3.5 w-3.5 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground">
+              {preference.origin} → {preference.destination}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">{preference.departure_period}</p>
+            {preference.return_period && (
+              <p className="inline-flex items-center gap-1 text-xs text-muted-foreground/70 mt-0.5">
+                <ArrowLeftRight className="h-3 w-3" /> {preference.return_period}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 ml-4 shrink-0">
+          <span className="text-xs text-muted-foreground/50">Tracker details</span>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-elevated transition-colors cursor-pointer"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Fields */}
+      <div className="px-5 py-4 space-y-3 overflow-y-auto">
+        {preference.budget && (
+          <DetailRow label="Budget" value={`$${preference.budget}`} />
+        )}
+        <DetailRow label="Cabin" value={preference.cabin_class} />
+        <DetailRow label="Stops" value={formatStops(preference.max_stops)} />
+        <DetailRow label="Date flexibility" value={preference.date_flexibility} />
+        <DetailRow label="Priority" value={preference.priority} />
+        <DetailRow label="Alert frequency" value={preference.alert_frequency} />
+        {preference.nearby_airports && (
+          <DetailRow label="Nearby airports" value="Included" />
+        )}
+        {preference.additional_context && (
+          <div className="pt-1">
+            <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider mb-2">
+              Context for Claude
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed bg-elevated/60 rounded-lg px-3 py-2.5 border border-border/60">
+              {preference.additional_context}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -328,7 +465,7 @@ function StatusStrip({ activeCount }: { activeCount: number }) {
         <span className={cn('relative inline-flex rounded-full h-2 w-2', activeCount > 0 ? 'bg-success' : 'bg-muted-foreground/40')} />
       </span>
       <span className="text-xs text-muted-foreground">
-        {activeCount > 0 ? `${activeCount} monitor${activeCount !== 1 ? 's' : ''} active` : 'No active monitors'}
+        {activeCount > 0 ? `${activeCount} tracker${activeCount !== 1 ? 's' : ''} active` : 'No active trackers'}
       </span>
     </div>
   )
@@ -342,17 +479,149 @@ function EmptyState({ onNew }: { onNew: () => void }) {
       <div className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center mx-auto mb-3">
         <PlaneTakeoff className="h-5 w-5 text-muted-foreground" />
       </div>
-      <p className="text-sm text-foreground font-medium mb-1">No monitors yet</p>
+      <p className="text-sm text-foreground font-medium mb-1">No trackers yet</p>
       <p className="text-xs text-muted-foreground mb-4">
-        Set up your first flight monitor and Claude will do the rest.
+        Set up your first tracker and Claude will do the rest.
       </p>
       <Button
         size="sm"
         onClick={onNew}
         className="bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground cursor-pointer transition-all duration-150"
       >
-        <Plus className="h-3.5 w-3.5 mr-1" />Create monitor
+        <Plus className="h-3.5 w-3.5 mr-1" />Add tracker
       </Button>
+    </div>
+  )
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function formatStops(max_stops: number): string {
+  if (max_stops === 0) return 'Non-stop only'
+  if (max_stops === 1) return 'Up to 1 stop'
+  if (max_stops === 2) return 'Up to 2 stops'
+  return 'Any'
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <span className="text-xs text-muted-foreground/60 shrink-0">{label}</span>
+      <span className="text-xs text-foreground text-right">{value}</span>
+    </div>
+  )
+}
+
+// ── Idle panel ────────────────────────────────────────────────────────────────
+// Shown in the left region when no alert or tracker detail is selected.
+
+function getNextRunIn(): string {
+  const now = new Date()
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  }).formatToParts(now)
+  const ptHour = parseInt(parts.find(p => p.type === 'hour')!.value)
+  const ptMinute = parseInt(parts.find(p => p.type === 'minute')!.value)
+  const minutesUntil5am = (5 * 60 - (ptHour * 60 + ptMinute) + 1440) % 1440 || 1440
+  const h = Math.floor(minutesUntil5am / 60)
+  const m = minutesUntil5am % 60
+  if (h === 0) return `${m}m`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}m`
+}
+
+function daysUntil(dateStr: string): number | null {
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  d.setHours(0, 0, 0, 0)
+  return Math.ceil((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+function formatDaysUntil(days: number): string {
+  if (days === 0) return 'today'
+  if (days === 1) return 'tomorrow'
+  if (days < 0) return `${Math.abs(days)}d ago`
+  return `in ${days} days`
+}
+
+function IdlePanel({
+  preferences, prefsLoading,
+}: {
+  preferences: Preference[]
+  prefsLoading: boolean
+}) {
+  const nextRun = getNextRunIn()
+
+  // Find the active tracker with the nearest upcoming departure date.
+  // Gracefully skips entries whose date strings can't be parsed (older format).
+  const nearest = preferences
+    .filter(p => p.is_active)
+    .map(p => ({ p, days: daysUntil(p.departure_period) }))
+    .filter(({ days }) => days !== null)
+    .sort((a, b) => a.days! - b.days!)[0] ?? null
+
+  return (
+    <div
+      className="self-center pointer-events-none"
+      style={{ animation: 'fadeUp 350ms 320ms ease both' }}
+    >
+      <div className="bg-surface/60 backdrop-blur-md border border-border/50 rounded-2xl px-7 py-5 flex flex-col gap-4 min-w-[260px]">
+
+        {/* Soonest departure */}
+        {prefsLoading ? (
+          <div className="flex items-center gap-2 py-1 text-xs text-muted-foreground">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Loading…
+          </div>
+        ) : nearest ? (
+          <div className="flex flex-col gap-2">
+            <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">
+              Soonest departure
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="font-mono font-bold text-lg text-foreground tracking-widest">
+                {nearest.p.origin}
+              </span>
+              <PlaneTakeoff className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+              <span className="font-mono font-bold text-lg text-foreground tracking-widest">
+                {nearest.p.destination}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{nearest.p.departure_period}</span>
+              <span className="text-xs font-medium text-accent">
+                {formatDaysUntil(nearest.days!)}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground/50 py-1">
+            No upcoming departures found.
+          </p>
+        )}
+
+        <div className="h-px bg-border/40" />
+
+        {/* Next run */}
+        <div className="flex items-center gap-2">
+          <Clock className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
+          <span className="text-xs text-muted-foreground">
+            Next check in{' '}
+            <span className="text-foreground font-medium">{nextRun}</span>
+          </span>
+        </div>
+
+        {/* Hint */}
+        <p className="text-xs text-muted-foreground/35 leading-relaxed">
+          Select a deal or tap ⓘ on a tracker to view details here.
+        </p>
+
+      </div>
     </div>
   )
 }
