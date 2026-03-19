@@ -33,6 +33,18 @@ export function Navbar() {
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
           <Link
+            to="/"
+            className={cn(
+              'px-3 py-1.5 rounded-md text-sm transition-colors duration-150 cursor-pointer',
+              isActive('/')
+                ? 'text-foreground bg-surface'
+                : 'text-muted-foreground hover:text-foreground hover:bg-surface/60',
+            )}
+          >
+            Dashboard
+          </Link>
+
+          <Link
             to="/how-it-works"
             className={cn(
               'px-3 py-1.5 rounded-md text-sm transition-colors duration-150 cursor-pointer',
@@ -101,6 +113,7 @@ export function Navbar() {
       {mobileOpen && (
         <div className="fixed inset-0 z-30 pt-14 bg-background/95 backdrop-blur-md md:hidden">
           <div className="flex flex-col gap-1 p-4">
+            <MobileLink to="/" onClick={() => setMobileOpen(false)}>Dashboard</MobileLink>
             <MobileLink to="/how-it-works" onClick={() => setMobileOpen(false)}>How it works</MobileLink>
             {user ? (
               <>
