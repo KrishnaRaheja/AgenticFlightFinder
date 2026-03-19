@@ -7,12 +7,13 @@ import { AuthModal } from '@/components/AuthModal'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/useAuth'
+import { useLoadingText } from '@/hooks/useLoadingText'
 import { apiFetch } from '@/lib/api'
 import { cn, formatDate } from '@/lib/utils'
 import type { Preference, Alert } from '@/types'
 import {
   Plus, PlaneTakeoff, Bell, Info, ArrowLeftRight,
-  ChevronRight, Loader2, X, Clock
+  ChevronRight, Loader2, X, Clock, TriangleAlert
 } from 'lucide-react'
 
 // ── Panel content type ─────────────────────────────────────────────────────────
@@ -27,6 +28,7 @@ type PanelContent =
 
 export default function HomePage() {
   const { user, loading } = useAuth()
+  const loadingText = useLoadingText()
   const [wizardOpen, setWizardOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
 
@@ -126,7 +128,7 @@ export default function HomePage() {
     return (
       <div className="h-screen w-screen bg-background flex items-center justify-center gap-3">
         <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
-        <span className="text-sm text-muted-foreground">Loading...</span>
+        <span className="text-sm text-muted-foreground">{loadingText}</span>
       </div>
     )
   }
@@ -198,6 +200,14 @@ export default function HomePage() {
             <StatusStrip activeCount={activeCount} />
           </div>
 
+          {/* Spam notice — bottom-left */}
+          <div
+            className="absolute bottom-4 left-4 z-20"
+            style={{ animation: 'fadeUp 350ms 150ms ease both' }}
+          >
+            <SpamNotice />
+          </div>
+
           {/* Watchlist sidebar — slides in from right */}
           <div className={cn(
             'absolute top-14 right-0 bottom-0 z-20 w-96 flex flex-col',
@@ -234,7 +244,7 @@ export default function HomePage() {
               {prefsLoading ? (
                 <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Loading...
+                  {loadingText}
                 </div>
               ) : preferences.length === 0 ? (
                 <EmptyState onNew={() => setWizardOpen(true)} />
@@ -467,6 +477,19 @@ function PreferenceDetailPanel({ preference, onClose, closing }: { preference: P
   )
 }
 
+// ── Spam notice ───────────────────────────────────────────────────────────────
+
+function SpamNotice() {
+  return (
+    <div className="flex items-center gap-2 bg-surface/70 backdrop-blur-sm border border-amber-500/30 rounded-lg px-3 py-2 transition-all duration-300">
+      <TriangleAlert className="h-3 w-3 text-amber-400 shrink-0" />
+      <span className="text-xs text-muted-foreground">
+        Missing tracking emails? Check your <span className="text-amber-400">junk/spam</span> folder.
+      </span>
+    </div>
+  )
+}
+
 // ── Status strip ──────────────────────────────────────────────────────────────
 
 function StatusStrip({ activeCount }: { activeCount: number }) {
@@ -570,6 +593,7 @@ function IdlePanel({
   prefsLoading: boolean
 }) {
   const nextRun = getNextRunIn()
+  const loadingText = useLoadingText()
 
   // Find the active tracker with the nearest upcoming departure date.
   // Gracefully skips entries whose date strings can't be parsed (older format).
@@ -590,7 +614,7 @@ function IdlePanel({
         {prefsLoading ? (
           <div className="flex items-center gap-2 py-1 text-xs text-muted-foreground">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            Loading…
+            {loadingText}
           </div>
         ) : nearest ? (
           <div className="flex flex-col gap-2">

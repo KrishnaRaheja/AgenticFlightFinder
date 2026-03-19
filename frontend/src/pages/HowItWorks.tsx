@@ -10,11 +10,11 @@ const STEPS = [
     title: 'Tell it where you want to go',
     description:
       'Set your origin, destination, and travel window as specific or flexible as you like. Add a budget, preferred cabin, max stops, or just describe what you want in plain English.',
-    detail: 'You can say things like "I want to fly business class, no red-eyes, prefer Star Alliance airlines, and I\'m flexible on dates by a week." Claude understands context, not just checkboxes.',
+    detail: 'You can say things like "No red-eyes, prefer Star Alliance airlines, and I\'m flexible on dates by a week." Claude understands context, not just checkboxes.',
   },
   {
     icon: Bot,
-    title: 'Claude monitors prices every day',
+    title: 'We monitor prices every day',
     description:
       'A Claude agent runs daily at 5 AM PT, searching flights for each of your active monitors. It analyzes results against your preferences, taking into account price trends, schedule, and your specific context.',
     detail: 'Claude doesn\'t just check if a price is below your budget, it reasons about whether a deal is genuinely good given current market rates, your flexibility, and your stated priorities.',
@@ -24,7 +24,7 @@ const STEPS = [
     title: 'You get alerted when a deal appears',
     description:
       'When Claude finds something worth flagging, it composes a clear, human-readable email explaining exactly why it thinks this is a good deal and what you should know before booking.',
-    detail: 'Alerts include the reasoning, a reference price (so you can see what "normal" looks like), and the key flight details. No noise. Only alerts when something genuinely stands out.',
+    detail: 'Alerts include the reasoning, a reference price (so you can see what "normal" looks like), and the key flight details. No noise. Only alerts when something genuinely stands out. Check your spam or junk folder if you\'re not seeing them.',
   },
 ]
 
