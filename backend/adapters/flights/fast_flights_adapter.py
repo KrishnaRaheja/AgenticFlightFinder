@@ -23,6 +23,7 @@ Design Considerations:
 from fast_flights import get_flights, FlightData, Passengers, Result
 from backend.adapters.flights.adapter_interface import FlightAdapter
 from backend.models.universal_flight_model import UniversalFlight, FlightItinerary
+from tenacity import retry, stop_after_attempt, wait_exponential, before_sleep_log
 from typing import List, Optional, Set, Tuple
 from datetime import datetime, timedelta
 import re
@@ -98,23 +99,11 @@ class FastFlightsAdapter(FlightAdapter):
                 f"(class={seat_class}, max_stops={max_stops})"
             )
 
-            result: Result = get_flights(
-                flight_data=[
-                    FlightData(
-                        date=departure_date,
-                        from_airport=origin,
-                        to_airport=destination
-                    )
-                ],
-                trip="one-way",
-                seat=seat_class,
-                passengers=Passengers(
-                    adults=1,
-                    children=0,
-                    infants_in_seat=0,
-                    infants_on_lap=0
-                ),
-                fetch_mode="fallback"
+            result: Result = self._fetch_flights_with_retry(
+                departure_date=departure_date,
+                origin=origin,
+                destination=destination,
+                seat_class=seat_class,
             )
 
             if not result or not result.flights:
@@ -149,6 +138,43 @@ class FastFlightsAdapter(FlightAdapter):
                 exc_info=True
             )
             return []
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=30),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True,
+    )
+    def _fetch_flights_with_retry(
+        self,
+        departure_date: str,
+        origin: str,
+        destination: str,
+        seat_class: str,
+    ) -> Result:
+        """Call get_flights() with exponential backoff retry.
+
+        Retries up to 3 times with delays of ~2s, ~4s on failure.
+        Raises the last exception if all attempts are exhausted.
+        """
+        return get_flights(
+            flight_data=[
+                FlightData(
+                    date=departure_date,
+                    from_airport=origin,
+                    to_airport=destination,
+                )
+            ],
+            trip="one-way",
+            seat=seat_class,
+            passengers=Passengers(
+                adults=1,
+                children=0,
+                infants_in_seat=0,
+                infants_on_lap=0,
+            ),
+            fetch_mode="fallback",
+        )
 
     def _process_flights(
         self,
