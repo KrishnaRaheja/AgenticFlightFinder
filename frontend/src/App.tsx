@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react'
 import HomePage from '@/pages/HomePage'
 import HowItWorks from '@/pages/HowItWorks'
 import Settings from '@/pages/Settings'
+import ResetPasswordPage from '@/pages/ResetPasswordPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -45,6 +46,9 @@ function App() {
         <Route path="/settings" element={
           <ProtectedRoute><Settings /></ProtectedRoute>
         } />
+
+        {/* Password reset — public, session comes from Supabase recovery token */}
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Legacy redirects */}
         <Route path="/login" element={<Navigate to="/" replace />} />
