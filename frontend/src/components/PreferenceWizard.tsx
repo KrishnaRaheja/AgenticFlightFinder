@@ -37,7 +37,7 @@ const DEFAULT_DATA: WizardData = {
 // 'auth' is an inline auth form between route and preferences
 type WizardView = 'route' | 'auth' | 'preferences' | 'context'
 
-const MAIN_STEPS = ['Route', 'Preferences', 'Tell Claude']
+const MAIN_STEPS = ['Route', 'Preferences', 'Make it yours!']
 
 // Map view → which step index to highlight in the progress bar
 const VIEW_TO_STEP_INDEX: Record<WizardView, number> = {
@@ -434,7 +434,9 @@ function StepPreferences({ data, update }: { data: WizardData; update: (p: Parti
         <input type="checkbox" id="nearby" checked={data.nearby_airports}
           onChange={e => update({ nearby_airports: e.target.checked })}
           className="w-4 h-4 rounded border-border bg-elevated accent-primary cursor-pointer" />
-        <Label htmlFor="nearby" className="text-sm text-muted-foreground cursor-pointer">Include nearby airports</Label>
+        <Label htmlFor="nearby" className="text-sm text-muted-foreground cursor-pointer">
+          Include nearby airports <span className="italic text-xs text-muted-foreground/60 ml-1">(search nearby departure and/or arrival airports, e.g. JFK, LGA, EWR)</span>
+        </Label>
       </div>
     </div>
   )
@@ -452,10 +454,10 @@ function StepContext({
     <div className="px-6 py-5 space-y-4">
       <div className="flex items-start gap-3">
         <div className="mt-0.5 p-1.5 rounded-lg bg-primary/10 border border-primary/20 shrink-0">
-          <Sparkles className="h-4 w-4 text-accent" />
+          <Sparkles className="h-3 w-3 text-accent" />
         </div>
         <div>
-          <h3 className="text-base font-semibold text-foreground">Tell Claude what matters <span className="font-normal text-muted-foreground text-sm">(Optional)</span></h3>
+          <h3 className="text-base font-semibold text-foreground">Tell our agent what matters <span className="font-normal text-muted-foreground text-sm">(Optional)</span></h3>
         </div>
       </div>
       <div className="relative">

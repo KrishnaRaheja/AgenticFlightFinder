@@ -3,7 +3,7 @@ import { useAuth, DuplicateEmailError } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, Mail, Lock, ArrowRight } from 'lucide-react'
+import { Loader2, Mail, Lock, ArrowRight, TriangleAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface AuthFormProps {
@@ -116,6 +116,10 @@ export function AuthForm({ onSuccess, defaultTab = 'signup' }: AuthFormProps) {
           {!loading && <ArrowRight className="h-3.5 w-3.5 ml-2" />}
         </Button>
       </form>
+      <div className="flex items-center gap-2 bg-surface/70 backdrop-blur-sm border border-amber-500/30 rounded-lg px-3 py-2 mt-4">
+        <TriangleAlert className="h-3 w-3 text-amber-400 shrink-0" />
+        <span className="text-xs text-muted-foreground">Your data is only used to search for flights and send you alerts, and is never sold. We cannot see your password.</span>
+      </div>
     </div>
   )
 }

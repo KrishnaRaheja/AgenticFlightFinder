@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 const STEPS = [
   {
     icon: PlaneTakeoff,
-    title: 'Tell it where you want to go',
+    title: 'Tell us where you want to go',
     description:
       'Set your origin, destination, and travel window as specific or flexible as you like. Add a budget, preferred cabin, max stops, or just describe what you want in plain English.',
     detail: 'You can say things like "No red-eyes, prefer Star Alliance airlines, and I\'m flexible on dates by a week." Claude understands context, not just checkboxes.',
