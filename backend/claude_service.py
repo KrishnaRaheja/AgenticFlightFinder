@@ -24,6 +24,9 @@ import bleach
 # Tags and attributes safe for HTML email content.
 # Strips anything that could execute code or redirect users (script, iframe, object, etc.).
 _EMAIL_ALLOWED_TAGS = [
+    # Document structure — needed so <style> isn't stripped to raw CSS text
+    "html", "head", "body", "style",
+    # Layout
     "a", "b", "br", "div", "em", "h1", "h2", "h3", "h4", "h5", "h6",
     "hr", "i", "img", "li", "ol", "p", "span", "strong", "table",
     "tbody", "td", "th", "thead", "tr", "ul",
