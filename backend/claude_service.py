@@ -19,6 +19,24 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import logging
 
+import bleach
+
+# Tags and attributes safe for HTML email content.
+# Strips anything that could execute code or redirect users (script, iframe, object, etc.).
+_EMAIL_ALLOWED_TAGS = [
+    "a", "b", "br", "div", "em", "h1", "h2", "h3", "h4", "h5", "h6",
+    "hr", "i", "img", "li", "ol", "p", "span", "strong", "table",
+    "tbody", "td", "th", "thead", "tr", "ul",
+]
+_EMAIL_ALLOWED_ATTRIBUTES = {
+    "*": ["style", "class"],
+    "a": ["href", "target"],
+    "img": ["src", "alt", "width", "height"],
+    "table": ["width", "cellpadding", "cellspacing", "border", "bgcolor"],
+    "td": ["width", "colspan", "rowspan", "align", "valign", "bgcolor"],
+    "th": ["width", "colspan", "rowspan", "align", "valign"],
+}
+
 from backend.database import get_supabase
 from backend.email_service import send_email
 from backend.adapters.flights.fast_flights_adapter import FastFlightsAdapter
@@ -494,6 +512,17 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
         email_body_html = arguments.get("email_body_html")
         reference_price = arguments.get("reference_price")
         reasoning = arguments.get("reasoning")
+
+        # Sanitize Claude-generated HTML before storing or sending.
+        # Strips executable tags (script, iframe, object, etc.) while preserving
+        # safe formatting needed for a proper email layout.
+        if email_body_html:
+            email_body_html = bleach.clean(
+                email_body_html,
+                tags=_EMAIL_ALLOWED_TAGS,
+                attributes=_EMAIL_ALLOWED_ATTRIBUTES,
+                strip=True,
+            )
         
         required_fields = ["user_id", "preference_id", "alert_type", "email_subject", "email_body_html", "reference_price", "reasoning"]
         if not all(arguments.get(field) for field in required_fields):

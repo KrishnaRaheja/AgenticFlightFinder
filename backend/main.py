@@ -19,7 +19,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer
 from fastapi.openapi.utils import get_openapi
 from backend.database import get_supabase
 from backend.scheduler import start_scheduler
@@ -45,14 +44,10 @@ app = FastAPI(
 
 logger = logging.getLogger(__name__)
 
-# Configure Bearer token security
-security = HTTPBearer()
-
 # Add CORS middleware to allow requests from React frontend
 _allowed_origins = [
     "http://localhost:3000",
     "http://localhost:5173",
-    "https://*.vercel.app",
     "https://flightfinders.org",
     "https://www.flightfinders.org",
 ]
@@ -115,8 +110,7 @@ async def health_check():
     """Tests database connection"""
     try:
         supabase = get_supabase()
-        # Test database connection by querying flight_preferences table
         supabase.table("flight_preferences").select("count", count="exact").execute()
-        return {"status": "healthy", "database": "connected"}
+        return {"status": "healthy"}
     except Exception:
-        return {"status": "unhealthy", "error": "Database connection failed"}
+        return {"status": "unhealthy"}
