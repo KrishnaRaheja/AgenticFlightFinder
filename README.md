@@ -1,7 +1,5 @@
 # Agentic Flight Finder
 
-**Set it and forget it - Let us passively watch prices for you.**
-
 Agentic Flight Finder is a web app for setting up autonomous flight monitors. Pick a route and preferences once, and a Claude agent searches for flights on your behalf every morning, builds up a price history over time, and emails you a summary of what it found. The longer it runs, the sharper its price assessments get.
 
 **Live:** [flightfinders.org](https://flightfinders.org)
