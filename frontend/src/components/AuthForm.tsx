@@ -3,7 +3,7 @@ import { useAuth, DuplicateEmailError } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, Mail, Lock, ArrowRight, TriangleAlert } from 'lucide-react'
+import { Loader2, Mail, Lock, TriangleAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface AuthFormProps {
@@ -58,7 +58,7 @@ export function AuthForm({ onSuccess, defaultTab = 'signup' }: AuthFormProps) {
         <p className="text-sm text-muted-foreground">
           {signupDone
             ? <>We sent a confirmation link to <span className="text-foreground">{email}</span>.<br />Check your inbox or junk folder to authenticate yourself.</>
-            : <>We sent a password reset link to <span className="text-foreground">{email}</span>.<br />Check your inbox or junk folder.</>
+            : <>If an account exists for <span className="text-foreground">{email}</span>, we sent a password reset link.<br />Check your inbox or junk folder.</>
           }
         </p>
         <button
@@ -134,7 +134,7 @@ export function AuthForm({ onSuccess, defaultTab = 'signup' }: AuthFormProps) {
         >
           {loading && <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />}
           {forgotMode ? 'Send reset link' : tab === 'signin' ? 'Sign in' : 'Create account'}
-          {!loading && <ArrowRight className="h-3.5 w-3.5 ml-2" />}
+          {/* trailing icon removed */}
         </Button>
         {forgotMode && (
           <button
