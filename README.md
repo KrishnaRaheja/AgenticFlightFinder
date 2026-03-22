@@ -1,6 +1,6 @@
 # Agentic Flight Finder
 
-Agentic Flight Finder is a web app for setting up autonomous flight monitors. Pick a route and preferences once, and a Claude agent searches for flights on your behalf every morning, builds up a price history over time, and emails you a summary of what it found. The longer it runs, the sharper its price assessments get.
+Agentic Flight Finder is a web app for setting up autonomous flight monitors. Pick a route and preferences once, and a Claude agent runs each morning to reason through your case — deciding whether to search, how to evaluate results against its own price history, and whether an alert is due. The longer it runs, the sharper its assessments get.
 
 **Live:** [flightfinders.org](https://flightfinders.org)
 
@@ -12,7 +12,7 @@ Agentic Flight Finder is a web app for setting up autonomous flight monitors. Pi
 
 ## How It Works
 
-You set a flight route, budget, and preferred cabin class through a multi-step wizard. From there, a scheduled Claude agent takes over: every morning at 5 AM, it searches for flights, stores the results, and queries its own price history. It then sends you a formatted email update on your chosen schedule (daily or weekly) that includes current prices and an assessment of whether they're good, typical, or above average. The agent reasons through this evaluation using its own past searches and when available, indicators from the flight data source.
+You set a flight route, budget, and preferred cabin class through a multi-step wizard. From there, a scheduled Claude agent takes over each morning. Claude goes through each preference and makes tool calls based on context (e.g. how long since last alert, price history). When you receive an alert, it includes a formatted summary with current prices and Claude's evaluation of them (good, typical, or above average).
 
 ---
 
@@ -26,7 +26,7 @@ The system has two distinct execution paths. The **request path** handles user i
 
 ## The Agent
 
-A Claude agent runs on a cron schedule, using multi-turn tool use to search flights, build price history, and produce a reasoned assessment of current prices for each user's route. Given a preference, the agent decides what to search, stores results, retrieves historical trends, and writes a summary email evaluating whether current prices are good, typical, or above average. The conversation ends when Claude calls `end_turn`, typically after 4–6 turns and capped at 7.
+A Claude agent runs on a cron schedule, using multi-turn tool use to reason through each user's preference (see https://platform.claude.com/docs/en/agent-sdk/agent-loop for more details). Based on context like alert frequency and recent activity, it decides whether to search for flights, update price history, send an alert, or skip the run entirely.
 
 ### Tools
 
@@ -189,4 +189,4 @@ Required environment variables are documented in [`.env.example`](.env.example).
 
 ## About
 
-Most flight tracking tools don't support passive monitoring, and when they do, they can't understand real user context. I wanted something to passively monitor routes I was eyeing, while understanding specific context a traditional booking service would not be able to understand.
+Most flight tracking tools don't support passive monitoring, and when they do, they can't account for real user context. I wanted something to passively monitor routes I was eyeing, while accounting for the kind of specific context a traditional booking service ignores.

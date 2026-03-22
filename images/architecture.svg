@@ -1,83 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 680 560">
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 820 510">
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M1 1.5 L9 5 L1 8.5" fill="none" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
 
-  <!-- Lane 1: Request Path background -->
-  <rect x="20" y="20" width="640" height="190" rx="14" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5" opacity="0.8"/>
-  <text font-family="Arial, sans-serif" font-size="12" fill="#185FA5" x="36" y="44">Request path</text>
+  <!-- Background -->
+  <rect width="820" height="510" fill="#FAFAFA" rx="4"/>
 
-  <!-- Lane 2: Autonomous Path background -->
-  <rect x="20" y="230" width="640" height="310" rx="14" fill="#EEEDFE" stroke="#7F77DD" stroke-width="0.5" opacity="0.8"/>
-  <text font-family="Arial, sans-serif" font-size="12" fill="#534AB7" x="36" y="254">Autonomous path</text>
+  <!-- Shared zone (right column) -->
+  <rect x="560" y="15" width="245" height="480" rx="10" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="5 3"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#94A3B8" x="682" y="33" text-anchor="middle" letter-spacing="1.5">SHARED</text>
 
-  <!-- Browser -->
-  <rect x="44" y="68" width="110" height="104" rx="8" fill="#B5D4F4" stroke="#378ADD" stroke-width="0.5"/>
-  <text font-family="Arial, sans-serif" font-size="14" font-weight="500" fill="#0C447C" x="99" y="114" text-anchor="middle" dominant-baseline="central">Browser</text>
-  <text font-family="Arial, sans-serif" font-size="12" fill="#185FA5" x="99" y="136" text-anchor="middle" dominant-baseline="central">React / Vite</text>
+  <!-- Request Path lane -->
+  <rect x="15" y="15" width="535" height="155" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" font-weight="600" fill="#2563EB" x="30" y="33" letter-spacing="1">REQUEST PATH</text>
+
+  <!-- Autonomous Path lane -->
+  <rect x="15" y="183" width="535" height="312" rx="10" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" font-weight="600" fill="#7C3AED" x="30" y="200" letter-spacing="1">AUTONOMOUS PATH</text>
+
+  <!-- SUPABASE -->
+  <rect x="580" y="72" width="135" height="310" rx="8" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#065F46" x="647" y="224" text-anchor="middle">Supabase</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#047857" x="647" y="243" text-anchor="middle">Postgres + Auth</text>
+
+  <!-- BROWSER -->
+  <rect x="35" y="50" width="115" height="80" rx="7" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#1E40AF" x="92" y="87" text-anchor="middle">Browser</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#1D4ED8" x="92" y="106" text-anchor="middle">React / Vite</text>
 
   <!-- Arrow: Browser -> FastAPI -->
-  <line x1="154" y1="120" x2="224" y2="120" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text font-family="Arial, sans-serif" font-size="11" fill="#5F5E5A" x="189" y="113" text-anchor="middle">JWT</text>
+  <line x1="150" y1="90" x2="202" y2="90" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="176" y="83" text-anchor="middle">JWT</text>
 
-  <!-- FastAPI -->
-  <rect x="224" y="68" width="130" height="104" rx="8" fill="#9FE1CB" stroke="#1D9E75" stroke-width="0.5"/>
-  <text font-family="Arial, sans-serif" font-size="14" font-weight="500" fill="#085041" x="289" y="114" text-anchor="middle" dominant-baseline="central">FastAPI</text>
-  <text font-family="Arial, sans-serif" font-size="12" fill="#0F6E56" x="289" y="136" text-anchor="middle" dominant-baseline="central">Railway</text>
+  <!-- FASTAPI -->
+  <rect x="202" y="50" width="125" height="80" rx="7" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#065F46" x="264" y="87" text-anchor="middle">FastAPI</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#047857" x="264" y="106" text-anchor="middle">Railway</text>
 
   <!-- Arrow: FastAPI -> Supabase -->
-  <line x1="354" y1="120" x2="424" y2="120" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text font-family="Arial, sans-serif" font-size="11" fill="#5F5E5A" x="389" y="113" text-anchor="middle">RLS</text>
+  <line x1="327" y1="90" x2="580" y2="90" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="453" y="83" text-anchor="middle">RLS</text>
 
-  <!-- Supabase (shared, spans both lanes) -->
-  <rect x="424" y="68" width="130" height="450" rx="8" fill="#9FE1CB" stroke="#1D9E75" stroke-width="0.5"/>
-  <text font-family="Arial, sans-serif" font-size="14" font-weight="500" fill="#085041" x="489" y="286" text-anchor="middle" dominant-baseline="central">Supabase</text>
-  <text font-family="Arial, sans-serif" font-size="12" fill="#0F6E56" x="489" y="308" text-anchor="middle" dominant-baseline="central">Postgres + Auth</text>
+  <!-- APSCHEDULER -->
+  <rect x="35" y="218" width="115" height="80" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="12" font-weight="600" fill="#4C1D95" x="92" y="254" text-anchor="middle">APScheduler</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#6D28D9" x="92" y="272" text-anchor="middle">05:00 PT</text>
 
-  <!-- APScheduler -->
-  <rect x="44" y="278" width="110" height="104" rx="8" fill="#CECBF6" stroke="#7F77DD" stroke-width="0.5"/>
-  <text font-family="Arial, sans-serif" font-size="13" font-weight="500" fill="#26215C" x="99" y="322" text-anchor="middle" dominant-baseline="central">APScheduler</text>
-  <text font-family="Arial, sans-serif" font-size="11" fill="#3C3489" x="99" y="344" text-anchor="middle" dominant-baseline="central">5 AM PT</text>
+  <!-- Arrow: APScheduler -> Claude Agent -->
+  <line x1="150" y1="258" x2="202" y2="258" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="176" y="251" text-anchor="middle">triggers</text>
 
-  <!-- Arrow: Scheduler -> Claude -->
-  <line x1="154" y1="330" x2="224" y2="330" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- CLAUDE AGENT -->
+  <rect x="202" y="218" width="125" height="80" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#4C1D95" x="264" y="254" text-anchor="middle">Claude Agent</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#6D28D9" x="264" y="272" text-anchor="middle">Haiku · tool use</text>
 
-  <!-- Claude Agent -->
-  <rect x="224" y="278" width="130" height="104" rx="8" fill="#CECBF6" stroke="#7F77DD" stroke-width="0.5"/>
-  <text font-family="Arial, sans-serif" font-size="13" font-weight="500" fill="#26215C" x="289" y="318" text-anchor="middle" dominant-baseline="central">Claude Agent</text>
-  <text font-family="Arial, sans-serif" font-size="11" fill="#3C3489" x="289" y="340" text-anchor="middle" dominant-baseline="central">Haiku · tool use</text>
-
-  <!-- Arrow: Claude -> Supabase -->
-  <line x1="354" y1="330" x2="422" y2="330" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text font-family="Arial, sans-serif" font-size="11" fill="#5F5E5A" x="388" y="323" text-anchor="middle">tools</text>
-
-  <!-- Arrow: Scheduler -> Resend -->
-  <line x1="99" y1="382" x2="99" y2="430" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text font-family="Arial, sans-serif" font-size="11" fill="#5F5E5A" x="78" y="410" text-anchor="middle">5 PM</text>
-
-  <!-- Resend -->
-  <rect x="44" y="430" width="110" height="56" rx="8" fill="#FAC775" stroke="#BA7517" stroke-width="0.5"/>
-  <text font-family="Arial, sans-serif" font-size="14" font-weight="500" fill="#412402" x="99" y="458" text-anchor="middle" dominant-baseline="central">Resend</text>
-
-  <!-- Arrow: Resend -> User inbox -->
-  <line x1="154" y1="458" x2="224" y2="458" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
-
-  <!-- User inbox -->
-  <rect x="224" y="430" width="130" height="56" rx="8" fill="#D3D1C7" stroke="#888780" stroke-width="0.5"/>
-  <text font-family="Arial, sans-serif" font-size="14" font-weight="500" fill="#2C2C2A" x="289" y="458" text-anchor="middle" dominant-baseline="central">User inbox</text>
-
-  <!-- Flight Adapter -->
-  <rect x="580" y="278" width="70" height="104" rx="8" fill="#F5C4B3" stroke="#993C1D" stroke-width="0.5"/>
-  <text font-family="Arial, sans-serif" font-size="13" font-weight="500" fill="#4A1B0C" x="615" y="318" text-anchor="middle" dominant-baseline="central">Flight</text>
-  <text font-family="Arial, sans-serif" font-size="13" font-weight="500" fill="#4A1B0C" x="615" y="336" text-anchor="middle" dominant-baseline="central">adapter</text>
-  <text font-family="Arial, sans-serif" font-size="11" fill="#712B13" x="615" y="356" text-anchor="middle" dominant-baseline="central">fast-flights</text>
-
-  <!-- Arrow: Claude -> Flight Adapter -->
-  <path d="M354 292 L410 292 L410 248 L615 248 L615 278" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
-
+  <!-- Arrow: Claude -> Flight Adapter (search) -->
+  <line x1="327" y1="250" x2="382" y2="250" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="354" y="244" text-anchor="middle">search</text>
   <!-- Arrow: Flight Adapter -> Claude (return) -->
-  <path d="M615 382 L615 500 L410 500 L410 368 L354 368" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="382" y1="266" x2="327" y2="266" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#64748B" x="354" y="276" text-anchor="middle">results</text>
+
+  <!-- FLIGHT ADAPTER -->
+  <rect x="382" y="218" width="120" height="80" rx="7" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#7F1D1D" x="442" y="254" text-anchor="middle">Flight Adapter</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#991B1B" x="442" y="272" text-anchor="middle">fast-flights</text>
+
+  <!-- Arrow: Claude Agent -> Supabase (tools) -->
+  <path d="M264 298 L264 342 L580 342" fill="none" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="415" y="335" text-anchor="middle">tools</text>
+
+  <!-- Arrow: APScheduler -> Email Service (5 PM) -->
+  <line x1="92" y1="298" x2="92" y2="368" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="108" y="337" text-anchor="start">17:00 PT</text>
+
+  <!-- EMAIL SERVICE -->
+  <rect x="35" y="368" width="115" height="70" rx="7" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="12" font-weight="600" fill="#78350F" x="92" y="407" text-anchor="middle">Email Service</text>
+
+  <!-- Arrow: Email Service -> Resend -->
+  <line x1="150" y1="403" x2="202" y2="403" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- RESEND -->
+  <rect x="202" y="368" width="115" height="70" rx="7" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#78350F" x="259" y="407" text-anchor="middle">Resend</text>
+
+  <!-- Arrow: Resend -> User Inbox -->
+  <line x1="317" y1="403" x2="372" y2="403" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- USER INBOX -->
+  <rect x="372" y="368" width="128" height="70" rx="7" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#334155" x="436" y="407" text-anchor="middle">User Inbox</text>
 
 </svg>
