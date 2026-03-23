@@ -17,21 +17,43 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 from backend.database import get_supabase
+from backend.limiter import limiter
 from backend.scheduler import start_scheduler
 
 from backend.routes.preferences import router as preferences_router
 
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN", ""),
+    traces_sample_rate=0.1,
+    environment=os.getenv("RAILWAY_ENVIRONMENT", "development"),
+)
+
+
+class _BodySizeLimitMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        cl = request.headers.get("content-length")
+        if cl and int(cl) > 8_192:  # 8 KB — 16× the largest valid payload
+            return Response("Request too large", status_code=413)
+        return await call_next(request)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    start_scheduler()
+    app.state.scheduler = start_scheduler()
     logger.info(
         "Scheduler running in PT with daily monitoring and daily email delivery at configured schedule times"
     )
     yield
+    app.state.scheduler.shutdown(wait=False)
 
 
 app = FastAPI(
@@ -43,6 +65,10 @@ app = FastAPI(
 )
 
 logger = logging.getLogger(__name__)
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(_BodySizeLimitMiddleware)
 
 # Add CORS middleware to allow requests from React frontend
 _allowed_origins = [
@@ -59,8 +85,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 app.include_router(preferences_router)
@@ -107,10 +133,15 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Tests database connection"""
+    """Tests database connection and scheduler health."""
+    checks: dict[str, str] = {}
     try:
         supabase = get_supabase()
         supabase.table("flight_preferences").select("count", count="exact").execute()
-        return {"status": "healthy"}
+        checks["database"] = "ok"
     except Exception:
-        return {"status": "unhealthy"}
+        checks["database"] = "error"
+    scheduler = getattr(app.state, "scheduler", None)
+    checks["scheduler"] = "ok" if (scheduler and scheduler.running) else "error"
+    overall = "healthy" if all(v == "ok" for v in checks.values()) else "unhealthy"
+    return {"status": overall, **checks}

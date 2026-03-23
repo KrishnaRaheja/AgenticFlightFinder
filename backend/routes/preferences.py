@@ -13,9 +13,10 @@ Key features:
 - Returns alerts for each preference
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from backend.auth import AuthContext, get_current_user
 from backend.database import get_user_supabase
+from backend.limiter import limiter
 from backend.limits import MAX_ACTIVE_PREFERENCES_PER_USER
 from backend.schemas import (
     FlightPreferenceCreate,
@@ -41,7 +42,9 @@ def get_preference_service(auth: AuthContext = Depends(get_current_user)) -> Pre
 
 
 @router.post("/", response_model=FlightPreferenceResponse)
+@limiter.limit("10/minute")
 async def create_preference(
+    request: Request,
     preference: FlightPreferenceCreate,
     auth: AuthContext = Depends(get_current_user),
     preference_service: PreferenceService = Depends(get_preference_service),
@@ -66,7 +69,9 @@ async def create_preference(
 
 
 @router.get("/", response_model=PreferencesListResponse)
+@limiter.limit("60/minute")
 async def get_preferences(
+    request: Request,
     auth: AuthContext = Depends(get_current_user),
     preference_service: PreferenceService = Depends(get_preference_service),
 ):
@@ -87,7 +92,9 @@ async def get_preferences(
 
 
 @router.get("/{preference_id}", response_model=FlightPreferenceResponse)
+@limiter.limit("60/minute")
 async def get_preference(
+    request: Request,
     preference_id: UUID,
     auth: AuthContext = Depends(get_current_user),
     preference_service: PreferenceService = Depends(get_preference_service),
@@ -107,7 +114,9 @@ async def get_preference(
 
 
 @router.put("/{preference_id}", response_model=FlightPreferenceResponse)
+@limiter.limit("20/minute")
 async def update_preference(
+    request: Request,
     preference_id: UUID,
     preference: FlightPreferenceCreate,
     auth: AuthContext = Depends(get_current_user),
@@ -135,7 +144,9 @@ async def update_preference(
 
 
 @router.patch("/{preference_id}/status", response_model=FlightPreferenceResponse)
+@limiter.limit("30/minute")
 async def update_preference_status(
+    request: Request,
     preference_id: UUID,
     status_update: FlightPreferenceStatusUpdate,
     auth: AuthContext = Depends(get_current_user),
@@ -163,7 +174,9 @@ async def update_preference_status(
 
 
 @router.delete("/{preference_id}")
+@limiter.limit("20/minute")
 async def delete_preference(
+    request: Request,
     preference_id: UUID,
     auth: AuthContext = Depends(get_current_user),
     preference_service: PreferenceService = Depends(get_preference_service),
@@ -186,7 +199,9 @@ async def delete_preference(
 
 
 @router.get("/{preference_id}/alerts", response_model=list[AlertResponse])
+@limiter.limit("60/minute")
 async def get_preference_alerts(
+    request: Request,
     preference_id: UUID,
     auth: AuthContext = Depends(get_current_user),
     preference_service: PreferenceService = Depends(get_preference_service),

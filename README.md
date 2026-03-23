@@ -191,3 +191,7 @@ Required environment variables are documented in [`.env.example`](.env.example).
 ## About
 
 Most flight tracking tools don't support passive monitoring, and when they do, they can't account for real user context. I wanted something to passively monitor routes I was eyeing, while accounting for the kind of specific context a traditional booking service ignores.
+
+---
+
+*Disclaimer: This is a personal project built for learning purposes, not a commercial product.*

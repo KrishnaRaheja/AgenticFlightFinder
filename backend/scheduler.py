@@ -7,17 +7,26 @@ ensuring that active user preferences are checked on a regular schedule.
 
 import asyncio
 import logging
+import logging.config
 from zoneinfo import ZoneInfo
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from backend.email_service import send_daily_alert_emails
 from backend.services import MonitoringService
 
-# Configure logging for scheduler events
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# Configure structured JSON logging for all backend loggers
+logging.config.dictConfig({
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "format": '{"time":"%(asctime)s","name":"%(name)s","level":"%(levelname)s","message":"%(message)s"}',
+            "datefmt": "%Y-%m-%dT%H:%M:%SZ",
+        }
+    },
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "json"}},
+    "root": {"handlers": ["console"], "level": "INFO"},
+})
 logger = logging.getLogger(__name__)
 monitoring_service = MonitoringService()
 

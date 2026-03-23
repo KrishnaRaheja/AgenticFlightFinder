@@ -10,3 +10,5 @@ aiosmtplib==5.1.0
 resend
 fast-flights==2.2
 tenacity==9.1.2
+slowapi==0.1.9
+sentry-sdk[fastapi]>=2.20.0

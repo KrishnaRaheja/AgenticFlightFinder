@@ -35,6 +35,7 @@ export default function HomePage() {
   const [preferences, setPreferences] = useState<Preference[]>([])
   const [activeLimit, setActiveLimit] = useState<number>(Infinity)
   const [prefsLoading, setPrefsLoading] = useState(false)
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [panelContent, setPanelContent] = useState<PanelContent | null>(null)
 
@@ -84,13 +85,18 @@ export default function HomePage() {
   const fetchPreferences = useCallback(async () => {
     if (!user) return
     setPrefsLoading(true)
+    setFetchError(null)
     try {
       const res = await apiFetch('/api/preferences/')
       if (res.ok) {
         const body = await res.json()
         setPreferences(body.preferences)
         setActiveLimit(body.active_limit)
+      } else {
+        setFetchError(`Failed to load trackers (${res.status})`)
       }
+    } catch {
+      setFetchError('Could not reach server. Check your connection.')
     } finally {
       setPrefsLoading(false)
     }
@@ -248,7 +254,12 @@ export default function HomePage() {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-3">
-              {prefsLoading ? (
+              {fetchError ? (
+                <div className="flex items-center gap-2 bg-destructive/10 border border-destructive/30 rounded-lg px-3 py-2 mx-1 mt-1 text-xs text-destructive">
+                  <TriangleAlert className="h-3 w-3 shrink-0" />
+                  {fetchError}
+                </div>
+              ) : prefsLoading ? (
                 <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {loadingText}
