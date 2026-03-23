@@ -21,6 +21,7 @@ jobs:
           SUPABASE_URL: "https://placeholder.supabase.co"
           SUPABASE_SERVICE_KEY: "placeholder"
           SUPABASE_ANON_KEY: "placeholder"
+          ANTHROPIC_API_KEY: "placeholder"
 
   frontend-check:
     runs-on: ubuntu-latest
