@@ -21,6 +21,7 @@ You set a flight route, budget, and preferred cabin class through a multi-step w
 ![System Architecture](images/architecture.svg)
 
 The system has two distinct execution paths. The **request path** handles user interactions synchronously: the React frontend talks to a FastAPI backend on Railway, which reads and writes to Supabase with Row Level Security enforced via the user's JWT. The **autonomous path** runs independently of any user request: APScheduler triggers monitoring at a fixed time, the Claude agent runs its tool loop, and results are batched for email delivery later in the day. These paths share Supabase as a data store but use different Supabase client configurations (see [Backend Architecture](#backend-architecture)).
+There is one exception to this however: when a flight tracker is first created, FastAPI triggers Claude to monitor the route so the user sees an initial search. After the initial monitoring, Claude runs according to APScheduler.
 
 ---
 
