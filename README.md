@@ -25,22 +25,6 @@ There is one exception to this however: when a flight tracker is first created, 
 
 ---
 
-## Screenshots
-
-**Tracker setup: preferences step.** Optional details for a flight preference so Claude can intelligently filter routes. Includes options like 'Include nearby airports' (ex. JFK, LGA, and EWR are all in New York, taking off from either is fine).
-
-![Preference wizard](images/preference-selection.png)
-
-**Tracker setup: additional context step.** Users can specify airline preferences, layover limits, departure time windows, or anything else that matters to them.
-
-![Additional context](images/additional-context-section.png)
-
-**Email preview.** Each alert is viewable in-app and sent to the user's inbox.
-
-![Email preview](images/email-preview.png)
-
----
-
 ## The Agent
 
 A Claude agent runs on a cron schedule, using multi-turn tool use to reason through each user's preference (see https://platform.claude.com/docs/en/agent-sdk/agent-loop for more details). Based on context like alert frequency and recent activity, it decides whether to search for flights, update price history, send an alert, or skip the run entirely.
@@ -154,22 +138,6 @@ The backend uses two Supabase clients with different privilege levels. The **ser
 
 ---
 
-## Screenshots
-
-**Tracker setup: preferences step.** Optional details for a flight preference so Claude can intelligently filter routes. Includes options like 'Include nearby airports' (ex. JFK, LGA, and EWR are all in New York, taking off from either is fine).
-
-![Preference wizard](images/preference-selection.png)
-
-**Tracker setup: additional context step.** Users can specify airline preferences, layover limits, departure time windows, or anything else that matters to them.
-
-![Additional context](images/additional-context-section.png)
-
-**Email preview.** Each alert is viewable in-app and sent to the user's inbox.
-
-![Email preview](images/email-preview.png)
-
----
-
 ## Database Schema
 
 All data lives in Supabase (Postgres). Row Level Security is enforced on every table, users can only read and write their own rows.
@@ -232,6 +200,22 @@ An audit trail of every agent run — including runs where Claude decided to ski
 | `activity_type` | text | `searched`, `alerted`, `skipped_search`, `no_results_found` |
 | `reasoning` | text | Claude's explanation for the decision |
 | `timestamp` | timestamptz | When the run occurred |
+
+---
+
+## Screenshots
+
+**Tracker setup: preferences step.** Optional details for a flight preference so Claude can intelligently filter routes. Includes options like 'Include nearby airports' (ex. JFK, LGA, and EWR are all in New York, taking off from either is fine).
+
+![Preference wizard](images/preference-selection.png)
+
+**Tracker setup: additional context step.** Users can specify airline preferences, layover limits, departure time windows, or anything else that matters to them.
+
+![Additional context](images/additional-context-section.png)
+
+**Email preview.** Each alert is viewable in-app and sent to the user's inbox.
+
+![Email preview](images/email-preview.png)
 
 ---
 
