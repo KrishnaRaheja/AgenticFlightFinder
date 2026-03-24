@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 880 510">
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 820 510">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M1 1.5 L9 5 L1 8.5" fill="none" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -6,24 +6,24 @@
   </defs>
 
   <!-- Background -->
-  <rect width="880" height="510" fill="#FAFAFA" rx="4"/>
+  <rect width="820" height="510" fill="#FAFAFA" rx="4"/>
 
-  <!-- Shared zone -->
-  <rect x="590" y="15" width="275" height="480" rx="10" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="5 3"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#94A3B8" x="727" y="33" text-anchor="middle" letter-spacing="1.5">SHARED</text>
+  <!-- Shared zone (right column) -->
+  <rect x="560" y="15" width="245" height="480" rx="10" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="5 3"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#94A3B8" x="682" y="33" text-anchor="middle" letter-spacing="1.5">SHARED</text>
 
   <!-- Request Path lane -->
-  <rect x="15" y="15" width="565" height="155" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+  <rect x="15" y="15" width="535" height="155" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
   <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" font-weight="600" fill="#2563EB" x="30" y="33" letter-spacing="1">REQUEST PATH</text>
 
   <!-- Autonomous Path lane -->
-  <rect x="15" y="183" width="565" height="312" rx="10" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="1"/>
+  <rect x="15" y="183" width="535" height="312" rx="10" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="1"/>
   <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" font-weight="600" fill="#7C3AED" x="30" y="200" letter-spacing="1">AUTONOMOUS PATH</text>
 
   <!-- SUPABASE -->
-  <rect x="615" y="72" width="135" height="310" rx="8" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#065F46" x="682" y="224" text-anchor="middle">Supabase</text>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#047857" x="682" y="243" text-anchor="middle">Postgres + Auth</text>
+  <rect x="580" y="72" width="135" height="310" rx="8" fill="#D1FAE5" stroke="#6EE7B7" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#065F46" x="647" y="224" text-anchor="middle">Supabase</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#047857" x="647" y="243" text-anchor="middle">Postgres + Auth</text>
 
   <!-- BROWSER -->
   <rect x="35" y="50" width="115" height="80" rx="7" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1"/>
@@ -40,8 +40,8 @@
   <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#047857" x="264" y="106" text-anchor="middle">Railway</text>
 
   <!-- Arrow: FastAPI -> Supabase -->
-  <line x1="327" y1="90" x2="615" y2="90" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="471" y="83" text-anchor="middle">RLS</text>
+  <line x1="327" y1="90" x2="580" y2="90" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="453" y="83" text-anchor="middle">RLS</text>
 
   <!-- APSCHEDULER -->
   <rect x="35" y="218" width="115" height="80" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
@@ -50,36 +50,29 @@
   <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#6D28D9" x="92" y="279" text-anchor="middle">17:00 PT (Email)</text>
 
   <!-- Arrow: APScheduler -> Claude Agent -->
-  <line x1="150" y1="258" x2="190" y2="258" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="150" y1="258" x2="202" y2="258" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
 
   <!-- CLAUDE AGENT -->
-  <rect x="190" y="218" width="125" height="80" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#4C1D95" x="252" y="254" text-anchor="middle">Claude Agent</text>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#6D28D9" x="252" y="272" text-anchor="middle">Haiku · tool use</text>
+  <rect x="202" y="218" width="125" height="80" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#4C1D95" x="264" y="254" text-anchor="middle">Claude Agent</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#6D28D9" x="264" y="272" text-anchor="middle">Haiku · tool use</text>
 
-  <!-- Arrow: Claude Agent -> Tool Use -->
-  <line x1="315" y1="258" x2="340" y2="258" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Arrow: Claude Agent -> Flight Adapter (search) -->
+  <line x1="327" y1="250" x2="382" y2="250" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="354" y="244" text-anchor="middle">search</text>
 
-  <!-- TOOL USE -->
-  <rect x="340" y="226" width="78" height="64" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="1"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="12" font-weight="600" fill="#4C1D95" x="379" y="258" text-anchor="middle">Tool Use</text>
-
-  <!-- Arrow: Tool Use -> Flight Adapter (call) -->
-  <line x1="418" y1="248" x2="453" y2="248" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#64748B" x="435" y="242" text-anchor="middle">search</text>
-
-  <!-- Arrow: Flight Adapter -> Tool Use (results) -->
-  <line x1="453" y1="262" x2="418" y2="262" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#64748B" x="435" y="274" text-anchor="middle">results</text>
+  <!-- Arrow: Flight Adapter -> Claude Agent (results) -->
+  <line x1="382" y1="266" x2="327" y2="266" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="9" fill="#64748B" x="354" y="278" text-anchor="middle">results</text>
 
   <!-- FLIGHT ADAPTER -->
-  <rect x="453" y="218" width="115" height="80" rx="7" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#7F1D1D" x="510" y="254" text-anchor="middle">Flight Adapter</text>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#991B1B" x="510" y="272" text-anchor="middle">fast-flights</text>
+  <rect x="382" y="218" width="120" height="80" rx="7" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="13" font-weight="600" fill="#7F1D1D" x="442" y="254" text-anchor="middle">Flight Adapter</text>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="11" fill="#991B1B" x="442" y="272" text-anchor="middle">fast-flights</text>
 
-  <!-- Arrow: Tool Use -> Supabase I/O -->
-  <path d="M379,290 L379,342 L615,342" fill="none" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
-  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="495" y="335" text-anchor="middle">I/O</text>
+  <!-- Arrow: Claude Agent -> Supabase (I/O tools) -->
+  <path d="M264 298 L264 342 L580 342" fill="none" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text font-family="'Segoe UI',Arial,sans-serif" font-size="10" fill="#64748B" x="415" y="335" text-anchor="middle">I/O</text>
 
   <!-- Arrow: APScheduler -> Email Service -->
   <line x1="92" y1="298" x2="92" y2="368" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>

@@ -444,12 +444,25 @@ function StepPreferences({ data, update }: { data: WizardData; update: (p: Parti
 
 // ── Step: Tell Claude (context) ────────────────────────────────────────────────
 
+const CONTEXT_SUGGESTIONS = [
+  'No layovers over 2 hrs',
+  'Value convenience over cost',
+  'Open to a red-eye if it saves money',
+]
+
 function StepContext({
   data, update, error, atLimit
 }: {
   data: WizardData; update: (p: Partial<WizardData>) => void; error: string | null; atLimit: boolean
 }) {
   const remaining = 500 - data.additional_context.length
+
+  const appendSuggestion = (s: string) => {
+    const current = data.additional_context.trim()
+    const next = current ? `${current}. ${s}` : s
+    if (next.length <= 500) update({ additional_context: next })
+  }
+
   return (
     <div className="px-6 py-5 space-y-4">
       <div className="flex items-start gap-3">
@@ -457,16 +470,37 @@ function StepContext({
           <Sparkles className="h-3 w-3 text-accent" />
         </div>
         <div>
-          <h3 className="text-base font-semibold text-foreground">Tell our agent what matters <span className="font-normal text-muted-foreground text-sm">(Optional)</span></h3>
+          <h3 className="text-base font-semibold text-foreground">
+            Tell our agent what matters{' '}
+            <span className="font-normal text-muted-foreground text-sm">(Optional)</span>
+          </h3>
+          <p className="text-xs text-muted-foreground/60 mt-0.5">
+            Understands real world context.
+          </p>
         </div>
       </div>
+
+      {/* Suggestion chips */}
+      <div className="flex flex-wrap gap-1.5">
+        {CONTEXT_SUGGESTIONS.map(s => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => appendSuggestion(s)}
+            className="text-xs px-2.5 py-1 rounded-full border border-border bg-elevated hover:border-primary/40 hover:text-foreground text-muted-foreground transition-colors cursor-pointer"
+          >
+            + {s}
+          </button>
+        ))}
+      </div>
+
       <div className="relative">
         {/* SYNC: maxLength must match backend schemas.py FlightPreferenceCreate.additional_context max_length */}
         <Textarea
           placeholder="e.g. I prefer morning departures and want to avoid Spirit Airlines. Layovers under 2 hours only. Happy to fly out of Newark instead of JFK if it saves money."
           value={data.additional_context}
           onChange={e => update({ additional_context: e.target.value })}
-          maxLength={500} rows={5}
+          maxLength={500} rows={4}
           className="bg-elevated border-border text-foreground placeholder:text-muted-foreground/50 text-sm focus-visible:ring-ring resize-none"
         />
         <span className={cn(
