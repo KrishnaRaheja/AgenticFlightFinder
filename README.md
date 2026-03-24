@@ -25,6 +25,22 @@ There is one exception to this however: when a flight tracker is first created, 
 
 ---
 
+## Screenshots
+
+**Tracker setup: preferences step.** Optional details for a flight preference so Claude can intelligently filter routes. Includes options like 'Include nearby airports' (ex. JFK, LGA, and EWR are all in New York, taking off from either is fine).
+
+![Preference wizard](images/preference-selection.png)
+
+**Tracker setup: additional context step.** Users can specify airline preferences, layover limits, departure time windows, or anything else that matters to them.
+
+![Additional context](images/additional-context-section.png)
+
+**Email preview.** Each alert is viewable in-app and sent to the user's inbox.
+
+![Email preview](images/email-preview.png)
+
+---
+
 ## The Agent
 
 A Claude agent runs on a cron schedule, using multi-turn tool use to reason through each user's preference (see https://platform.claude.com/docs/en/agent-sdk/agent-loop for more details). Based on context like alert frequency and recent activity, it decides whether to search for flights, update price history, send an alert, or skip the run entirely.
@@ -151,6 +167,71 @@ The backend uses two Supabase clients with different privilege levels. The **ser
 **Email preview.** Each alert is viewable in-app and sent to the user's inbox.
 
 ![Email preview](images/email-preview.png)
+
+---
+
+## Database Schema
+
+All data lives in Supabase (Postgres). Row Level Security is enforced on every table, users can only read and write their own rows.
+
+### `flight_preferences`
+
+The core configuration table. Each row represents one active flight monitor a user has set up.
+
+| Column | Type | Description |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `user_id` | uuid | FK → `auth.users` |
+| `origin` / `destination` | varchar | IATA airport codes |
+| `departure_period` / `return_period` | text | Travel window (e.g. "March 2025") |
+| `max_stops` | integer | Maximum layovers (default 2) |
+| `cabin_class` | text | `economy`, `business`, etc. |
+| `budget` | integer | Optional price ceiling |
+| `nearby_airports` | boolean | Expand search to nearby airports |
+| `date_flexibility` | text | `exact`, `±3 days`, `±1 week` |
+| `priority` | text | `cheapest`, `fastest`, `balanced` |
+| `alert_frequency` | text | `daily`, `weekly`, `biweekly` |
+| `additional_context` | text | Free-text user context passed to Claude |
+| `is_active` | boolean | Whether the monitor is currently running |
+
+### `price_history`
+
+A timestamped record of every flight result Claude stores. Used to compute `avg_price`, `min_price`, and `max_price` for deal assessment.
+
+| Column | Type | Description |
+|---|---|---|
+| `preference_id` | uuid | FK → `flight_preferences` |
+| `departure_date` | date | The specific flight date searched |
+| `price` | numeric | Fare found |
+| `duration_minutes` | integer | Total trip duration |
+| `stops` | integer | Number of layovers |
+| `airline` | text | Carrier name |
+| `price_indicator` | text | `low`, `typical`, or `high` (from the flight source) |
+| `search_session_id` | uuid | Groups all results from a single agent search call |
+
+### `alerts_sent`
+
+A log of every alert Claude has decided to send. Stores the full rendered HTML so users can view past alerts in-app.
+
+| Column | Type | Description |
+|---|---|---|
+| `preference_id` | uuid | FK → `flight_preferences` |
+| `alert_type` | text | Always `multi_flight_summary` currently |
+| `reference_price` | numeric | Price Claude used as the basis for its assessment |
+| `score` | numeric | Claude's deal score for this alert |
+| `reasoning` | text | Claude's written justification for sending |
+| `email_subject` / `email_body_html` | text | The rendered email content |
+
+### `agent_activity_log`
+
+An audit trail of every agent run — including runs where Claude decided to skip or found no results.
+
+| Column | Type | Description |
+|---|---|---|
+| `preference_id` | uuid | FK → `flight_preferences` |
+| `activity_type` | text | `searched`, `alerted`, `skipped_search`, `no_results_found` |
+| `reasoning` | text | Claude's explanation for the decision |
+| `timestamp` | timestamptz | When the run occurred |
 
 ---
 
