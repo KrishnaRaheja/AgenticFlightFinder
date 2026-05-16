@@ -29,7 +29,7 @@ class FlightPreferenceCreate(BaseModel):
     priority: Literal["price", "balanced", "convenience"] = "balanced"
     prefer_non_work_days: bool = Field(default=False)
     # NOTE: allowed values below must stay in sync with PreferenceWizard.tsx (StepPreferences)
-    alert_frequency: Literal["daily", "weekly"] = "daily"
+    alert_frequency: Literal["daily", "weekly"] = "weekly"
     additional_context: Optional[str] = Field(None, max_length=500)  # NOTE: max_length must stay in sync with PreferenceWizard.tsx (StepContext, maxLength prop)
 
 class FlightPreferenceResponse(FlightPreferenceCreate):
