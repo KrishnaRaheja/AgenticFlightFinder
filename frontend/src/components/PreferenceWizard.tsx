@@ -29,7 +29,7 @@ interface WizardData {
 const DEFAULT_DATA: WizardData = {
   origin: '', destination: '', departure_period: '', return_period: '',
   budget: '', max_stops: '2', cabin_class: 'economy', date_flexibility: 'exact',
-  nearby_airports: false, priority: 'balanced', alert_frequency: 'daily',
+  nearby_airports: false, priority: 'balanced', alert_frequency: 'weekly',
   additional_context: '',
 }
 
