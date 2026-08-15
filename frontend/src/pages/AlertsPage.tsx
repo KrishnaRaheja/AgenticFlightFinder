@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/lib/supabase'
-import { API_URL } from '@/config'
+import { apiFetch } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import {
   Bell, ChevronDown, Loader2, PlaneTakeoff, PlaneLanding,
@@ -38,11 +37,7 @@ export default function AlertsPage() {
 
   const fetchPreferences = useCallback(async () => {
     if (!user) return
-    const { data: { session } } = await supabase.auth.getSession()
-    const token = session?.access_token
-    const res = await fetch(`${API_URL}/api/preferences/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const res = await apiFetch('/api/preferences/')
     if (res.ok) {
       const prefs = await res.json()
       setRows(prefs.map((p: PreferenceWithAlerts) => ({
@@ -70,11 +65,7 @@ export default function AlertsPage() {
     // Fetch alerts if not loaded yet
     setRows((prev) => prev.map((r) => r.id === id ? { ...r, expanded: true, alertsLoading: true } : r))
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const token = session?.access_token
-      const res = await fetch(`${API_URL}/api/preferences/${id}/alerts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await apiFetch(`/api/preferences/${id}/alerts`)
       const alerts: Alert[] = res.ok ? await res.json() : []
       setRows((prev) => prev.map((r) => r.id === id ? { ...r, alerts, alertsLoading: false } : r))
     } catch {

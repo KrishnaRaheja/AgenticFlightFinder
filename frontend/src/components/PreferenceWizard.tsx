@@ -7,8 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { supabase } from '@/lib/supabase'
-import { API_URL } from '@/config'
+import { apiFetch } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import {
   ArrowRight, ArrowLeft, Loader2, Sparkles,
@@ -106,8 +105,6 @@ export function PreferenceWizard({ open, onClose, onCreated, atLimit = false }: 
     if (!user) { goTo('auth', 'forward'); return }
     setSubmitting(true); setError(null)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const token = session?.access_token
       const body = {
         origin: data.origin, destination: data.destination,
         departure_period: data.departure_period,
@@ -118,9 +115,8 @@ export function PreferenceWizard({ open, onClose, onCreated, atLimit = false }: 
         priority: data.priority, alert_frequency: data.alert_frequency,
         additional_context: data.additional_context || undefined,
       }
-      const res = await fetch(`${API_URL}/api/preferences/`, {
+      const res = await apiFetch('/api/preferences/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(body),
       })
       if (!res.ok) {
