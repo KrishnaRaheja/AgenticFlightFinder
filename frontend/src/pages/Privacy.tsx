@@ -192,9 +192,9 @@ export default function Privacy() {
 
           <H>8. If there is a data breach</H>
           <P>
-            If a breach affects your personal information, you will be notified by email without
-            unreasonable delay, along with what was affected and what you should do. Relevant
-            authorities will be notified where the law requires it.
+            If the Service becomes aware of a breach affecting your personal information, you will
+            be notified by email as soon as is reasonably practicable. Relevant authorities will be
+            notified where the law requires it.
           </P>
 
           <H>9. Children</H>
