@@ -6,6 +6,8 @@ import HomePage from '@/pages/HomePage'
 import HowItWorks from '@/pages/HowItWorks'
 import Settings from '@/pages/Settings'
 import ResetPasswordPage from '@/pages/ResetPasswordPage'
+import Privacy from '@/pages/Privacy'
+import Terms from '@/pages/Terms'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -41,6 +43,8 @@ function App() {
 
         {/* Public */}
         <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
 
         {/* Protected */}
         <Route path="/settings" element={

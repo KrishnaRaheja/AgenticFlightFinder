@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth, DuplicateEmailError } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +22,7 @@ export function AuthForm({ onSuccess, defaultTab = 'signup' }: AuthFormProps) {
   const [signupDone, setSignupDone] = useState(false)
   const [forgotMode, setForgotMode] = useState(false)
   const [resetSent, setResetSent] = useState(false)
+  const [agreed, setAgreed] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setError(null); setLoading(true)
@@ -127,9 +129,30 @@ export function AuthForm({ onSuccess, defaultTab = 'signup' }: AuthFormProps) {
           </div>
         )}
 
+        {!forgotMode && tab === 'signup' && (
+          <label className="flex items-start gap-2 text-xs text-muted-foreground cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={e => setAgreed(e.target.checked)}
+              className="mt-0.5 accent-primary cursor-pointer"
+            />
+            <span>
+              I agree to the{' '}
+              <Link to="/terms" target="_blank" className="text-accent hover:text-accent/80 underline underline-offset-2">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" target="_blank" className="text-accent hover:text-accent/80 underline underline-offset-2">
+                Privacy Policy
+              </Link>
+            </span>
+          </label>
+        )}
+
         {error && <p className="text-destructive text-sm">{error}</p>}
 
-        <Button type="submit" disabled={loading}
+        <Button type="submit" disabled={loading || (!forgotMode && tab === 'signup' && !agreed)}
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
         >
           {loading && <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />}

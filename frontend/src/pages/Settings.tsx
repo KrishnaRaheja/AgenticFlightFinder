@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 import { useAuth } from '@/hooks/useAuth'
 import { useLogout } from '@/hooks/useLogout'
 import { Settings as SettingsIcon, Mail, LogOut } from 'lucide-react'
@@ -9,10 +10,10 @@ export default function Settings() {
   const handleLogout = useLogout()
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
 
-      <main className="max-w-lg mx-auto px-4 pt-24 pb-16">
+      <main className="max-w-lg mx-auto px-4 pt-24 pb-16 flex-1 w-full">
         <div className="flex items-center gap-3 mb-8">
           <div className="p-2 rounded-lg bg-surface border border-border">
             <SettingsIcon className="h-5 w-5 text-accent" />
@@ -54,6 +55,8 @@ export default function Settings() {
           Sign out
         </Button>
       </main>
+
+      <Footer />
     </div>
   )
 }

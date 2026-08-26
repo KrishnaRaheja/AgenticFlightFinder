@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 import { PlaneTakeoff, Bot, Mail, ChevronRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
@@ -33,10 +34,10 @@ export default function HowItWorks() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
 
-      <main className="max-w-2xl mx-auto px-4 pt-24 pb-20">
+      <main className="max-w-2xl mx-auto px-4 pt-24 pb-20 flex-1 w-full">
         {/* Header */}
         <div className="mb-14">
           <h1 className="text-3xl font-bold text-foreground tracking-tight">How it works</h1>
@@ -133,6 +134,8 @@ export default function HowItWorks() {
           )}
         </div>
       </main>
+
+      <Footer />
     </div>
   )
 }
