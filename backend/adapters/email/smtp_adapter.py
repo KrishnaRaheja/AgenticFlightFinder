@@ -40,8 +40,8 @@ class SMTPEmailAdapter(EmailAdapter):
             )
             return {"success": True}
         except SMTPException as exc:
-            logger.exception("SMTP error sending email to %s", to_email)
+            logger.exception("SMTP error sending email")
             return {"success": False, "error": str(exc)}
         except Exception as exc:
-            logger.exception("Unexpected SMTP error sending email to %s", to_email)
+            logger.exception("Unexpected SMTP error sending email")
             return {"success": False, "error": str(exc)}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { Globe } from '@/components/Globe'
 import { Navbar } from '@/components/Navbar'
 import { PreferenceWizard } from '@/components/PreferenceWizard'
@@ -369,6 +370,13 @@ export default function HomePage() {
 
         </>
       )}
+
+      {/* ── Legal links — bottom-center, clear of the bottom-left notice and the right sidebar ── */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 text-xs text-muted-foreground/60 pointer-events-auto">
+        <Link to="/privacy" className="hover:text-muted-foreground transition-colors">Privacy</Link>
+        <span>·</span>
+        <Link to="/terms" className="hover:text-muted-foreground transition-colors">Terms</Link>
+      </div>
 
       {/* ── Wizard overlay ── */}
       <PreferenceWizard open={wizardOpen} onClose={() => setWizardOpen(false)} onCreated={fetchPreferences} atLimit={atLimit} />

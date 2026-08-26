@@ -41,7 +41,7 @@ class ResendEmailAdapter(EmailAdapter):
             await asyncio.to_thread(resend.Emails.send, params)
             return {"success": True}
         except Exception:
-            logger.exception("Resend error sending email to %s", to_email)
+            logger.exception("Resend error sending email")
             return {"success": False, "error": "Resend API error"}
 
     async def send_batch(self, emails: list[dict]) -> dict:

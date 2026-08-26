@@ -504,6 +504,9 @@ function StepContext({
           remaining < 50 ? 'text-warning' : 'text-muted-foreground/50',
         )}>{remaining}</span>
       </div>
+      <p className="text-xs text-muted-foreground/60">
+        Sent to Claude to evaluate your route — please avoid sensitive personal details.
+      </p>
       {atLimit && (
         <div className="flex items-center gap-2 bg-surface/70 backdrop-blur-sm border border-amber-500/30 rounded-lg px-3 py-2 transition-all duration-300">
           <TriangleAlert className="h-3 w-3 text-amber-400 shrink-0" />

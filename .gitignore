@@ -46,3 +46,6 @@ dist/
 *.swp
 *.bak
 *.tmp
+
+# Internal compliance notes (not for the public repo)
+legal/compliance-notes.md

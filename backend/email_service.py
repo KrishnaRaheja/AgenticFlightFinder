@@ -28,7 +28,7 @@ async def send_email(to_email: str, subject: str, html_body: str) -> dict:
         logger.exception("Email provider configuration error")
         return {"success": False, "error": "Email provider configuration error"}
     except Exception:
-        logger.exception("Unexpected error sending email to %s", to_email)
+        logger.exception("Unexpected error sending email")
         return {"success": False, "error": "Unexpected email sending error"}
 
 

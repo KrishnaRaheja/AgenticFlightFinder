@@ -538,7 +538,7 @@ async def execute_send_alert(arguments: Dict[str, Any]) -> Dict[str, Any]:
                     # Send email immediately
                     email_result = await send_email(user_email, email_subject, email_body_html)
                     if email_result.get("success"):
-                        logger.info(f"Sent immediate welcome email for preference {preference_id} to {user_email}")
+                        logger.info(f"Sent immediate welcome email for preference {preference_id}")
                     else:
                         logger.error(f"Failed to send immediate email: {email_result.get('error')}")
                 else:
